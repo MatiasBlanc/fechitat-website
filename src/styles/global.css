@@ -114,23 +114,34 @@
     );
   }
 
+  /* Variables de color para el riel — modo claro (default) */
+  .hangul-rail {
+    --rail-color: var(--color-text-soft);
+    --rail-color-active: var(--color-red);
+    --rail-color-hover: var(--color-red);
+    --rail-opacity: 0.55;
+    --rail-opacity-active: 1;
+  }
+
+  /* Variables de color para el riel — modo oscuro (sobre hero) */
+  .hangul-rail--dark {
+    --rail-color: rgba(255, 255, 255, 0.5);
+    --rail-color-active: #fff;
+    --rail-color-hover: #fff;
+  }
+
+  .hangul-rail a {
+    color: var(--rail-color) !important;
+    opacity: var(--rail-opacity);
+  }
+
   .hangul-rail a.active {
-    opacity: 1;
-    color: var(--color-red);
+    color: var(--rail-color-active) !important;
+    opacity: var(--rail-opacity-active);
   }
 
-  .hangul-rail--dark a {
-    color: rgba(255, 255, 255, 0.45);
-  }
-
-  .hangul-rail--dark a.active,
-  .hangul-rail--dark a:hover {
-    color: #fff;
-    opacity: 1;
-  }
-
-  .hangul-rail:not(.hangul-rail--dark) a:hover {
-    opacity: 1;
-    color: var(--color-red);
+  .hangul-rail a:hover {
+    color: var(--rail-color-hover) !important;
+    opacity: var(--rail-opacity-active);
   }
 }
