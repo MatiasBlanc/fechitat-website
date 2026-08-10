@@ -1,0 +1,184 @@
+---
+// Padres — beneficios, seguridad, FAQ, testimonios y formulario de clase de prueba.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HangulRail from '../components/HangulRail.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Tag from '../components/Tag.astro';
+import PageHero from '../components/PageHero.astro';
+import { img } from '../lib/imagenes';
+
+const titulo = 'Para padres — FECHITAT';
+
+const riel = [
+  { href: '#beneficios', kr: '혜택', label: 'Beneficios' },
+  { href: '#seguridad', kr: '안전', label: 'Seguridad' },
+  { href: '#testimonios', kr: '후기', label: 'Testimonios' },
+  { href: '#inscribir', kr: '등록', label: 'Inscribir' },
+];
+
+const beneficios = [
+  { etiqueta: 'Disciplina', variante: 'red', texto: 'Rutinas claras y metas por cinturón que enseñan constancia dentro y fuera del dojang.' },
+  { etiqueta: 'Confianza', variante: 'blue', texto: 'Cada examen superado refuerza la seguridad en sí mismos, en el tatami y en la vida diaria.' },
+  { etiqueta: 'Respeto', variante: 'gold', texto: 'El saludo, la jerarquía de grados y el trabajo en pareja enseñan a respetar a otros y a sí mismos.' },
+  { etiqueta: 'Condición física', variante: 'default', texto: 'Coordinación, flexibilidad y resistencia, con progresiones adecuadas a cada edad.' },
+];
+
+// TODO: testimonios desde Sanity (schema testimonio, página: Padres).
+const testimonios = [
+  { texto: '"Mi hija pasó de ser tímida a presentarse voluntaria en la escuela. El cambio se nota en su seguridad diaria, no solo en el dojang."', autor: 'Madre de alumna, 8 años' },
+  { texto: '"Los instructores son exigentes pero muy pacientes. Nunca sentí que fuera un ambiente de presión, sino de aprendizaje real."', autor: 'Padre de alumno, 11 años' },
+  { texto: '"Nos encantó que la federación tenga proyección internacional. Mi hijo ahora sueña con representar a Chile."', autor: 'Madre de alumno, 13 años' },
+];
+
+const faqs = [
+  { pregunta: '¿A qué edad puede empezar mi hijo/a?', respuesta: 'Recibimos alumnos desde los 5 años en clases infantiles, con progresiones adaptadas a cada etapa de desarrollo.' },
+  { pregunta: '¿Necesita experiencia previa?', respuesta: 'No. La mayoría de los alumnos comienza sin experiencia; el uniforme y el cinturón blanco se entregan al inscribirse.' },
+  { pregunta: '¿Cuántas veces por semana se entrena?', respuesta: 'Los dojangs afiliados ofrecen entre 2 y 3 clases semanales; cada escuela define su propio horario.' },
+  { pregunta: '¿Pueden competir a nivel nacional?', respuesta: 'Sí, una vez alcanzado el nivel adecuado pueden participar en el calendario nacional y, con buen desempeño, en la selección para torneos internacionales.' },
+];
+---
+
+<BaseLayout title={titulo}>
+  <HangulRail links={riel} />
+
+  <PageHero
+    title="Un deporte que forma<br />el carácter de tu hijo/a"
+    crumb="Para padres"
+    description="Más que patadas y cinturones: disciplina, respeto, autocontrol y confianza, guiados por instructores certificados en un ambiente seguro y supervisado."
+    image={img.ninosClase}
+    imageAlt="Niños practicando Taekwon-Do ITF"
+    imageStyle="border-radius:2px;"
+  >
+    <div class="hero-actions" style="margin-top:1.4em;">
+      <a href="#inscribir" class="btn">Reservar clase de prueba gratis</a>
+    </div>
+  </PageHero>
+
+  <!-- Beneficios -->
+  <section id="beneficios">
+    <div class="wrap">
+      <div class="section-head">
+        <div><Eyebrow>Por qué Taekwon-Do</Eyebrow><h2>Lo que tu hijo/a se lleva a casa</h2></div>
+      </div>
+      <div class="grid g-4">
+        {
+          beneficios.map((beneficio) => (
+            <div class="card"><div class="body">
+              <Tag variant={beneficio.variante} style="margin-bottom:.8em;">{beneficio.etiqueta}</Tag>
+              <p style="color:var(--text-soft);font-size:.9rem;">{beneficio.texto}</p>
+            </div></div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Seguridad -->
+  <section class="alt" id="seguridad">
+    <div class="wrap grid g-2" style="align-items:center;gap:3em;">
+      <img
+        src={img.instructorInfantil}
+        alt="Instructor supervisando entrenamiento infantil"
+        style="border-radius:2px;"
+      />
+      <div>
+        <Eyebrow>Tranquilidad para ti</Eyebrow>
+        <h2>Un ambiente seguro y supervisado</h2>
+        <ul style="color:var(--text-soft);padding-left:1.1em;line-height:2;">
+          <li>Instructores certificados por FECHITAT e ITF</li>
+          <li>Grupos separados por edad y nivel</li>
+          <li>Protecciones obligatorias en todo contacto</li>
+          <li>Seguro de accidentes en clases y competencias oficiales</li>
+          <li>Comunicación directa con el instructor sobre el progreso</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <div class="wrap" style="max-width:820px;">
+      <Eyebrow>Preguntas frecuentes</Eyebrow>
+      <h2 style="margin-bottom:1em;">Antes de inscribir</h2>
+      <div style="border-top:1px solid var(--line);">
+        {
+          faqs.map((faq) => (
+            <details style="padding:1.1em 0;border-bottom:1px solid var(--line);">
+              <summary style="cursor:pointer;font-family:'Kumbh Sans';font-weight:700;text-transform:uppercase;">
+                {faq.pregunta}
+              </summary>
+              <p style="color:var(--text-soft);margin-top:.7em;">{faq.respuesta}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section class="dark" id="testimonios">
+    <div class="wrap grid g-3">
+      {
+        testimonios.map((testimonio) => (
+          <div>
+            <p style="font-size:1.05rem;color:#e6e8ee;">{testimonio.texto}</p>
+            <div class="eyebrow" style="margin-top:1em;">— {testimonio.autor}</div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Inscripción / clase de prueba -->
+  <section id="inscribir">
+    <div class="wrap grid g-2" style="gap:3em;">
+      <div>
+        <Eyebrow>Da el primer paso</Eyebrow>
+        <h2>Reserva una clase de prueba gratuita</h2>
+        <p style="color:var(--text-soft);">
+          Completa el formulario y te contactaremos con el dojang más cercano a
+          tu domicilio para coordinar la primera clase, sin costo ni compromiso.
+        </p>
+      </div>
+      <form class="card" id="form-clase-prueba" style="padding:1.6em;">
+        <div class="grid g-2">
+          <div class="field">
+            <label for="nombre">Nombre del niño/a</label>
+            <input id="nombre" type="text" required />
+          </div>
+          <div class="field">
+            <label for="edad">Edad</label>
+            <input id="edad" type="number" min="4" max="17" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="comuna">Comuna</label>
+          <input id="comuna" type="text" placeholder="Ej. La Serena" />
+        </div>
+        <div class="grid g-2">
+          <div class="field">
+            <label for="tel">Teléfono de contacto</label>
+            <input id="tel" type="tel" required />
+          </div>
+          <div class="field">
+            <label for="mail">Correo</label>
+            <input id="mail" type="email" required />
+          </div>
+        </div>
+        <button type="submit" class="btn" style="width:100%;justify-content:center;">
+          Solicitar clase de prueba
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // TODO: conectar a [servicio elegido] (Formspree o function serverless).
+    // Por ahora se previene el envío para no recargar la página.
+    const form = document.querySelector('#form-clase-prueba');
+    form?.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      // TODO: enviar los datos del formulario al endpoint de leads.
+    });
+  </script>
+</BaseLayout>

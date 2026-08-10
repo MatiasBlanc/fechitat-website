@@ -1,0 +1,50 @@
+---
+// Header: nav sticky oscuro + menú responsive con burger.
+// La ruta activa se calcula desde Astro.url.pathname.
+const { pathname } = Astro.url;
+
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/federacion", label: "Federación" },
+  { href: "/eventos", label: "Eventos" },
+  { href: "/blog", label: "Blog" },
+];
+
+// En / se compara exacto; el resto por prefijo.
+const esActivo = (href) =>
+  href === "/" ? pathname === "/" : pathname.startsWith(href);
+---
+
+<header class="sticky top-0 z-50 bg-ink border-b border-white/8">
+  <div class="max-w-[var(--maxw)] mx-auto px-[28px] flex items-center justify-between h-[68px]">
+    <a href="/" class="flex items-center gap-[0.7em] text-white font-heading font-extrabold tracking-[0.02em] text-[1.05rem]" aria-label="FECHITAT — Inicio">
+      <img src="/images/general/fechitat-logo.svg" alt="" class="w-[36px] h-[36px] object-contain" />
+      FECHITAT
+    </a>
+    <nav class="primary flex gap-[2.1em] max-[900px]:fixed max-[900px]:inset-[68px_0_0_0] max-[900px]:bg-ink max-[900px]:flex-col max-[900px]:py-[2em] max-[900px]:px-[28px] max-[900px]:gap-[1.4em] max-[900px]:translate-x-full max-[900px]:transition-transform max-[900px]:duration-250 max-[900px]:ease-[ease] [&.open]:max-[900px]:translate-x-0" aria-label="Navegación principal">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              'text-[#cfd3dc] font-mono text-[0.76rem] tracking-[0.08em] uppercase py-[0.4em] border-b-2 border-transparent transition-colors duration-150 hover:text-white hover:border-red',
+              { 'text-white border-red': esActivo(link.href) },
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a href="/dojangs" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px]">Encuentra tu dojang</a>
+    </nav>
+    <button
+      class="burger hidden max-[900px]:block bg-none border-none text-white text-[1.4rem] cursor-pointer"
+      type="button"
+      data-burger
+      aria-expanded="false"
+      aria-label="Abrir menú"
+    >
+      ☰
+    </button>
+  </div>
+</header>

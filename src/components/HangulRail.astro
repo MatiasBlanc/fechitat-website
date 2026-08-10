@@ -1,0 +1,28 @@
+---
+// Riel vertical fijo a la derecha con scroll-spy (elemento distintivo del sitio).
+// Recibe los anclajes de la página vía la prop `links`.
+interface EnlaceRiel {
+  href: string;
+  kr: string;
+  label: string;
+}
+
+interface Props {
+  links: EnlaceRiel[];
+}
+
+const { links } = Astro.props;
+---
+
+<div class="hangul-rail fixed right-[14px] top-1/2 -translate-y-1/2 flex flex-col gap-[1.5em] z-40 max-[1050px]:hidden" aria-label="Navegación de secciones">
+  {
+    links.map((enlace) => (
+      <a
+        href={enlace.href}
+        class="writing-mode-vertical font-mono text-[0.68rem] tracking-[0.08em] text-text-soft flex items-center gap-[0.6em] opacity-55 transition-opacity duration-200 hover:opacity-100 hover:text-red [&.active]:opacity-100 [&.active]:text-red"
+      >
+        <span class="text-[0.85rem]">{enlace.kr}</span> {enlace.label}
+      </a>
+    ))
+  }
+</div>

@@ -1,0 +1,113 @@
+---
+// Blog — artículos filtrables por etiqueta.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Tag from '../components/Tag.astro';
+import PageHero from '../components/PageHero.astro';
+import { img } from '../lib/imagenes';
+
+const titulo = 'Blog — FECHITAT';
+
+// TODO: posts desde Sanity (schema post).
+const postDestacado = {
+  titulo: 'Principios de la defensa personal en el Taekwon-Do tradicional',
+  etiqueta: 'Destacado · Ensayos',
+  variante: 'red',
+  extracto:
+    'Un repaso de los fundamentos de Ap Chagi, Momtong Makgi y el control mental detrás de cada técnica de autodefensa ITF.',
+  fecha: '30 ene 2025 · 6 min',
+  imagen: img.postDefensa,
+};
+
+const posts = [
+  { titulo: 'Resultados del campeonato nacional 2025', etiqueta: 'Noticias', variante: 'default', fecha: '30 ene 2025', imagen: img.postNacional, tags: 'noticias,historia' },
+  { titulo: '5 deportistas chilenos destacados de 2025', etiqueta: 'Historia', variante: 'gold', fecha: '30 ene 2025', imagen: img.postHistoria, tags: 'historia' },
+  { titulo: 'El Taekwon-Do ITF en Chile: una línea de tiempo', etiqueta: 'Documentos', variante: 'blue', fecha: '28 ene 2025', imagen: img.postDocumento, tags: 'documentos,historia' },
+  { titulo: 'Los 11 principios del entrenamiento según el General Choi', etiqueta: 'Teoría', variante: 'red', fecha: '22 ene 2025', imagen: img.competidora, tags: 'teoria,ensayos' },
+  { titulo: 'Convocatoria: selección nacional rumbo a Jesolo', etiqueta: 'Noticias', variante: 'default', fecha: '18 ene 2025', imagen: img.postConvocatoria, tags: 'noticias' },
+  { titulo: 'Nuevo reglamento de exámenes de grado 2025', etiqueta: 'Documentos', variante: 'blue', fecha: '12 ene 2025', imagen: img.postReglamento, tags: 'documentos' },
+];
+
+const etiquetas = ['Todos', 'Noticias', 'Historia', 'Documentos', 'Ensayos', 'Teoría'];
+const slugEtiqueta = (etiqueta) =>
+  etiqueta === 'Todos' ? 'todos' : etiqueta.toLowerCase();
+---
+
+<BaseLayout title={titulo}>
+  <PageHero
+    title="Blog"
+    description="Historia, técnica y noticias del Taekwon-Do ITF en Chile — escrito por instructores y la propia federación."
+  />
+
+  <section>
+    <div class="wrap">
+      <!-- Artículo destacado -->
+      <a
+        href="#"
+        class="card"
+        style="display:grid;grid-template-columns:1.3fr 1fr;margin-bottom:2.6em;"
+      >
+        <div class="media" style={`aspect-ratio:auto;background-image:url('${postDestacado.imagen}');`}></div>
+        <div class="body" style="display:flex;flex-direction:column;justify-content:center;padding:2em;">
+          <Tag variant={postDestacado.variante} style="width:fit-content;">{postDestacado.etiqueta}</Tag>
+          <h2 style="font-size:1.7rem;margin:.6em 0 .4em;">{postDestacado.titulo}</h2>
+          <p style="color:var(--text-soft);font-size:.92rem;">{postDestacado.extracto}</p>
+          <p style="font-family:'JetBrains Mono';font-size:.72rem;color:var(--text-soft);margin-top:.8em;">
+            {postDestacado.fecha}
+          </p>
+        </div>
+      </a>
+
+      <!-- Filtro por etiquetas (barra horizontal) -->
+      <div class="blog-filter" role="toolbar" aria-label="Filtrar por categoría">
+        {
+          etiquetas.map((etiqueta, indice) => (
+            <button class:list={['pill', { active: indice === 0 }]} data-tag={slugEtiqueta(etiqueta)} type="button">
+              {etiqueta}
+            </button>
+          ))
+        }
+      </div>
+
+      <!-- Grilla de posts -->
+      <div id="post-grid" class="grid g-3">
+        {
+          posts.map((post) => (
+            <a class="card" href="#" data-post-tags={post.tags}>
+              <div class="media" style={`background-image:url('${post.imagen}');`}></div>
+              <div class="body">
+                <Tag variant={post.variante}>{post.etiqueta}</Tag>
+                <h4 style="font-size:1rem;margin:.7em 0 .4em;">{post.titulo}</h4>
+                <p style="font-family:'JetBrains Mono';font-size:.7rem;color:var(--text-soft);">
+                  {post.fecha}
+                </p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+      <div style="text-align:center;margin-top:2.4em;">
+        <!-- TODO: paginación / carga incremental desde Sanity -->
+        <button class="btn dark">Cargar más artículos</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const pills = document.querySelectorAll('.pill[data-tag]');
+    const posts = document.querySelectorAll('[data-post-tags]');
+    if (pills.length && posts.length) {
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          pills.forEach((p) => p.classList.remove('active'));
+          pill.classList.add('active');
+          const tag = pill.dataset.tag;
+          posts.forEach((post) => {
+            const tags = post.dataset.postTags?.split(',') ?? [];
+            post.style.display = tag === 'todos' || tags.includes(tag) ? '' : 'none';
+          });
+        });
+      });
+    }
+  </script>
+</BaseLayout>

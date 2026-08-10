@@ -1,0 +1,133 @@
+---
+// Jóvenes — sistema de grados, selección nacional y semana tipo.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HangulRail from '../components/HangulRail.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Tag from '../components/Tag.astro';
+import Stat from '../components/Stat.astro';
+import PageHero from '../components/PageHero.astro';
+import { img } from '../lib/imagenes';
+
+const titulo = 'Para jóvenes competidores — FECHITAT';
+
+const riel = [
+  { href: '#camino', kr: '단계', label: 'Camino de grados' },
+  { href: '#seleccion', kr: '국가대표', label: 'Selección nacional' },
+  { href: '#semana', kr: '일정', label: 'Semana tipo' },
+];
+
+const grados = [
+  { rango: '10° – 7° Gup', nombre: 'Fundamentos', texto: 'Posturas base, primeros Tul (formas) y disciplina de dojang.' },
+  { rango: '6° – 3° Gup', nombre: 'Técnica intermedia', texto: 'Combinaciones, primeras competencias locales y trabajo de combate controlado.' },
+  { rango: '2° – 1° Gup', nombre: 'Preparación a Dan', texto: 'Tul avanzados, liderazgo en clase y elegibilidad para torneos nacionales.' },
+  { rango: '1° Dan +', nombre: 'Cinturón negro', texto: 'Certificación ITF internacional y camino hacia instructor o selección nacional.' },
+];
+
+const semana = [
+  { dias: 'Lun / Mié / Vie', variante: 'red', nombre: 'Técnica y Tul', texto: 'Trabajo de formas, precisión y examen progresivo.' },
+  { dias: 'Martes / Jueves', variante: 'blue', nombre: 'Combate y táctica', texto: 'Sparring controlado, reglas de competencia y estrategia.' },
+  { dias: 'Sábado', variante: 'gold', nombre: 'Preparación física', texto: 'Fuerza, velocidad y flexibilidad específica del deporte.' },
+  { dias: 'Domingo', variante: 'default', nombre: 'Descanso activo', texto: 'Recuperación, movilidad y análisis de video con el instructor.' },
+];
+---
+
+<BaseLayout title={titulo}>
+  <HangulRail links={riel} />
+
+  <PageHero
+    title="Del cinturón blanco<br />a la selección nacional"
+    crumb="Para jóvenes"
+    description="Si ya entrenas y quieres llevarlo en serio: esta es la ruta técnica y competitiva que sigue todo deportista de FECHITAT."
+    image={img.jovenCompetidor}
+    imageAlt="Joven competidor de Taekwon-Do ITF"
+    imageStyle="border-radius:2px;"
+  >
+    <div class="hero-actions" style="margin-top:1.4em;">
+      <a href="/eventos" class="btn">Ver calendario de competencias</a>
+    </div>
+  </PageHero>
+
+  <!-- Camino de grados -->
+  <section id="camino">
+    <div class="wrap">
+      <div class="section-head">
+        <div><Eyebrow>Sistema de grados ITF</Eyebrow><h2>Tu camino de cinturón</h2></div>
+        <p>10 Gup hasta llegar a cinturón negro, y desde ahí, los grados Dan.</p>
+      </div>
+      <div class="belt-bar" style="margin-bottom:1.6em;"></div>
+      <div class="grid g-4">
+        {
+          grados.map((grado) => (
+            <div class="card"><div class="body">
+              <div class="eyebrow">{grado.rango}</div>
+              <h4 style="font-size:1.05rem;">{grado.nombre}</h4>
+              <p style="color:var(--text-soft);font-size:.88rem;">{grado.texto}</p>
+            </div></div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Selección nacional -->
+  <section class="dark" id="seleccion">
+    <div class="wrap grid g-2" style="align-items:center;gap:3em;">
+      <div>
+        <Eyebrow>Alto rendimiento</Eyebrow>
+        <h2>Camino a la selección nacional</h2>
+        <p style="color:#c9cdd6;">
+          Cada año, FECHITAT convoca clasificatorios nacionales en Poomsae (Tul)
+          y Combate. Los mejores resultados definen la nómina que representa a
+          Chile en campeonatos panamericanos y mundiales ITF.
+        </p>
+        <div class="grid g-2" style="margin-top:1.6em;">
+          <!-- TODO: estadísticas desde Sanity (schema estadistica, página: Jóvenes) -->
+          <Stat count={12} label="Deportistas en la nómina actual" dark />
+          <Stat count={3} label="Medallas panamericanas 2018–2024" dark />
+        </div>
+      </div>
+      <div class="card" style="background:#101a2c;border-color:#26365a;">
+        <div class="body">
+          <Eyebrow>Requisitos para postular</Eyebrow>
+          <ul style="color:#c9cdd6;padding-left:1.1em;line-height:2;font-size:.92rem;">
+            <li>Mínimo 1° Gup vigente</li>
+            <li>Dojang afiliado a FECHITAT</li>
+            <li>Participación en clasificatorio nacional</li>
+            <li>Certificado médico deportivo al día</li>
+          </ul>
+          <a href="#" class="btn" style="margin-top:.6em;">Ver bases de la convocatoria</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Semana tipo -->
+  <section id="semana">
+    <div class="wrap">
+      <Eyebrow>Vida de un competidor</Eyebrow>
+      <h2 style="margin-bottom:1.4em;">Semana tipo de entrenamiento</h2>
+      <div class="grid g-4">
+        {
+          semana.map((dia) => (
+            <div class="card"><div class="body">
+              <Tag variant={dia.variante}>{dia.dias}</Tag>
+              <h4 style="font-size:1rem;margin-top:.7em;">{dia.nombre}</h4>
+              <p style="color:var(--text-soft);font-size:.85rem;">{dia.texto}</p>
+            </div></div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="alt">
+    <div
+      class="wrap"
+      style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.6em;"
+    >
+      <div><Eyebrow>¿Vas en serio?</Eyebrow><h2 style="max-width:18ch;margin:0;">Habla con el director técnico de tu dojang</h2></div>
+      <a href="/federacion#directivos" class="btn dark">Ver directorio técnico</a>
+    </div>
+  </section>
+</BaseLayout>

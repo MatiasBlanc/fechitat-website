@@ -1,0 +1,25 @@
+---
+// Etiqueta de color sólido dentro de cards.
+// Variantes: default (ink), red, blue, gold.
+interface Props {
+  variant?: 'default' | 'red' | 'blue' | 'gold';
+  style?: string;
+}
+
+const { variant = 'default', style } = Astro.props;
+
+const variantClasses = {
+  default: 'bg-ink text-white',
+  red: 'bg-red text-white',
+  blue: 'bg-blue text-white',
+  gold: 'bg-gold text-white',
+};
+---
+
+<span
+  class:list={[
+    'inline-block font-mono text-[0.65rem] tracking-[0.08em] uppercase px-[0.6em] py-[0.3em] rounded-sm',
+    variantClasses[variant],
+  ]}
+  style={style}
+><slot /></span>

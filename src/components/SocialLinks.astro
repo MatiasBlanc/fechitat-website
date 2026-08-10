@@ -1,0 +1,39 @@
+---
+// Enlaces a redes sociales con iconos SVG reales.
+// Se usa en Header y Footer.
+import SocialIcon from './icons/SocialIcon.astro';
+
+interface EnlaceSocial {
+  href: string;
+  icono: 'x' | 'instagram' | 'youtube' | 'facebook';
+  etiqueta: string;
+}
+
+interface Props {
+  class?: string;
+  enlaces?: EnlaceSocial[];
+}
+
+const enlacesPorDefecto: EnlaceSocial[] = [
+  { href: '#', icono: 'x', etiqueta: 'X (Twitter)' },
+  { href: '#', icono: 'instagram', etiqueta: 'Instagram' },
+  { href: '#', icono: 'youtube', etiqueta: 'YouTube' },
+  { href: '#', icono: 'facebook', etiqueta: 'Facebook' },
+];
+
+const { class: clase = 'flex gap-[1em] items-center', enlaces = enlacesPorDefecto } = Astro.props;
+---
+
+<div class={clase}>
+  {
+    enlaces.map((enlace) => (
+      <a
+        href={enlace.href}
+        aria-label={enlace.etiqueta}
+        class="w-[30px] h-[30px] border border-white/18 rounded-full flex items-center justify-center text-[#cfd3dc] text-[0.72rem] hover:border-red hover:text-white transition-colors duration-150"
+      >
+        <SocialIcon name={enlace.icono} size={15} />
+      </a>
+    ))
+  }
+</div>

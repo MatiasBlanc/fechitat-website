@@ -1,0 +1,33 @@
+---
+// Hero de páginas interiores: miga, título, descripción y contenido extra
+// (acciones, imagen). Si se pasa `image` se muestra en grilla de 2 columnas.
+interface Props {
+  title: string;
+  description?: string;
+  crumb?: string;
+  image?: string;
+  imageAlt?: string;
+  imageStyle?: string;
+}
+
+const { title, description, crumb, image, imageAlt, imageStyle } = Astro.props;
+---
+
+<section class="bg-ink text-white py-[3.4em] pb-[2.4em]">
+  <div
+    class:list={['max-w-[var(--maxw)] mx-auto px-[28px]', { 'grid grid-cols-2 gap-[1.6em] items-center': Boolean(image) }]}
+    style={image ? 'align-items:center;' : undefined}
+  >
+    <div>
+      {crumb && (
+        <div class="font-mono text-[0.72rem] tracking-[0.1em] uppercase text-[#8b93a4] mb-[1em]">
+          <a href="/" class="hover:text-white transition-colors duration-150">Inicio</a> / {crumb}
+        </div>
+      )}
+      <h1 class="text-white text-[clamp(2rem,4.4vw,3.2rem)]" set:html={title} />
+      {description && <p class="text-[#c9cdd6] max-w-[60ch]">{description}</p>}
+      <slot />
+    </div>
+    {image && <img src={image} alt={imageAlt ?? ''} style={imageStyle} class="rounded-[var(--radius-sm)]" />}
+  </div>
+</section>

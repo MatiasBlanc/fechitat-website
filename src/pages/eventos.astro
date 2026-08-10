@@ -1,0 +1,123 @@
+---
+// Eventos — agenda de campeonatos, seminarios y exámenes de grado.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Tag from '../components/Tag.astro';
+import EventBadge from '../components/EventBadge.astro';
+import PageHero from '../components/PageHero.astro';
+import UIcon from '../components/icons/UIcon.astro';
+import { img } from '../lib/imagenes';
+
+const titulo = 'Eventos — FECHITAT';
+
+// TODO: eventos desde Sanity (schema evento).
+const eventoPrincipal = {
+  mes: 'OCT',
+  dia: '03',
+  nombre: 'XVIII Campeonato Mundial ITF',
+  sede: 'Jesolo, Italia',
+  detalle: 'Poomsae y combate · Delegación nacional confirmada',
+  imagen: img.heroTkd,
+};
+
+const proximos = [
+  { mes: '2026', dia: 'PAN', nombre: 'Panamericano ITF 2026', sede: 'Sede por confirmar', detalle: 'Clasificatorio nacional en marzo', tipo: 'Competencia' },
+  { mes: 'NOV', dia: '15', nombre: 'Examen nacional de grado', sede: 'Santiago, Chile', detalle: 'Todos los niveles · Inscripción a través de tu dojang', tipo: 'Examen' },
+  { mes: 'DIC', dia: '07', nombre: 'Seminario técnico nacional', sede: 'La Serena, Chile', detalle: 'Con instructores invitados de ITF', tipo: 'Seminario' },
+];
+
+const pasados = [
+  { anio: '2024', nombre: 'Campeonato Nacional Absoluto', sede: 'Santiago', imagen: img.eventoNacional },
+  { anio: '2024', nombre: 'Seminario técnico con el Maestro Rojas', sede: 'La Serena', imagen: img.seminario },
+  { anio: '2023', nombre: 'Panamericano ITF', sede: 'Montevideo, Uruguay', imagen: img.postDocumento },
+];
+
+const colorTipo = (tipo) => {
+  if (tipo === 'Competencia') return 'red';
+  if (tipo === 'Examen') return 'blue';
+  if (tipo === 'Seminario') return 'gold';
+  return 'default';
+};
+---
+
+<BaseLayout title={titulo}>
+  <PageHero
+    title="Eventos y competencias"
+    description="Campeonatos, seminarios técnicos y exámenes de grado de FECHITAT."
+  />
+
+  <!-- Evento principal -->
+  <section>
+    <div class="wrap">
+      <a href="#" class="evento-destacado">
+        <div class="evento-destacado__imagen" style={`background-image:url('${eventoPrincipal.imagen}');`}></div>
+        <div class="evento-destacado__info">
+          <Eyebrow>Próximo evento</Eyebrow>
+          <h2 style="font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.3em;">{eventoPrincipal.nombre}</h2>
+          <div class="evento-destacado__meta">
+            <span><UIcon name="map-pin" size={16} /> {eventoPrincipal.sede}</span>
+            <span>{eventoPrincipal.mes} {eventoPrincipal.dia}</span>
+          </div>
+          <p style="color:var(--text-soft);margin:1em 0 1.4em;max-width:48ch;">{eventoPrincipal.detalle}</p>
+          <span class="btn">Ver detalle del evento</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Próximos eventos -->
+  <section class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div><Eyebrow>Calendario</Eyebrow><h2>Próximos eventos</h2></div>
+      </div>
+      <div class="timeline-eventos">
+        {
+          proximos.map((evento) => (
+            <a href="#" class="timeline-card">
+              <div class="timeline-card__badge">
+                <EventBadge mes={evento.mes} dia={evento.dia} large />
+              </div>
+              <div class="timeline-card__info">
+                <Tag variant={colorTipo(evento.tipo)} style="margin-bottom:.6em;">{evento.tipo}</Tag>
+                <h3>{evento.nombre}</h3>
+                <div class="timeline-card__meta">
+                  <span><UIcon name="map-pin" size={14} /> {evento.sede}</span>
+                </div>
+                <p style="color:var(--text-soft);font-size:.88rem;margin:.5em 0 0;">{evento.detalle}</p>
+              </div>
+              <div class="timeline-card__arrow">
+                <UIcon name="arrow-right" size={20} />
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Eventos pasados -->
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div><Eyebrow>Archivo</Eyebrow><h2>Eventos pasados</h2></div>
+      </div>
+      <div class="grid g-3">
+        {
+          pasados.map((evento) => (
+            <div class="card">
+              <div class="media" style={`background-image:url('${evento.imagen}');`}></div>
+              <div class="body">
+                <Tag>{evento.anio}</Tag>
+                <h4 style="font-size:1rem;margin:.6em 0 .2em;">{evento.nombre}</h4>
+                <p style="color:var(--text-soft);font-size:.85rem;margin:0;">
+                  <UIcon name="map-pin" size={13} /> {evento.sede}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,218 @@
+---
+// Federación — historia, directorio, salón de campeones y afiliación.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HangulRail from '../components/HangulRail.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import PageHero from '../components/PageHero.astro';
+import { img } from '../lib/imagenes';
+
+const titulo = 'La Federación — FECHITAT';
+
+const riel = [
+  { href: '#quienes', kr: '우리', label: 'Quiénes somos' },
+  { href: '#historia', kr: '역사', label: 'Historia' },
+  { href: '#directivos', kr: '임원', label: 'Directivos' },
+  { href: '#campeones', kr: '챔피언', label: 'Campeones' },
+  { href: '#afiliacion', kr: '가입', label: 'Afiliación' },
+];
+
+// TODO: directivos y salón de campeones desde Sanity (schemas
+// directivo); la foto es opcional y el front usa iniciales si no hay.
+const directivos = [
+  { iniciales: 'JB', nombre: 'Juan Bravo', cargo: 'Presidente', email: 'presidencia@fechitat.cl', color: '' },
+  { iniciales: 'CS', nombre: 'Camila Soto', cargo: 'Vicepresidenta', email: 'vicepresidencia@fechitat.cl', color: 'var(--red)' },
+  { iniciales: 'RM', nombre: 'Rodrigo Muñoz', cargo: 'Secretario general', email: 'secretaria@fechitat.cl', color: 'var(--gold)' },
+  { iniciales: 'DT', nombre: 'Daniela Toro', cargo: 'Directora técnica', email: 'tecnica@fechitat.cl', color: 'var(--blue-soft)' },
+];
+
+const campeones = [
+  { iniciales: 'OR', nombre: 'Osvaldo Rojas', grado: 'Sahyun Nim · 7° Dan', color: 'var(--red)' },
+  { iniciales: 'ER', nombre: 'Ernesto Reyes', grado: 'Sahyun Nim · 7° Dan', color: 'var(--blue-soft)' },
+  { iniciales: 'JL', nombre: 'Javier Lillo', grado: 'Sabum Nim · 6° Dan', color: 'var(--gold)' },
+  { iniciales: 'MR', nombre: 'Marcelo Russo', grado: 'Sabum Nim · 6° Dan', color: '#3f8f4f' },
+];
+
+const hitos = [
+  { anio: '2005', tituloHito: 'Primeros dojangs ITF', texto: 'Sabum Nim pioneros comienzan a enseñar Taekwon-Do ITF en la IV Región.' },
+  { anio: '2011', tituloHito: 'Se constituye la Federación', texto: 'Osvaldo Rojas, Ernesto Reyes y Javier Lillo respaldan la creación de FECHITAT con personalidad jurídica.' },
+  { anio: '2013', tituloHito: 'Se une Sabumnim Marcelo Russo', texto: 'Sus escuelas de la IV Región se integran, ampliando la red nacional.' },
+  { anio: '2018', tituloHito: 'Primer podio panamericano', texto: 'La selección nacional obtiene sus primeras medallas internacionales.' },
+  { anio: '2025', tituloHito: 'Rumbo a Jesolo', texto: '+150 competidores activos y delegación confirmada al Mundial ITF.', ultimo: true },
+];
+---
+
+<BaseLayout title={titulo}>
+  <HangulRail links={riel} />
+
+  <PageHero
+    title="La Federación"
+    crumb="Federación"
+    description="FECHITAT es la organización que representa oficialmente al Taekwon-Do ITF Original en Chile, reuniendo dojangs, instructores y practicantes de todo el país."
+  />
+
+  <!-- Quiénes somos -->
+  <section id="quienes">
+    <div class="wrap grid g-2" style="align-items:center;gap:3em;">
+      <div>
+        <Eyebrow>Quiénes somos</Eyebrow>
+        <h2>Una organización nacional con vocación internacional</h2>
+        <p style="color:var(--text-soft);">
+          Reunimos a los dojangs, instructores y practicantes del país para
+          promover la enseñanza del Taekwon-Do ITF Original, preservando su
+          técnica y filosofía tradicional mientras proyectamos a nuestros
+          deportistas a competencias mundiales.
+        </p>
+        <p style="color:var(--text-soft);">
+          Trabajamos junto a Sabum Nim e instituciones deportivas para formar
+          no solo competidores, sino personas con disciplina, respeto y
+          autocontrol dentro y fuera del dojang.
+        </p>
+      </div>
+      <img
+        src={img.equipoNacional}
+        alt="Equipo nacional de Taekwon-Do ITF junto a la bandera de Chile"
+        style="border-radius:2px;"
+      />
+    </div>
+  </section>
+
+  <!-- Línea de tiempo -->
+  <section class="alt" id="historia">
+    <div class="wrap">
+      <Eyebrow>Nuestra historia</Eyebrow>
+      <h2 style="margin-bottom:1.4em;">Línea de tiempo de la federación</h2>
+    </div>
+    <div class="timeline-track" style="overflow-x:auto;cursor:grab;padding:0 28px 1em;">
+      <div
+        style="display:flex;gap:0;min-width:1100px;max-width:var(--maxw);margin:0 auto;position:relative;"
+      >
+        <div style="position:absolute;top:27px;left:0;right:0;height:2px;background:var(--line);"></div>
+        {
+          hitos.map((hito) => (
+            <div style="flex:1;position:relative;padding-top:2.6em;">
+              <div
+                style={`position:absolute;top:20px;left:0;width:14px;height:14px;border-radius:50%;background:${hito.ultimo ? 'var(--ink)' : 'var(--red)'};border:3px solid #fff;box-shadow:0 0 0 1px var(--line);`}
+              ></div>
+              <div class="eyebrow" style="margin-bottom:.3em;">{hito.anio}</div>
+              <h4 style="font-size:1rem;">{hito.tituloHito}</h4>
+              <p style="font-size:.88rem;color:var(--text-soft);max-width:22ch;">{hito.texto}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Directorio -->
+  <section id="directivos">
+    <div class="wrap">
+      <Eyebrow>Quiénes lideran</Eyebrow>
+      <h2 style="margin-bottom:1.2em;">Directorio</h2>
+      <div class="grid g-4">
+        {
+          directivos.map((directivo) => (
+            <div class="card"><div class="body" style="text-align:center;">
+              <div
+                class="avatar-initial"
+                style={`margin:0 auto .8em;${directivo.color ? `background:${directivo.color};` : ''}`}
+              >
+                {directivo.iniciales}
+              </div>
+              <h4 style="font-size:1.02rem;">{directivo.nombre}</h4>
+              <p style="color:var(--text-soft);font-size:.85rem;margin:0 0 .8em;">{directivo.cargo}</p>
+              <a href={`mailto:${directivo.email}`} class="pill">Contactar</a>
+            </div></div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Salón de campeones -->
+  <section class="dark" id="campeones">
+    <div class="wrap">
+      <div class="section-head">
+        <div><Eyebrow>Salón de campeones</Eyebrow><h2>Maestros que marcaron escuela</h2></div>
+      </div>
+      <div class="grid g-2">
+        {
+          campeones.map((campeon) => (
+            <div
+              style="display:flex;gap:1em;align-items:center;padding:1em 0;border-bottom:1px solid rgba(255,255,255,.1);"
+            >
+              <div class="avatar-initial" style={`background:${campeon.color};`}>
+                {campeon.iniciales}
+              </div>
+              <div>
+                <div class="eyebrow" style="margin-bottom:.2em;">{campeon.grado}</div>
+                <h4 style="color:#fff;font-size:1.05rem;margin:0;">{campeon.nombre}</h4>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div style="text-align:center;margin-top:2em;">
+        <a href="#" class="btn">Conocer más maestros</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios de afiliación -->
+  <section id="afiliacion">
+    <div class="wrap grid g-2" style="gap:3em;">
+      <div>
+        <Eyebrow>Beneficios de afiliación</Eyebrow>
+        <h2>Por qué ser parte de FECHITAT</h2>
+        <p style="color:var(--text-soft);">
+          Al afiliar tu escuela a la federación, tus alumnos acceden a exámenes
+          de grado reconocidos por ITF, seguro deportivo en competencias
+          oficiales y la posibilidad de representar a Chile en torneos
+          panamericanos y mundiales.
+        </p>
+        <ul style="color:var(--text-soft);padding-left:1.1em;line-height:2;">
+          <li>Presencia activa a nivel internacional</li>
+          <li>Certificación oficial de grados y cinturones negros</li>
+          <li>Acceso a seminarios técnicos con maestros invitados</li>
+          <li>Cobertura en el calendario nacional de competencias</li>
+        </ul>
+        <a href="#" class="btn dark" style="margin-top:.6em;">Afiliar mi escuela</a>
+      </div>
+      <div class="card">
+        <div class="body">
+          <Eyebrow>ITF Affiliated</Eyebrow>
+          <h3 style="font-size:1.6rem;">Reconocimiento internacional garantizado</h3>
+          <p style="color:var(--text-soft);font-size:.92rem;">
+            Nuestros exámenes, torneos y grados son válidos ante la
+            International Taekwon-Do Federation, permitiendo la movilidad de
+            tus alumnos hacia cualquier país afiliado.
+          </p>
+          <div class="belt-bar" style="margin:1.4em 0;"></div>
+          <p style="font-size:.8rem;color:var(--text-soft);font-family:'JetBrains Mono';">10° GUP → 1° DAN</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Arrastre horizontal de la línea de tiempo -->
+  <script>
+    const tl = document.querySelector('.timeline-track');
+    if (tl) {
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+      tl.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - tl.offsetLeft;
+        scrollLeft = tl.scrollLeft;
+      });
+      tl.addEventListener('mouseleave', () => { isDown = false; });
+      tl.addEventListener('mouseup', () => { isDown = false; });
+      tl.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - tl.offsetLeft;
+        tl.scrollLeft = scrollLeft - (x - startX) * 1.4;
+      });
+    }
+  </script>
+</BaseLayout>

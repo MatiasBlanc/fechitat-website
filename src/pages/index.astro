@@ -1,17 +1,294 @@
 ---
+// Página principal de FECHITAT.
+// Combina la orientación por audiencia (familias / competidores) con
+// la información completa del sitio (dojangs, eventos, noticias, estadísticas).
+import EventBadge from "../components/EventBadge.astro";
+import Eyebrow from "../components/Eyebrow.astro";
+import HangulRail from "../components/HangulRail.astro";
+import Stat from "../components/Stat.astro";
+import Tag from "../components/Tag.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { img } from "../lib/imagenes";
 
+const titulo = "FECHITAT — Federación Chilena de Taekwon-Do Tradicional";
+
+const riel = [
+  { href: "#eventos", kr: "대회", label: "Eventos" },
+  { href: "#camino", kr: "길", label: "Tu camino" },
+  { href: "#dojangs", kr: "도장", label: "Dojangs" },
+  { href: "#noticias", kr: "소식", label: "Noticias" },
+];
+
+// TODO: próximo evento desde Sanity (schema evento).
+const proximoEvento = {
+  mes: "OCT",
+  dia: "03",
+  nombre: "XVIII Campeonato Mundial · Jesolo, Italia",
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={titulo}>
+  <HangulRail links={riel} />
+
+  <!-- Hero -->
+  <section class="hero relative min-h-[78vh] flex items-end text-white overflow-hidden bg-[#0a0f1a]">
+    <div class="absolute inset-0 bg-cover bg-[center_30%] opacity-55" style="background-image:url('/images/hero/hero.webp');">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,0.35)_0%,rgba(11,18,32,0.55)_45%,rgba(11,18,32,0.97)_100%)]"></div>
+    <div class="relative z-[2] py-[5.5em] pb-[3.2em] w-full max-w-[var(--maxw)] mx-auto px-[28px]">
+      <Eyebrow>Fechitat · ITF Chile</Eyebrow>
+      <h1 class="text-white text-[clamp(2.4rem,6vw,4.6rem)] max-w-[14ch]">Encuentra tu camino<br />en el Taekwon-Do</h1>
+      <p class="lede text-[1.05rem] text-[#dfe2ea] max-w-[46ch] mb-[1.6em] font-normal">
+        Dojangs de Arica a Punta Arenas, instructores certificados por ITF y una
+        comunidad que entrena con disciplina, respeto y proyección
+        internacional.
+      </p>
+      <div class="flex gap-[1em] flex-wrap">
+        <a href="#dojangs" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px]">Encuentra tu dojang</a>
+        <a href="/federacion" class="inline-flex items-center gap-[0.5em] bg-transparent border border-white/50 text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-white/12 hover:-translate-y-[1px]">Conoce la federación</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Próximo evento -->
+  <section class="py-[2.6em] bg-paper-alt">
+    <div
+      class="max-w-[var(--maxw)] mx-auto px-[28px] flex items-center gap-[1.6em] flex-wrap justify-between"
+    >
+      <div class="flex items-center gap-[1.2em]">
+        <EventBadge mes={proximoEvento.mes} dia={proximoEvento.dia} />
+        <div>
+          <Eyebrow>Próximo evento</Eyebrow>
+          <div class="font-heading font-bold text-[1.15rem] uppercase">
+            {proximoEvento.nombre}
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-[1em] flex-wrap">
+        <a href="/eventos" class="inline-flex items-center gap-[0.5em] bg-ink text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-black hover:-translate-y-[1px]">Ver evento</a>
+        <a href="/eventos" class="inline-flex items-center gap-[0.5em] bg-transparent border border-ink text-ink font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-ink hover:text-white hover:-translate-y-[1px]">Ver calendario completo</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="camino" class="py-[4.4em]">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
+        <div>
+          <Eyebrow>Elige tu camino</Eyebrow>
+          <h2>¿Qué estás buscando?</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-[1.6em] max-[900px]:grid-cols-1">
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)] block" href="/padres">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.ninosClase}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="red">Familias</Tag>
+            <h3 class="text-[clamp(1.5rem,3vw,2rem)] mt-[0.7em]">Busco una actividad para mi hijo/a</h3>
+            <p class="text-text-soft">
+              Beneficios, seguridad, FAQ, testimonios y cómo reservar una clase
+              de prueba gratuita.
+            </p>
+            <span class="text-red font-mono text-[0.72rem] tracking-[0.04em] uppercase">Conocer el programa para familias →</span>
+          </div>
+        </a>
+
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)] block" href="/jovenes">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.jovenCompetidor}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Competidores</Tag>
+            <h3 class="text-[clamp(1.5rem,3vw,2rem)] mt-[0.7em]">Quiero avanzar y competir</h3>
+            <p class="text-text-soft">
+              Camino de grados, requisitos de selección nacional y una semana
+              tipo de entrenamiento.
+            </p>
+            <span class="text-red font-mono text-[0.72rem] tracking-[0.04em] uppercase">Conocer el camino competitivo →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quiénes somos (resumen) -->
+  <section class="py-[4.4em] bg-white">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] items-center max-[900px]:grid-cols-1">
+      <div>
+        <h2 class="text-[clamp(2rem,5vw,3.2rem)]">
+          Formamos artistas marciales,<br />no solo competidores
+        </h2>
+        <p class="text-text-soft max-w-[52ch]">
+          Trabajamos junto a instituciones deportivas que apoyan el desarrollo
+          del Taekwon-Do ITF en Chile. Cada medalla representa el trabajo
+          constante de nuestros dojangs y el orgullo de vestir la bandera
+          chilena.
+        </p>
+        <div class="h-[1px] bg-line my-[1.6em]"></div>
+        <div class="grid grid-cols-2 gap-[1.4em]">
+          <Stat count={50} suffix="+" label="Cinturones negros" />
+          <Stat count={150} suffix="+" label="Competidores activos" />
+        </div>
+      </div>
+      <div>
+        <img
+          src={img.competidora}
+          alt="Competidora de Taekwon-Do ITF con el uniforme nacional"
+          class="rounded-[var(--radius-sm)]"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Afiliados -->
+  <section class="py-[2.6em]">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <div class="flex justify-center items-center gap-[3em] flex-wrap opacity-85">
+        <img
+          src="/images/general/itf-logo.png"
+          alt="International Taekwon-Do Federation"
+          class="h-[110px] w-auto object-contain"
+        />
+        <img
+          src="/images/general/logo_panam.webp"
+          alt="Panamerican Taekwon-Do Federation"
+          class="h-[110px] w-auto object-contain"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Red de dojangs -->
+  <section class="py-[4.4em] bg-white" id="dojangs">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] mb-[0.6em]">Encuentra tu escuela más cercana</h2>
+      <div class="mb-[2.4em]">
+        <input
+          id="ciudad"
+          type="text"
+          class="w-full border border-line bg-white p-[1em_1.2em] font-body text-[1.05rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]"
+          placeholder="Ej. La Serena, Coquimbo…"
+        />
+      </div>
+      <!-- TODO: dojangs desde Sanity; por ahora agrupación estática del prototipo -->
+      <div class="grid grid-cols-4 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
+        <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Norte</Tag>
+            <h4 class="text-[1.05rem] mt-[0.6em]">
+              Antofagasta · Copiapó · La Serena
+            </h4>
+            <p class="text-text-soft text-[0.9rem] m-0">
+              6 dojangs afiliados
+            </p>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Centro</Tag>
+            <h4 class="text-[1.05rem] mt-[0.6em]">
+              Santiago · Valparaíso · Rancagua
+            </h4>
+            <p class="text-text-soft text-[0.9rem] m-0">
+              14 dojangs afiliados
+            </p>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Sur</Tag>
+            <h4 class="text-[1.05rem] mt-[0.6em]">
+              Concepción · Temuco · Valdivia
+            </h4>
+            <p class="text-text-soft text-[0.9rem] m-0">
+              9 dojangs afiliados
+            </p>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Austral</Tag>
+            <h4 class="text-[1.05rem] mt-[0.6em]">
+              Puerto Montt · Punta Arenas
+            </h4>
+            <p class="text-text-soft text-[0.9rem] m-0">
+              3 dojangs afiliados
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Últimas noticias -->
+  <section class="py-[4.4em] bg-white" id="noticias">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
+        <div><Eyebrow>Desde el dojang</Eyebrow><h2>Últimas noticias</h2></div>
+        <a href="/blog" class="inline-flex items-center gap-[0.5em] bg-ink text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-black hover:-translate-y-[1px]">Ver todo el blog</a>
+      </div>
+      <!-- TODO: posts destacados desde Sanity (schema post) -->
+      <div class="grid grid-cols-4 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]" href="/blog">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.postDefensa}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="red">Ensayos</Tag>
+            <h4 class="text-[1rem] mt-[0.7em] mb-0">
+              Principios de la defensa personal
+            </h4>
+          </div>
+        </a>
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]" href="/blog">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.postNacional}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag>Noticias</Tag>
+            <h4 class="text-[1rem] mt-[0.7em] mb-0">
+              Resultados del campeonato nacional
+            </h4>
+          </div>
+        </a>
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]" href="/blog">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.postHistoria}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="gold">Historia</Tag>
+            <h4 class="text-[1rem] mt-[0.7em] mb-0">
+              5 deportistas destacados 2025
+            </h4>
+          </div>
+        </a>
+        <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]" href="/blog">
+          <div
+            class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover"
+            style={`background-image:url('${img.postDocumento}');`}
+          >
+          </div>
+          <div class="p-[1.2em_1.3em_1.4em]">
+            <Tag variant="blue">Documentos</Tag>
+            <h4 class="text-[1rem] mt-[0.7em] mb-0">
+              El Taekwon-Do ITF en Chile
+            </h4>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+// Badge circular de fecha de evento (recurrente en Inicio y Eventos).
+interface Props {
+  mes: string;
+  dia: string;
+  muted?: boolean;
+  large?: boolean;
+}
+
+const { mes, dia, muted = false, large = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex flex-col items-center justify-center rounded-full border-2 font-mono flex-none',
+    large ? 'w-[60px] h-[60px]' : 'w-[56px] h-[56px]',
+    muted ? 'border-line' : 'border-red',
+  ]}
+>
+  <span
+    class:list={[
+      'text-[0.6rem] tracking-[0.05em]',
+      muted ? 'text-text-soft' : 'text-red',
+    ]}
+  >{mes}</span>
+  <span
+    class:list={[
+      'font-heading font-extrabold leading-none',
+      large ? 'text-[1.2rem]' : 'text-[1.1rem]',
+    ]}
+  >{dia}</span>
+</div>

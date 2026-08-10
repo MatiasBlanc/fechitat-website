@@ -1,0 +1,109 @@
+/* ============================================================
+   FECHITAT — Tailwind v4 + tema personalizado
+   Portado de fechitat-inspiration/style.css (fuente de verdad
+   de diseño). No cambiar paleta, tipografía, belt bar ni
+   hangul rail sin pedido explícito.
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ---------- Tema personalizado ---------- */
+@theme {
+  /* Colores */
+  --color-ink: #0b1220;
+  --color-ink-soft: #101a2c;
+  --color-paper: #f2eee3;
+  --color-paper-alt: #e7e0ce;
+  --color-white: #ffffff;
+  --color-red: #c4161c;
+  --color-red-dark: #961015;
+  --color-blue: #1b3a6b;
+  --color-blue-soft: #274b85;
+  --color-gold: #b08d57;
+  --color-text: #181410;
+  --color-text-soft: #5b5648;
+  --color-line: #d8d0ba;
+
+  /* Fuentes */
+  --font-heading: 'Kumbh Sans', sans-serif;
+  --font-body: 'Work Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Radios */
+  --radius-sm: 2px;
+}
+
+/* ---------- Estilos base ---------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 0 0 0.4em;
+    line-height: 1.02;
+    color: var(--color-ink);
+  }
+
+  ::selection {
+    background: var(--color-red);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-red);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* ---------- Componentes reutilizables ---------- */
+@layer components {
+  /* Franja simbólica de colores del cinturón (no es decoración: mantener) */
+  .belt-bar {
+    height: 6px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      #fff 0 16.6%,
+      #e8c34a 16.6% 33.2%,
+      #3f8f4f 33.2% 49.8%,
+      #2358a8 49.8% 66.4%,
+      var(--color-red) 66.4% 83%,
+      var(--color-ink) 83% 100%
+    );
+  }
+}
