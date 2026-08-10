@@ -1,0 +1,48 @@
+---
+// Componente Button reutilizable con variantes.
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'dark' | 'dark-ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  class: clase = '',
+  type = 'button',
+  disabled = false,
+} = Astro.props;
+
+const baseClasses = 'inline-flex items-center gap-[0.5em] font-mono tracking-[0.08em] uppercase rounded-[var(--radius-sm)] cursor-pointer transition-all duration-150 ease-[ease] disabled:opacity-50 disabled:cursor-not-allowed';
+
+const sizeClasses = {
+  sm: 'text-[0.7rem] py-[0.6em] px-[1em]',
+  md: 'text-[0.78rem] py-[0.9em] px-[1.5em]',
+  lg: 'text-[0.85rem] py-[1em] px-[2em]',
+};
+
+const variantClasses = {
+  primary: 'bg-red text-white hover:bg-red-dark hover:-translate-y-[1px]',
+  secondary: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
+  ghost: 'bg-transparent border border-white/50 text-white hover:bg-white/12 hover:-translate-y-[1px]',
+  dark: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
+  'dark-ghost': 'bg-transparent border border-ink text-ink hover:bg-ink hover:text-white hover:-translate-y-[1px]',
+};
+
+const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${clase}`;
+---
+
+{href ? (
+  <a href={href} class={allClasses}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={allClasses} disabled={disabled}>
+    <slot />
+  </button>
+)}

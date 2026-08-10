@@ -115,6 +115,12 @@
     );
   }
 
+  /* Riel hangul — estados base */
+  .hangul-rail a.active {
+    opacity: 1;
+    color: var(--color-red);
+  }
+
   /* Riel hangul — variante oscura sobre hero */
   .hangul-rail--dark a {
     color: rgba(255, 255, 255, 0.45);
@@ -124,5 +130,11 @@
   .hangul-rail--dark a:hover {
     color: #fff;
     opacity: 1;
+  }
+
+  /* Riel hangul — hover en modo claro */
+  .hangul-rail:not(.hangul-rail--dark) a:hover {
+    opacity: 1;
+    color: var(--color-red);
   }
 }

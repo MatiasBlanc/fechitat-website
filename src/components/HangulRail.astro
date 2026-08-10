@@ -1,6 +1,7 @@
 ---
 // Riel vertical fijo a la derecha con scroll-spy (elemento distintivo del sitio).
 // Recibe los anclajes de la página vía la prop `links`.
+// El primer enlace se marca como activo por defecto.
 interface EnlaceRiel {
   href: string;
   kr: string;
@@ -14,14 +15,20 @@ interface Props {
 const { links } = Astro.props;
 ---
 
-<div class="hangul-rail fixed right-[14px] top-1/2 -translate-y-1/2 flex flex-col gap-[1.5em] z-40 max-[1050px]:hidden" aria-label="Navegación de secciones">
+<div class="hangul-rail fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-6 z-40 max-[1050px]:hidden" aria-label="Navegación de secciones">
   {
-    links.map((enlace) => (
+    links.map((enlace, index) => (
       <a
         href={enlace.href}
-        class="writing-mode-vertical font-mono text-[0.68rem] tracking-[0.08em] text-text-soft flex items-center gap-[0.6em] opacity-55 transition-opacity duration-200 hover:opacity-100 hover:text-red [&.active]:opacity-100 [&.active]:text-red"
+        class:list={[
+          'writing-mode-vertical font-mono text-[0.68rem] tracking-[0.08em] flex items-center gap-[0.6em] transition-all duration-200',
+          index === 0
+            ? 'active opacity-100 text-red'
+            : 'opacity-55 text-text-soft hover:opacity-100 hover:text-red',
+        ]}
       >
-        <span class="text-[0.85rem]">{enlace.kr}</span> {enlace.label}
+        <span class="text-[0.85rem]">{enlace.kr}</span>
+        <span>{enlace.label}</span>
       </a>
     ))
   }
