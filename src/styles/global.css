@@ -31,9 +31,6 @@
 
   /* Radios */
   --radius-sm: 2px;
-
-  /* Ancho máximo */
-  --maxw: 1180px;
 }
 
 /* ---------- Estilos base ---------- */
@@ -94,8 +91,10 @@
 }
 
 /* ---------- Utilidades personalizadas ---------- */
-@utility writing-mode-vertical {
-  writing-mode: vertical-rl;
+@layer utilities {
+  .writing-mode-vertical {
+    writing-mode: vertical-rl;
+  }
 }
 
 /* ---------- Componentes reutilizables ---------- */
