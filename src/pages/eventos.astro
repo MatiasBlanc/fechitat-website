@@ -6,34 +6,29 @@ import EventBadge from '../components/EventBadge.astro';
 import PageHero from '../components/PageHero.astro';
 import UIcon from '../components/icons/UIcon.astro';
 import { img } from '../lib/imagenes';
+import { getProximoEventoDestacado, getProximosEventos, getEventosPasados } from '../lib/sanityQueries';
+import { urlFor } from '../lib/sanity';
 
 const titulo = 'Eventos — FECHITAT';
 
-const eventoPrincipal = {
-  mes: 'OCT', dia: '03',
-  nombre: 'XVIII Campeonato Mundial ITF',
-  sede: 'Jesolo, Italia',
-  detalle: 'Poomsae y combate · Delegación nacional confirmada',
-  imagen: img.heroTkd,
+// Datos de Sanity
+const eventoPrincipal = await getProximoEventoDestacado();
+const proximos = await getProximosEventos();
+const pasados = await getEventosPasados();
+
+const colorTipo = (tipo: string) => {
+  if (tipo === 'competencia') return 'red';
+  if (tipo === 'examen') return 'blue';
+  if (tipo === 'seminario') return 'gold';
+  return 'default';
 };
 
-const proximos = [
-  { mes: '2026', dia: 'PAN', nombre: 'Panamericano ITF 2026', sede: 'Sede por confirmar', detalle: 'Clasificatorio nacional en marzo', tipo: 'Competencia' },
-  { mes: 'NOV', dia: '15', nombre: 'Examen nacional de grado', sede: 'Santiago, Chile', detalle: 'Todos los niveles · Inscripción a través de tu dojang', tipo: 'Examen' },
-  { mes: 'DIC', dia: '07', nombre: 'Seminario técnico nacional', sede: 'La Serena, Chile', detalle: 'Con instructores invitados de ITF', tipo: 'Seminario' },
-];
-
-const pasados = [
-  { anio: '2024', nombre: 'Campeonato Nacional Absoluto', sede: 'Santiago', imagen: img.eventoNacional },
-  { anio: '2024', nombre: 'Seminario técnico con el Maestro Rojas', sede: 'La Serena', imagen: img.seminario },
-  { anio: '2023', nombre: 'Panamericano ITF', sede: 'Montevideo, Uruguay', imagen: img.postDocumento },
-];
-
-const colorTipo = (tipo) => {
-  if (tipo === 'Competencia') return 'red';
-  if (tipo === 'Examen') return 'blue';
-  if (tipo === 'Seminario') return 'gold';
-  return 'default';
+const labelTipo = (tipo: string) => {
+  if (tipo === 'competencia') return 'Competencia';
+  if (tipo === 'examen') return 'Examen';
+  if (tipo === 'seminario') return 'Seminario';
+  if (tipo === 'exhibicion') return 'Exhibición';
+  return 'Otro';
 };
 ---
 
@@ -44,27 +39,31 @@ const colorTipo = (tipo) => {
   />
 
   <!-- Evento principal -->
-  <section class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <a href="#" class="block bg-ink rounded-sm overflow-hidden text-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
-        <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
-          <div class="aspect-[16/9] lg:aspect-auto lg:min-h-[360px] bg-cover bg-center" style={`background-image:url('${eventoPrincipal.imagen}');`}></div>
-          <div class="p-6 md:p-10">
-            <Eyebrow>Próximo evento</Eyebrow>
-            <h2 class="text-white text-[clamp(1.5rem,4vw,2.8rem)] mb-2">{eventoPrincipal.nombre}</h2>
-            <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-[#c9cdd6]">
-              <span class="flex items-center gap-1"><UIcon name="map-pin" size={14} /> {eventoPrincipal.sede}</span>
-              <span>{eventoPrincipal.mes} {eventoPrincipal.dia}</span>
+  {eventoPrincipal && (
+    <section class="py-10 md:py-[4.4em]">
+      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+        <a href="#" class="block bg-ink rounded-sm overflow-hidden text-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
+          <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
+            {eventoPrincipal.flyer && (
+              <div class="aspect-[16/9] lg:aspect-auto lg:min-h-[360px] bg-cover bg-center" style={`background-image:url('${urlFor(eventoPrincipal.flyer).width(800).url()}');`}></div>
+            )}
+            <div class="p-6 md:p-10">
+              <Eyebrow>Próximo evento</Eyebrow>
+              <h2 class="text-white text-[clamp(1.5rem,4vw,2.8rem)] mb-2">{eventoPrincipal.titulo}</h2>
+              <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-light-soft">
+                {eventoPrincipal.lugar && <span class="flex items-center gap-1"><UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}</span>}
+                <span>{new Date(eventoPrincipal.fecha).toLocaleDateString('es-CL', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+              </div>
+              {eventoPrincipal.descripcion && <p class="text-text-soft mt-4 mb-6 max-w-[48ch] text-sm md:text-base">{eventoPrincipal.descripcion}</p>}
+              <span class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
+                Ver detalle del evento
+              </span>
             </div>
-            <p class="text-text-soft mt-4 mb-6 max-w-[48ch] text-sm md:text-base">{eventoPrincipal.detalle}</p>
-            <span class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
-              Ver detalle del evento
-            </span>
           </div>
-        </div>
-      </a>
-    </div>
-  </section>
+        </a>
+      </div>
+    </section>
+  )}
 
   <!-- Próximos eventos -->
   <section class="py-10 md:py-[4.4em] bg-white">
@@ -73,51 +72,64 @@ const colorTipo = (tipo) => {
         <Eyebrow>Calendario</Eyebrow>
         <h2>Próximos eventos</h2>
       </div>
-      <div class="flex flex-col relative">
-        <div class="absolute left-7 md:left-[38px] top-0 bottom-0 w-[2px] bg-line"></div>
-        {proximos.map((evento) => (
-          <a href="#" class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line transition-colors duration-150 hover:bg-ink/3 last:border-b-none group">
-            <div class="flex-none relative z-[1]">
-              <EventBadge mes={evento.mes} dia={evento.dia} large />
-            </div>
-            <div class="flex-1 min-w-0">
-              <Tag variant={colorTipo(evento.tipo)} style="margin-bottom:0.5em;">{evento.tipo}</Tag>
-              <h3 class="text-base md:text-lg mb-1">{evento.nombre}</h3>
-              <div class="flex gap-3 font-mono text-xs tracking-wider text-text-soft">
-                <span class="flex items-center gap-1"><UIcon name="map-pin" size={12} /> {evento.sede}</span>
+      <div class="flex flex-col">
+        {proximos.length > 0 ? (
+          proximos.map((evento) => (
+            <a href="#" class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line transition-colors duration-150 hover:bg-ink/3 last:border-b-none group">
+              <div class="flex-none relative z-[1]">
+                <EventBadge
+                  mes={new Date(evento.fecha).toLocaleDateString('es-CL', {month: 'short'}).toUpperCase()}
+                  dia={new Date(evento.fecha).getDate().toString()}
+                  large
+                />
               </div>
-              <p class="text-text-soft text-sm mt-2">{evento.detalle}</p>
-            </div>
-            <div class="self-center text-text-soft transition-all duration-150 group-hover:text-red group-hover:translate-x-1 hidden md:block">
-              <UIcon name="arrow-right" size={20} />
-            </div>
-          </a>
-        ))}
+              <div class="flex-1 min-w-0">
+                <Tag variant={colorTipo(evento.tipo)} style="margin-bottom:0.5em;">{labelTipo(evento.tipo)}</Tag>
+                <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
+                <div class="flex gap-3 font-mono text-xs tracking-wider text-text-soft">
+                  {evento.lugar && <span class="flex items-center gap-1"><UIcon name="map-pin" size={12} /> {evento.lugar}</span>}
+                </div>
+                {evento.descripcion && <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>}
+              </div>
+              <div class="self-center text-text-soft transition-all duration-150 group-hover:text-red group-hover:translate-x-1 hidden md:block">
+                <UIcon name="arrow-right" size={20} />
+              </div>
+            </a>
+          ))
+        ) : (
+          <p class="text-text-soft py-8">No hay eventos próximos programados.</p>
+        )}
       </div>
     </div>
   </section>
 
   <!-- Eventos pasados -->
-  <section class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <div class="mb-8">
-        <Eyebrow>Archivo</Eyebrow>
-        <h2>Eventos pasados</h2>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {pasados.map((evento) => (
-          <div class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-            <div class="aspect-[16/10] bg-cover" style={`background-image:url('${evento.imagen}');`}></div>
-            <div class="p-4 md:p-5">
-              <Tag>{evento.anio}</Tag>
-              <h4 class="text-sm md:text-base mt-2 mb-1">{evento.nombre}</h4>
-              <p class="text-text-soft text-sm">
-                <UIcon name="map-pin" size={12} /> {evento.sede}
-              </p>
+  {pasados.length > 0 && (
+    <section class="py-10 md:py-[4.4em]">
+      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+        <div class="mb-8">
+          <Eyebrow>Archivo</Eyebrow>
+          <h2>Eventos pasados</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pasados.map((evento) => (
+            <div class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
+              {evento.flyer && (
+                <div class="aspect-[16/10] bg-cover" style={`background-image:url('${urlFor(evento.flyer).width(400).url()}');`}></div>
+              )}
+              <div class="p-4 md:p-5">
+                <Tag>{new Date(evento.fecha).getFullYear()}</Tag>
+                <h4 class="text-sm md:text-base mt-2 mb-1">{evento.titulo}</h4>
+                {evento.lugar && (
+                  <p class="text-text-soft text-sm">
+                    <UIcon name="map-pin" size={12} /> {evento.lugar}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 </BaseLayout>

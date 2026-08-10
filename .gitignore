@@ -4,7 +4,9 @@ dist/
 .astro/
 
 # dependencies
-node_modules/
+node_modules
+.env
+.env.local/
 
 # logs
 npm-debug.log*

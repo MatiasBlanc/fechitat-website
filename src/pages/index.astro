@@ -6,6 +6,8 @@ import Stat from "../components/Stat.astro";
 import Tag from "../components/Tag.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { img } from "../lib/imagenes";
+import { getMetricas, getProximoEventoDestacado, getBlogPostsDestacados, getEscuelasPorRegion } from "../lib/sanityQueries";
+import { urlFor } from "../lib/sanity";
 
 const titulo = "FECHITAT — Federación Chilena de Taekwon-Do Tradicional";
 
@@ -16,67 +18,92 @@ const riel = [
   { href: "#noticias", kr: "소식", label: "Noticias" },
 ];
 
-const proximoEvento = {
-  mes: "OCT",
-  dia: "03",
-  nombre: "XVIII Campeonato Mundial · Jesolo, Italia",
-};
+// Datos de Sanity
+const metricas = await getMetricas();
+const proximoEvento = await getProximoEventoDestacado();
+const noticias = await getBlogPostsDestacados();
+const escuelas = await getEscuelasPorRegion();
 ---
 
 <BaseLayout title={titulo}>
   <HangulRail links={riel} />
 
   <!-- Hero -->
-  <section class="hero relative min-h-[60vh] md:min-h-[78vh] flex items-end text-white overflow-hidden bg-[#0a0f1a]">
-    <div class="absolute inset-0 bg-cover bg-[center_30%] opacity-55" style="background-image:url('/images/hero/hero.webp');"></div>
-    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,0.35)_0%,rgba(11,18,32,0.55)_45%,rgba(11,18,32,0.97)_100%)]"></div>
-    <div class="relative z-[2] py-12 md:py-[5.5em] pb-8 md:pb-[3.2em] w-full max-w-[1180px] mx-auto px-5 md:px-7">
+  <section
+    class="hero relative min-h-[60vh] md:min-h-[78vh] flex items-end text-white overflow-hidden bg-dark"
+  >
+    <div
+      class="absolute inset-0 bg-cover bg-[center_30%] opacity-55"
+      style="background-image:url('/images/hero/hero.webp');"
+    >
+    </div>
+    <div
+      class="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,0.35)_0%,rgba(11,18,32,0.55)_45%,rgba(11,18,32,0.97)_100%)]"
+    >
+    </div>
+    <div
+      class="relative z-[2] py-12 md:py-[5.5em] pb-8 md:pb-[3.2em] w-full max-w-[1180px] mx-auto px-5 md:px-7"
+    >
       <Eyebrow>Fechitat · ITF Chile</Eyebrow>
       <h1 class="text-white text-[clamp(2rem,6vw,4.6rem)] max-w-[14ch]">
         Encuentra tu camino<br />en el Taekwon-Do
       </h1>
-      <p class="text-base md:text-[1.05rem] text-[#dfe2ea] max-w-[46ch] mb-6 font-normal">
+      <p
+        class="text-base md:text-[1.05rem] text-light max-w-[46ch] mb-6 font-normal"
+      >
         Dojangs de Arica a Punta Arenas, instructores certificados por ITF y una
-        comunidad que entrena con disciplina, respeto y proyección internacional.
+        comunidad que entrena con disciplina, respeto y proyección
+        internacional.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <a href="#dojangs" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+        <a
+          href="#dojangs"
+          class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px"
+        >
           Encuentra tu dojang
         </a>
-        <a href="/federacion" class="inline-flex items-center justify-center gap-2 bg-transparent border border-white/50 text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-white/12 hover:-translate-y-px">
+        <a
+          href="/federacion"
+          class="inline-flex items-center justify-center gap-2 bg-transparent border border-white/50 text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-white/12 hover:-translate-y-px"
+        >
           Conoce la federación
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Próximo evento -->
-  <section class="py-6 md:py-[2.6em] bg-paper-alt" id="eventos">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 justify-between">
-        <div class="flex items-center gap-4">
-          <EventBadge mes={proximoEvento.mes} dia={proximoEvento.dia} />
-          <div>
-            <Eyebrow>Próximo evento</Eyebrow>
-            <div class="font-heading font-bold text-base md:text-[1.15rem] uppercase">
-              {proximoEvento.nombre}
+  {/* Próximo evento */}
+  {proximoEvento && (
+    <section class="py-6 md:py-[2.6em] bg-paper" id="eventos">
+      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 justify-between">
+          <div class="flex items-center gap-4">
+            <EventBadge
+              mes={new Date(proximoEvento.fecha).toLocaleDateString('es-CL', {month: 'short'}).toUpperCase()}
+              dia={new Date(proximoEvento.fecha).getDate().toString()}
+            />
+            <div>
+              <Eyebrow>Próximo evento</Eyebrow>
+              <div class="font-heading font-bold text-base md:text-[1.15rem] uppercase">
+                {proximoEvento.titulo}
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
-            Ver evento
-          </a>
-          <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-transparent border border-ink text-ink font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-ink hover:text-white hover:-translate-y-px">
-            Ver calendario completo
-          </a>
+          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
+              Ver evento
+            </a>
+            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-transparent border border-ink text-ink font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-ink hover:text-white hover:-translate-y-px">
+              Ver calendario completo
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <!-- Camino -->
-  <section id="camino" class="py-10 md:py-[4.4em]">
+  <section id="camino" class="py-10 md:py-[4.4em] bg-white">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
       <div class="mb-8">
         <Eyebrow>Elige tu camino</Eyebrow>
@@ -84,29 +111,53 @@ const proximoEvento = {
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/padres">
-          <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.ninosClase}');`}></div>
+        <a
+          class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+          href="/padres"
+        >
+          <div
+            class="aspect-[16/10] bg-cover"
+            style={`background-image:url('${img.ninosClase}');`}
+          >
+          </div>
           <div class="p-4 md:p-5">
             <Tag variant="red">Familias</Tag>
-            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">Busco una actividad para mi hijo/a</h3>
+            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">
+              Busco una actividad para mi hijo/a
+            </h3>
             <p class="text-text-soft text-sm md:text-base">
-              Beneficios, seguridad, FAQ, testimonios y cómo reservar una clase de prueba gratuita.
+              Beneficios, seguridad, FAQ, testimonios y cómo reservar una clase
+              de prueba gratuita.
             </p>
-            <span class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block">
+            <span
+              class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block"
+            >
               Conocer el programa para familias →
             </span>
           </div>
         </a>
 
-        <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/jovenes">
-          <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.jovenCompetidor}');`}></div>
+        <a
+          class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+          href="/jovenes"
+        >
+          <div
+            class="aspect-[16/10] bg-cover"
+            style={`background-image:url('${img.jovenCompetidor}');`}
+          >
+          </div>
           <div class="p-4 md:p-5">
             <Tag variant="blue">Competidores</Tag>
-            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">Quiero avanzar y competir</h3>
+            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">
+              Quiero avanzar y competir
+            </h3>
             <p class="text-text-soft text-sm md:text-base">
-              Camino de grados, requisitos de selección nacional y una semana tipo de entrenamiento.
+              Camino de grados, requisitos de selección nacional y una semana
+              tipo de entrenamiento.
             </p>
-            <span class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block">
+            <span
+              class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block"
+            >
               Conocer el camino competitivo →
             </span>
           </div>
@@ -116,8 +167,10 @@ const proximoEvento = {
   </section>
 
   <!-- Quiénes somos -->
-  <section class="py-10 md:py-[4.4em] bg-white">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+  <section class="py-10 md:py-[4.4em] bg-paper">
+    <div
+      class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+    >
       <div>
         <h2 class="text-[clamp(1.6rem,5vw,3.2rem)]">
           Formamos artistas marciales,<br />no solo competidores
@@ -125,12 +178,21 @@ const proximoEvento = {
         <p class="text-text-soft max-w-[52ch]">
           Trabajamos junto a instituciones deportivas que apoyan el desarrollo
           del Taekwon-Do ITF en Chile. Cada medalla representa el trabajo
-          constante de nuestros dojangs y el orgullo de vestir la bandera chilena.
+          constante de nuestros dojangs y el orgullo de vestir la bandera
+          chilena.
         </p>
         <div class="h-px bg-line my-6"></div>
         <div class="grid grid-cols-2 gap-4 md:gap-6">
-          <Stat count={50} suffix="+" label="Cinturones negros" />
-          <Stat count={150} suffix="+" label="Competidores activos" />
+          {metricas.length > 0 ? (
+            metricas.map((m) => (
+              <Stat count={m.valor} suffix={m.sufijo} label={m.titulo} />
+            ))
+          ) : (
+            <>
+              <Stat count={50} suffix="+" label="Cinturones negros" />
+              <Stat count={150} suffix="+" label="Competidores activos" />
+            </>
+          )}
         </div>
       </div>
       <div>
@@ -143,10 +205,12 @@ const proximoEvento = {
     </div>
   </section>
 
-  <!-- Red de dojangs -->
+  {/* Red de dojangs */}
   <section class="py-10 md:py-[4.4em] bg-white" id="dojangs">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <h2 class="text-[clamp(1.5rem,4vw,2.8rem)] mb-4">Encuentra tu escuela más cercana</h2>
+      <h2 class="text-[clamp(1.5rem,4vw,2.8rem)] mb-4">
+        Encuentra tu escuela más cercana
+      </h2>
       <div class="mb-8">
         <input
           id="ciudad"
@@ -155,52 +219,99 @@ const proximoEvento = {
           placeholder="Ej. La Serena, Coquimbo…"
         />
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { region: 'Norte', ciudades: 'Antofagasta · Copiapó · La Serena', count: '6 dojangs afiliados' },
-          { region: 'Centro', ciudades: 'Santiago · Valparaíso · Rancagua', count: '14 dojangs afiliados' },
-          { region: 'Sur', ciudades: 'Concepción · Temuco · Valdivia', count: '9 dojangs afiliados' },
-          { region: 'Austral', ciudades: 'Puerto Montt · Punta Arenas', count: '3 dojangs afiliados' },
-        ].map((zona) => (
-          <div class="bg-white border border-line rounded-sm overflow-hidden">
-            <div class="p-4 md:p-5">
-              <Tag variant="blue">{zona.region}</Tag>
-              <h4 class="text-sm md:text-base mt-2">{zona.ciudades}</h4>
-              <p class="text-text-soft text-sm">{zona.count}</p>
-            </div>
+      {escuelas.length > 0 ? (
+        <>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {escuelas.slice(0, 3).map((escuela) => (
+              <a href="#" class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
+                <div class="p-4 md:p-5">
+                  {escuela.region && <Tag variant="blue">{escuela.region}</Tag>}
+                  <h4 class="text-sm md:text-base mt-2">{escuela.nombre}</h4>
+                  {escuela.ciudad && <p class="text-text-soft text-sm">{escuela.ciudad}</p>}
+                </div>
+              </a>
+            ))}
           </div>
-        ))}
-      </div>
+          <div class="mt-6 text-center">
+            <a href="/escuelas" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
+              Ver todas las escuelas ({escuelas.length})
+            </a>
+          </div>
+        </>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {region: 'Coquimbo', ciudades: 'La Serena · Coquimbo · Ovalle', count: '6 dojangs'},
+            {region: 'Metropolitana', ciudades: 'Santiago · Cerro Navia', count: '4 dojangs'},
+            {region: 'Tarapacá', ciudades: 'Iquique', count: '1 dojang'},
+          ].map((zona) => (
+            <div class="bg-white border border-line rounded-sm overflow-hidden">
+              <div class="p-4 md:p-5">
+                <Tag variant="blue">{zona.region}</Tag>
+                <h4 class="text-sm md:text-base mt-2">{zona.ciudades}</h4>
+                <p class="text-text-soft text-sm">{zona.count}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   </section>
 
   <!-- Últimas noticias -->
-  <section class="py-10 md:py-[4.4em] bg-white" id="noticias">
+  <section class="py-10 md:py-[4.4em] bg-paper" id="noticias">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8"
+      >
         <div>
           <Eyebrow>Desde el dojang</Eyebrow>
           <h2>Últimas noticias</h2>
         </div>
-        <a href="/blog" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px"
+        >
           Ver todo el blog
         </a>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { img: img.postDefensa, tag: 'Ensayos', variant: 'red', title: 'Principios de la defensa personal' },
-          { img: img.postNacional, tag: 'Noticias', variant: 'default', title: 'Resultados del campeonato nacional' },
-          { img: img.postHistoria, tag: 'Historia', variant: 'gold', title: '5 deportistas destacados 2025' },
-          { img: img.postDocumento, tag: 'Documentos', variant: 'blue', title: 'El Taekwon-Do ITF en Chile' },
-        ].map((post) => (
-          <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/blog">
-            <div class="aspect-[16/10] bg-cover" style={`background-image:url('${post.img}');`}></div>
-            <div class="p-4 md:p-5">
-              <Tag variant={post.variant}>{post.tag}</Tag>
-              <h4 class="text-sm md:text-base mt-2">{post.title}</h4>
-            </div>
-          </a>
-        ))}
+        {noticias.length > 0 ? (
+          noticias.map((post) => (
+            <a
+              class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+              href={`/blog/${post.slug?.current || '#'}`}
+            >
+              {post.imagen && (
+                <div
+                  class="aspect-[16/10] bg-cover"
+                  style={`background-image:url('${urlFor(post.imagen).width(400).url()}');`}
+                />
+              )}
+              <div class="p-4 md:p-5">
+                {post.categorias?.[0] && <Tag>{post.categorias[0]}</Tag>}
+                <h4 class="text-sm md:text-base mt-2">{post.titulo}</h4>
+              </div>
+            </a>
+          ))
+        ) : (
+          <>
+            <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/blog">
+              <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postDefensa}');`} />
+              <div class="p-4 md:p-5">
+                <Tag variant="red">Ensayos</Tag>
+                <h4 class="text-sm md:text-base mt-2">Principios de la defensa personal</h4>
+              </div>
+            </a>
+            <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/blog">
+              <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postNacional}');`} />
+              <div class="p-4 md:p-5">
+                <Tag>Noticias</Tag>
+                <h4 class="text-sm md:text-base mt-2">Resultados del campeonato nacional</h4>
+              </div>
+            </a>
+          </>
+        )}
       </div>
     </div>
   </section>

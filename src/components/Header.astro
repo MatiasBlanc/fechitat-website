@@ -30,7 +30,7 @@ const esActivo = (href) =>
               'font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150',
               esActivo(link.href)
                 ? 'text-white border-red'
-                : 'text-[#cfd3dc] hover:text-white hover:border-red',
+                : 'text-light-soft hover:text-white hover:border-red',
             ]}
           >
             {link.label}
@@ -67,7 +67,7 @@ const esActivo = (href) =>
             'font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4',
             esActivo(link.href)
               ? 'text-white border-red'
-              : 'text-[#cfd3dc] hover:text-white border-transparent',
+              : 'text-light-soft hover:text-white border-transparent',
           ]}
         >
           {link.label}

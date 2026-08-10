@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Tag from '../components/Tag.astro';
+import PageHero from '../components/PageHero.astro';
+import UIcon from '../components/icons/UIcon.astro';
+import { getEscuelas } from '../lib/sanityQueries';
+
+const titulo = 'Escuelas Afiliadas — FECHITAT';
+
+// Datos de Sanity
+const escuelas = await getEscuelas();
+
+// Agrupar por región
+const escuelasPorRegion = escuelas.reduce((acc: any, escuela: any) => {
+  const region = escuela.region || 'Sin región';
+  if (!acc[region]) acc[region] = [];
+  acc[region].push(escuela);
+  return acc;
+}, {});
+
+const regiones = Object.keys(escuelasPorRegion).sort();
+---
+
+<BaseLayout title={titulo}>
+  <PageHero
+    title="Escuelas afiliadas"
+    crumb="Escuelas"
+    description="Encuentra el dojang más cercano a tu ubicación. Todas las escuelas afiliadas a FECHITAT están certificadas por la ITF."
+  />
+
+  {/* Buscador */}
+  <section class="py-8 md:py-[2.6em] bg-white border-b border-line">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <input
+            id="buscar-escuela"
+            type="text"
+            class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]"
+            placeholder="Buscar por nombre, ciudad o región..."
+          />
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button
+            class="filtro-region px-4 py-2 font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-ink text-white transition-colors duration-150"
+            data-region="todas"
+          >
+            Todas
+          </button>
+          {regiones.map((region) => (
+            <button
+              class="filtro-region px-4 py-2 font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-white hover:bg-ink hover:text-white hover:border-ink transition-colors duration-150"
+              data-region={region}
+            >
+              {region}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Listado de escuelas */}
+  <section class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+      {/* Contador */}
+      <div class="mb-6">
+        <p class="text-text-soft text-sm">
+          Mostrando <span id="contador">{escuelas.length}</span> escuelas afiliadas
+        </p>
+      </div>
+
+      {/* Escuelas por región */}
+      <div id="lista-escuelas">
+        {regiones.map((region) => (
+          <div class="region-grupo mb-10" data-region={region}>
+            <div class="flex items-center gap-3 mb-4">
+              <Eyebrow>{region}</Eyebrow>
+              <span class="text-text-soft text-sm font-mono">({escuelasPorRegion[region].length})</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {escuelasPorRegion[region].map((escuela: any) => (
+                <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
+                  <div class="p-5">
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                      <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
+                    </div>
+
+                    {escuela.ciudad && (
+                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-2">
+                        <UIcon name="map-pin" size={14} />
+                        {escuela.ciudad}
+                      </p>
+                    )}
+
+                    {escuela.sensei && (
+                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-3">
+                        <UIcon name="user" size={14} />
+                        {escuela.sensei}
+                      </p>
+                    )}
+
+                    <div class="flex flex-wrap gap-2 mt-4">
+                      {escuela.telefono && (
+                        <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                          <UIcon name="phone" size={12} />
+                          Teléfono
+                        </a>
+                      )}
+                      {escuela.email && (
+                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                          <UIcon name="mail" size={12} />
+                          Email
+                        </a>
+                      )}
+                      {escuela.whatsapp && (
+                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                          <UIcon name="phone" size={12} />
+                          WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Sin resultados */}
+      <div id="sin-resultados" class="hidden text-center py-12">
+        <p class="text-text-soft text-lg mb-2">No se encontraron escuelas</p>
+        <p class="text-text-soft text-sm">Intenta con otro término de búsqueda</p>
+      </div>
+    </div>
+  </section>
+
+  {/* CTA */}
+  <section class="py-10 md:py-[4.4em] bg-white">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 text-center">
+      <Eyebrow>¿No encuentras tu dojang?</Eyebrow>
+      <h2 class="max-w-[20ch] mx-auto mb-4">Afilia tu escuela a FECHITAT</h2>
+      <p class="text-text-soft max-w-[50ch] mx-auto mb-6">
+        Si tienes una escuela de Taekwon-Do ITF y quieres ser parte de la federación, contáctanos para conocer los requisitos de afiliación.
+      </p>
+      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
+        Contactar directiva
+      </a>
+    </div>
+  </section>
+
+  <script>
+    // Buscador
+    const input = document.getElementById('buscar-escuela') as HTMLInputElement;
+    const contador = document.getElementById('contador');
+    const sinResultados = document.getElementById('sin-resultados');
+    const listaEscuelas = document.getElementById('lista-escuelas');
+    const regionGrupos = document.querySelectorAll('.region-grupo');
+    const escuelaCards = document.querySelectorAll('.escuela-card');
+    const filtroBtns = document.querySelectorAll('.filtro-region');
+
+    let regionActiva = 'todas';
+
+    function filtrar() {
+      const busqueda = input?.value.toLowerCase().trim() || '';
+      let total = 0;
+
+      regionGrupos.forEach((grupo) => {
+        const region = (grupo as HTMLElement).dataset.region || '';
+        const cards = grupo.querySelectorAll('.escuela-card');
+        let visiblesEnRegion = 0;
+
+        cards.forEach((card) => {
+          const el = card as HTMLElement;
+          const nombre = el.dataset.nombre || '';
+          const ciudad = el.dataset.ciudad || '';
+          const regionCard = el.dataset.region || '';
+
+          const coincideRegion = regionActiva === 'todas' || regionCard === regionActiva;
+          const coincideBusqueda = !busqueda || nombre.includes(busqueda) || ciudad.includes(busqueda) || regionCard.includes(busqueda);
+
+          if (coincideRegion && coincideBusqueda) {
+            el.style.display = '';
+            visiblesEnRegion++;
+            total++;
+          } else {
+            el.style.display = 'none';
+          }
+        });
+
+        // Mostrar/ocultar grupo de región
+        (grupo as HTMLElement).style.display = visiblesEnRegion > 0 ? '' : 'none';
+      });
+
+      // Actualizar contador
+      if (contador) contador.textContent = total.toString();
+
+      // Mostrar mensaje de sin resultados
+      if (sinResultados && listaEscuelas) {
+        if (total === 0) {
+          sinResultados.classList.remove('hidden');
+          listaEscuelas.classList.add('hidden');
+        } else {
+          sinResultados.classList.add('hidden');
+          listaEscuelas.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Event listeners
+    input?.addEventListener('input', filtrar);
+
+    filtroBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const region = (btn as HTMLElement).dataset.region || 'todas';
+        regionActiva = region;
+
+        // Actualizar estilos de botones
+        filtroBtns.forEach((b) => {
+          const el = b as HTMLElement;
+          if (el.dataset.region === region) {
+            el.classList.add('bg-ink', 'text-white');
+            el.classList.remove('bg-white');
+          } else {
+            el.classList.remove('bg-ink', 'text-white');
+            el.classList.add('bg-white');
+          }
+        });
+
+        filtrar();
+      });
+    });
+  </script>
+</BaseLayout>

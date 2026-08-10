@@ -5,6 +5,7 @@ import Eyebrow from '../components/Eyebrow.astro';
 import Tag from '../components/Tag.astro';
 import PageHero from '../components/PageHero.astro';
 import { img } from '../lib/imagenes';
+import { getTestimonios } from '../lib/sanityQueries';
 
 const titulo = 'Para padres — FECHITAT';
 
@@ -22,11 +23,8 @@ const beneficios = [
   { etiqueta: 'Condición física', variante: 'default', texto: 'Coordinación, flexibilidad y resistencia, con progresiones adecuadas a cada edad.' },
 ];
 
-const testimonios = [
-  { texto: '"Mi hija pasó de ser tímida a presentarse voluntaria en la escuela. El cambio se nota en su seguridad diaria, no solo en el dojang."', autor: 'Madre de alumna, 8 años' },
-  { texto: '"Los instructores son exigentes pero muy pacientes. Nunca sentí que fuera un ambiente de presión, sino de aprendizaje real."', autor: 'Padre de alumno, 11 años' },
-  { texto: '"Nos encantó que la federación tenga proyección internacional. Mi hijo ahora sueña con representar a Chile."', autor: 'Madre de alumno, 13 años' },
-];
+// Datos de Sanity
+const testimonios = await getTestimonios();
 
 const faqs = [
   { pregunta: '¿A qué edad puede empezar mi hijo/a?', respuesta: 'Recibimos alumnos desde los 5 años en clases infantiles, con progresiones adaptadas a cada etapa de desarrollo.' },
@@ -116,11 +114,11 @@ const faqs = [
   </section>
 
   <!-- Testimonios -->
-  <section class="py-10 md:py-[4.4em] bg-ink text-[#e6e8ee]" id="testimonios">
+  <section class="py-10 md:py-[4.4em] bg-ink text-light" id="testimonios">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 md:grid-cols-3 gap-8">
       {testimonios.map((t) => (
         <div>
-          <p class="text-base md:text-lg text-[#e6e8ee]">{t.texto}</p>
+          <p class="text-base md:text-lg text-light">{t.texto}</p>
           <Eyebrow>— {t.autor}</Eyebrow>
         </div>
       ))}

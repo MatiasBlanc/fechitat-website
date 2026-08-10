@@ -1,0 +1,127 @@
+---
+// Esta página redirige todas las rutas de /admin a Sanity Studio
+// Si Sanity Studio está desplegado, redirige allí
+// Si no, muestra un iframe con el Studio local
+
+const sanityStudioUrl = 'https://fechitat-website.sanity.studio';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — FECHITAT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Work Sans", sans-serif;
+      background: #f1f4f6;
+      min-height: 100vh;
+    }
+    .admin-header {
+      background: #0b1220;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-header h1 {
+      font-family: "Kumbh Sans", sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .admin-header a {
+      color: #c9cdd6;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-family: "JetBrains Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .admin-header a:hover {
+      color: white;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 56px);
+      border: none;
+    }
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 56px);
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #d8d0ba;
+      border-top-color: #c4161c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <h1>FECHITAT · Admin</h1>
+    <a href="/">← Volver al sitio</a>
+  </header>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p style="color: #5b5648; font-size: 0.9rem;">Cargando Sanity Studio...</p>
+  </div>
+
+  <iframe
+    id="studio-frame"
+    src={sanityStudioUrl}
+    style="display: none;"
+    onload="document.getElementById('loading').style.display='none'; this.style.display='block';"
+    onerror="handleError()"
+  ></iframe>
+
+  <script>
+    function handleError() {
+      document.getElementById('loading').innerHTML = `
+        <p style="color: #5b5648; font-size: 1rem; margin-bottom: 1rem;">No se pudo cargar Sanity Studio</p>
+        <a href="http://localhost:3333" target="_blank" style="color: #c4161c; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem;">
+          Abrir Studio local →
+        </a>
+      `;
+    }
+
+    // Timeout de 10 segundos
+    setTimeout(() => {
+      const loading = document.getElementById('loading');
+      const frame = document.getElementById('studio-frame');
+      if (loading && loading.style.display !== 'none') {
+        loading.innerHTML = `
+          <p style="color: #5b5648; font-size: 1rem; margin-bottom: 1rem;">Sanity Studio no responde</p>
+          <div style="display: flex; gap: 1rem;">
+            <a href="${sanityStudioUrl}" target="_blank" style="color: #c4161c; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem;">
+              Abrir en nueva pestaña →
+            </a>
+            <a href="http://localhost:3333" target="_blank" style="color: #274b85; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem;">
+              Studio local →
+            </a>
+          </div>
+        `;
+      }
+    }, 10000);
+  </script>
+</body>
+</html>
