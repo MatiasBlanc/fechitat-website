@@ -1,6 +1,4 @@
 ---
-// Header: nav sticky oscuro + menú responsive con burger.
-// La ruta activa se calcula desde Astro.url.pathname.
 const { pathname } = Astro.url;
 
 const links = [
@@ -10,21 +8,20 @@ const links = [
   { href: "/blog", label: "Blog" },
 ];
 
-// En / se compara exacto; el resto por prefijo.
 const esActivo = (href) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
-<header class="sticky top-0 z-50 bg-ink border-b border-white/8">
-  <div class="max-w-[1180px] mx-auto px-7 flex items-center justify-between h-[68px]">
+<header class="sticky top-0 z-50 bg-ink border-b border-white/10">
+  <div class="max-w-[1180px] mx-auto px-5 md:px-7 flex items-center justify-between h-16 md:h-[68px]">
     <!-- Logo -->
-    <a href="/" class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-lg" aria-label="FECHITAT — Inicio">
+    <a href="/" class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg" aria-label="FECHITAT — Inicio">
       <img src="/images/general/fechitat-logo.svg" alt="" class="w-9 h-9 object-contain" />
       <span>FECHITAT</span>
     </a>
 
     <!-- Navegación desktop -->
-    <nav class="hidden md:flex items-center gap-8" aria-label="Navegación principal">
+    <nav class="hidden lg:flex items-center gap-8" aria-label="Navegación principal">
       {
         links.map((link) => (
           <a
@@ -40,14 +37,14 @@ const esActivo = (href) =>
           </a>
         ))
       }
-      <a href="/dojangs" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm cursor-pointer transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+      <a href="/dojangs" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
         Encuentra tu dojang
       </a>
     </nav>
 
     <!-- Botón burger (mobile) -->
     <button
-      class="md:hidden flex items-center justify-center w-10 h-10 text-white text-2xl cursor-pointer bg-transparent border-none"
+      class="lg:hidden flex items-center justify-center w-10 h-10 text-white text-2xl cursor-pointer bg-transparent border-none"
       type="button"
       data-burger
       aria-expanded="false"
@@ -59,7 +56,7 @@ const esActivo = (href) =>
 
   <!-- Menú mobile (overlay) -->
   <nav
-    class="mobile-nav fixed inset-0 top-[68px] bg-ink flex flex-col px-7 py-8 gap-6 translate-x-full transition-transform duration-300 md:hidden"
+    class="mobile-nav fixed inset-0 top-16 bg-ink flex flex-col px-5 py-8 gap-6 translate-x-full transition-transform duration-300 lg:hidden z-50"
     aria-label="Navegación móvil"
   >
     {
@@ -67,24 +64,23 @@ const esActivo = (href) =>
         <a
           href={link.href}
           class:list={[
-            'font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150',
+            'font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4',
             esActivo(link.href)
-              ? 'text-white border-red pl-4'
-              : 'text-[#cfd3dc] hover:text-white border-transparent pl-4',
+              ? 'text-white border-red'
+              : 'text-[#cfd3dc] hover:text-white border-transparent',
           ]}
         >
           {link.label}
         </a>
       ))
     }
-    <a href="/dojangs" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-sm tracking-widest uppercase py-3 px-6 rounded-sm cursor-pointer transition-all duration-150 hover:bg-red-dark mt-4">
+    <a href="/dojangs" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-sm tracking-widest uppercase py-3 px-6 rounded-sm transition-all duration-150 hover:bg-red-dark mt-4">
       Encuentra tu dojang
     </a>
   </nav>
 </header>
 
 <style>
-  /* Menú mobile abierto */
   .mobile-nav.open {
     transform: translateX(0);
   }

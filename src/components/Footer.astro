@@ -1,27 +1,24 @@
 ---
-// Footer: igual en las 6 páginas.
-// Enlaces internos placeholder (documentos/transparencia) — TODO:
-// apuntar a las rutas reales cuando existan.
 import UIcon from './icons/UIcon.astro';
 import SocialLinks from './SocialLinks.astro';
 ---
 
-<footer class="bg-ink text-[#aeb3bf] py-[3.2em] pb-[1.6em]">
-  <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
-    <div class="grid grid-cols-[1.4fr_1fr_1fr_1fr] gap-[2em] pb-[2.6em] border-b border-white/10 max-[800px]:grid-cols-2">
+<footer class="bg-ink text-[#aeb3bf] py-12 md:py-[3.2em] pb-8 md:pb-[1.6em]">
+  <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-8 md:pb-[2.6em] border-b border-white/10">
       <div>
-        <div class="flex items-center gap-[0.7em] text-white font-heading font-extrabold tracking-[0.02em] text-[1.05rem] mb-[1em]">
-          <img src="/images/general/fechitat-logo.svg" alt="" class="w-[36px] h-[36px] object-contain" />
+        <div class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg mb-4">
+          <img src="/images/general/fechitat-logo.svg" alt="" class="w-9 h-9 object-contain" />
           FECHITAT
         </div>
-        <p class="max-w-[32ch] text-[#9aa0ad]">
+        <p class="max-w-[32ch] text-[#9aa0ad] text-sm md:text-base">
           Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF.
           Formando artistas marciales desde los dojangs de todo Chile.
         </p>
       </div>
       <div>
-        <h4 class="text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase mb-[1em]">Legales</h4>
-        <ul class="list-none p-0 m-0 flex flex-col gap-[0.6em] text-[0.9rem]">
+        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Legales</h4>
+        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
           <li><a href="#" class="hover:text-white transition-colors duration-150">Documentos</a></li>
           <li><a href="#" class="hover:text-white transition-colors duration-150">Transparencia</a></li>
           <li><a href="#" class="hover:text-white transition-colors duration-150">Estatutos</a></li>
@@ -30,28 +27,28 @@ import SocialLinks from './SocialLinks.astro';
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase mb-[1em]">Recursos</h4>
-        <ul class="list-none p-0 m-0 flex flex-col gap-[0.6em] text-[0.9rem]">
+        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Recursos</h4>
+        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
           <li><a href="#" class="hover:text-white transition-colors duration-150">Manual de exámenes</a></li>
           <li><a href="#" class="hover:text-white transition-colors duration-150">Reglamento de torneos</a></li>
           <li><a href="#" class="hover:text-white transition-colors duration-150">Enciclopedia técnica</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase mb-[1em]">Contacto</h4>
-        <ul class="list-none p-0 m-0 flex flex-col gap-[0.6em] text-[0.9rem]">
-          <li class="flex items-center gap-[0.5em]">
+        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Contacto</h4>
+        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
+          <li class="flex items-center gap-2">
             <UIcon name="mail" size={16} />
             <span>contacto@fechitat.cl</span>
           </li>
-          <li class="flex items-center gap-[0.5em]">
+          <li class="flex items-center gap-2">
             <UIcon name="phone" size={16} />
             <span>+569 8888 9668</span>
           </li>
         </ul>
       </div>
     </div>
-    <div class="flex justify-between items-center pt-[1.6em] text-[0.82rem] flex-wrap gap-[1em]">
+    <div class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-[1.6em] text-sm gap-4">
       <div>Hecho en ★ con espíritu indómito.</div>
       <SocialLinks />
     </div>

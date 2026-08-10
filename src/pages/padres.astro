@@ -1,5 +1,4 @@
 ---
-// Padres — beneficios, seguridad, FAQ, testimonios y formulario de clase de prueba.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
 import Eyebrow from '../components/Eyebrow.astro';
@@ -48,44 +47,45 @@ const faqs = [
     imageAlt="Niños practicando Taekwon-Do ITF"
     imageStyle="border-radius:2px;"
   >
-    <div class="flex gap-[1em] flex-wrap mt-[1.4em]">
-      <a href="#inscribir" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px]">Reservar clase de prueba gratis</a>
+    <div class="flex flex-wrap gap-3 mt-5">
+      <a href="#inscribir" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+        Reservar clase de prueba gratis
+      </a>
     </div>
   </PageHero>
 
   <!-- Beneficios -->
-  <section id="beneficios" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
-      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
-        <div><Eyebrow>Por qué Taekwon-Do</Eyebrow><h2>Lo que tu hijo/a se lleva a casa</h2></div>
+  <section id="beneficios" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+      <div class="mb-8">
+        <Eyebrow>Por qué Taekwon-Do</Eyebrow>
+        <h2>Lo que tu hijo/a se lleva a casa</h2>
       </div>
-      <div class="grid grid-cols-4 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
-        {
-          beneficios.map((beneficio) => (
-            <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
-              <div class="p-[1.2em_1.3em_1.4em]">
-                <Tag variant={beneficio.variante} style="margin-bottom:0.8em;">{beneficio.etiqueta}</Tag>
-                <p class="text-text-soft text-[0.9rem]">{beneficio.texto}</p>
-              </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {beneficios.map((b) => (
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <div class="p-4 md:p-5">
+              <Tag variant={b.variante} style="margin-bottom:0.6em;">{b.etiqueta}</Tag>
+              <p class="text-text-soft text-sm">{b.texto}</p>
             </div>
-          ))
-        }
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Seguridad -->
-  <section class="py-[4.4em] bg-white" id="seguridad">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] items-center max-[900px]:grid-cols-1">
+  <section class="py-10 md:py-[4.4em] bg-white" id="seguridad">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <img
         src={img.instructorInfantil}
         alt="Instructor supervisando entrenamiento infantil"
-        class="rounded-[var(--radius-sm)]"
+        class="rounded-sm w-full order-2 lg:order-1"
       />
-      <div>
+      <div class="order-1 lg:order-2">
         <Eyebrow>Tranquilidad para ti</Eyebrow>
         <h2>Un ambiente seguro y supervisado</h2>
-        <ul class="text-text-soft pl-[1.1em] leading-8">
+        <ul class="text-text-soft pl-5 leading-8 text-sm md:text-base">
           <li>Instructores certificados por FECHITAT e ITF</li>
           <li>Grupos separados por edad y nivel</li>
           <li>Protecciones obligatorias en todo contacto</li>
@@ -97,40 +97,39 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="py-[4.4em]">
-    <div class="max-w-[820px] mx-auto px-[28px]">
+  <section class="py-10 md:py-[4.4em]">
+    <div class="max-w-[820px] mx-auto px-5 md:px-7">
       <Eyebrow>Preguntas frecuentes</Eyebrow>
-      <h2 class="mb-[1em]">Antes de inscribir</h2>
+      <h2 class="mb-6">Antes de inscribir</h2>
       <div class="border-t border-line">
-        {
-          faqs.map((faq) => (
-            <details class="py-[1.1em] border-b border-line">
-              <summary class="cursor-pointer font-heading font-bold uppercase">{faq.pregunta}</summary>
-              <p class="text-text-soft mt-[0.7em]">{faq.respuesta}</p>
-            </details>
-          ))
-        }
+        {faqs.map((faq) => (
+          <details class="py-4 border-b border-line group">
+            <summary class="cursor-pointer font-heading font-bold uppercase text-sm md:text-base list-none flex justify-between items-center gap-4">
+              {faq.pregunta}
+              <span class="text-text-soft transition-transform duration-200 group-open:rotate-45 text-lg">+</span>
+            </summary>
+            <p class="text-text-soft mt-3 text-sm md:text-base">{faq.respuesta}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Testimonios -->
-  <section class="py-[4.4em] bg-ink text-[#e6e8ee]" id="testimonios">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-3 gap-[1.6em] max-[900px]:grid-cols-1">
-      {
-        testimonios.map((testimonio) => (
-          <div>
-            <p class="text-[1.05rem] text-[#e6e8ee]">{testimonio.texto}</p>
-            <Eyebrow>— {testimonio.autor}</Eyebrow>
-          </div>
-        ))
-      }
+  <section class="py-10 md:py-[4.4em] bg-ink text-[#e6e8ee]" id="testimonios">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 md:grid-cols-3 gap-8">
+      {testimonios.map((t) => (
+        <div>
+          <p class="text-base md:text-lg text-[#e6e8ee]">{t.texto}</p>
+          <Eyebrow>— {t.autor}</Eyebrow>
+        </div>
+      ))}
     </div>
   </section>
 
   <!-- Inscripción / clase de prueba -->
-  <section id="inscribir" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] max-[900px]:grid-cols-1">
+  <section id="inscribir" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       <div>
         <Eyebrow>Da el primer paso</Eyebrow>
         <h2>Reserva una clase de prueba gratuita</h2>
@@ -139,32 +138,32 @@ const faqs = [
           tu domicilio para coordinar la primera clase, sin costo ni compromiso.
         </p>
       </div>
-      <form class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden p-[1.6em]" id="form-clase-prueba">
-        <div class="grid grid-cols-2 gap-[1.6em] max-[600px]:grid-cols-1">
-          <div class="mb-[1.1em]">
-            <label for="nombre" class="block font-mono text-[0.7rem] tracking-[0.06em] uppercase text-text-soft mb-[0.5em]">Nombre del niño/a</label>
-            <input id="nombre" type="text" required class="w-full border border-line bg-white p-[0.8em_0.9em] font-body text-[0.95rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+      <form class="bg-white border border-line rounded-sm overflow-hidden p-5 md:p-6" id="form-clase-prueba">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label for="nombre" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Nombre del niño/a</label>
+            <input id="nombre" type="text" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
           </div>
-          <div class="mb-[1.1em]">
-            <label for="edad" class="block font-mono text-[0.7rem] tracking-[0.06em] uppercase text-text-soft mb-[0.5em]">Edad</label>
-            <input id="edad" type="number" min="4" max="17" required class="w-full border border-line bg-white p-[0.8em_0.9em] font-body text-[0.95rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
-          </div>
-        </div>
-        <div class="mb-[1.1em]">
-          <label for="comuna" class="block font-mono text-[0.7rem] tracking-[0.06em] uppercase text-text-soft mb-[0.5em]">Comuna</label>
-          <input id="comuna" type="text" placeholder="Ej. La Serena" class="w-full border border-line bg-white p-[0.8em_0.9em] font-body text-[0.95rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
-        </div>
-        <div class="grid grid-cols-2 gap-[1.6em] max-[600px]:grid-cols-1">
-          <div class="mb-[1.1em]">
-            <label for="tel" class="block font-mono text-[0.7rem] tracking-[0.06em] uppercase text-text-soft mb-[0.5em]">Teléfono de contacto</label>
-            <input id="tel" type="tel" required class="w-full border border-line bg-white p-[0.8em_0.9em] font-body text-[0.95rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
-          </div>
-          <div class="mb-[1.1em]">
-            <label for="mail" class="block font-mono text-[0.7rem] tracking-[0.06em] uppercase text-text-soft mb-[0.5em]">Correo</label>
-            <input id="mail" type="email" required class="w-full border border-line bg-white p-[0.8em_0.9em] font-body text-[0.95rem] rounded-[var(--radius-sm)] focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+          <div class="mb-4">
+            <label for="edad" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Edad</label>
+            <input id="edad" type="number" min="4" max="17" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
           </div>
         </div>
-        <button type="submit" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px] w-full justify-center">
+        <div class="mb-4">
+          <label for="comuna" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Comuna</label>
+          <input id="comuna" type="text" placeholder="Ej. La Serena" class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label for="tel" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Teléfono de contacto</label>
+            <input id="tel" type="tel" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+          </div>
+          <div class="mb-4">
+            <label for="mail" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Correo</label>
+            <input id="mail" type="email" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+          </div>
+        </div>
+        <button type="submit" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px w-full">
           Solicitar clase de prueba
         </button>
       </form>
@@ -172,12 +171,9 @@ const faqs = [
   </section>
 
   <script>
-    // TODO: conectar a [servicio elegido] (Formspree o function serverless).
-    // Por ahora se previene el envío para no recargar la página.
     const form = document.querySelector('#form-clase-prueba');
-    form?.addEventListener('submit', (evento) => {
-      evento.preventDefault();
-      // TODO: enviar los datos del formulario al endpoint de leads.
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
     });
   </script>
 </BaseLayout>

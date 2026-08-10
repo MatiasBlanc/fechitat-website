@@ -1,5 +1,4 @@
 ---
-// Jóvenes — sistema de grados, selección nacional y semana tipo.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
 import Eyebrow from '../components/Eyebrow.astro';
@@ -43,38 +42,41 @@ const semana = [
     imageAlt="Joven competidor de Taekwon-Do ITF"
     imageStyle="border-radius:2px;"
   >
-    <div class="flex gap-[1em] flex-wrap mt-[1.4em]">
-      <a href="/eventos" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px]">Ver calendario de competencias</a>
+    <div class="flex flex-wrap gap-3 mt-5">
+      <a href="/eventos" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+        Ver calendario de competencias
+      </a>
     </div>
   </PageHero>
 
   <!-- Camino de grados -->
-  <section id="camino" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
-      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
-        <div><Eyebrow>Sistema de grados ITF</Eyebrow><h2>Tu camino de cinturón</h2></div>
-        <p>10 Gup hasta llegar a cinturón negro, y desde ahí, los grados Dan.</p>
+  <section id="camino" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+      <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-6">
+        <div>
+          <Eyebrow>Sistema de grados ITF</Eyebrow>
+          <h2>Tu camino de cinturón</h2>
+        </div>
+        <p class="text-text-soft text-sm md:text-base">10 Gup hasta llegar a cinturón negro, y desde ahí, los grados Dan.</p>
       </div>
       <BeltBar />
-      <div class="grid grid-cols-4 gap-[1.6em] mt-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
-        {
-          grados.map((grado) => (
-            <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
-              <div class="p-[1.2em_1.3em_1.4em]">
-                <Eyebrow>{grado.rango}</Eyebrow>
-                <h4 class="text-[1.05rem]">{grado.nombre}</h4>
-                <p class="text-text-soft text-[0.88rem]">{grado.texto}</p>
-              </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        {grados.map((grado) => (
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <div class="p-4 md:p-5">
+              <Eyebrow>{grado.rango}</Eyebrow>
+              <h4 class="text-sm md:text-base">{grado.nombre}</h4>
+              <p class="text-text-soft text-sm">{grado.texto}</p>
             </div>
-          ))
-        }
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Selección nacional -->
-  <section class="py-[4.4em] bg-ink text-[#e6e8ee]" id="seleccion">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] items-center max-[900px]:grid-cols-1">
+  <section class="py-10 md:py-[4.4em] bg-ink text-[#e6e8ee]" id="seleccion">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <div>
         <Eyebrow>Alto rendimiento</Eyebrow>
         <h2 class="text-white">Camino a la selección nacional</h2>
@@ -83,54 +85,57 @@ const semana = [
           y Combate. Los mejores resultados definen la nómina que representa a
           Chile en campeonatos panamericanos y mundiales ITF.
         </p>
-        <div class="grid grid-cols-2 gap-[1.6em] mt-[1.6em]">
+        <div class="grid grid-cols-2 gap-4 md:gap-6 mt-6">
           <Stat count={12} label="Deportistas en la nómina actual" dark />
           <Stat count={3} label="Medallas panamericanas 2018–2024" dark />
         </div>
       </div>
-      <div class="bg-[#101a2c] border-[#26365a] border rounded-[var(--radius-sm)] overflow-hidden">
-        <div class="p-[1.2em_1.3em_1.4em]">
+      <div class="bg-[#101a2c] border border-[#26365a] rounded-sm overflow-hidden">
+        <div class="p-5 md:p-6">
           <Eyebrow>Requisitos para postular</Eyebrow>
-          <ul class="text-[#c9cdd6] pl-[1.1em] leading-8 text-[0.92rem]">
+          <ul class="text-[#c9cdd6] pl-5 leading-8 text-sm">
             <li>Mínimo 1° Gup vigente</li>
             <li>Dojang afiliado a FECHITAT</li>
             <li>Participación en clasificatorio nacional</li>
             <li>Certificado médico deportivo al día</li>
           </ul>
-          <a href="#" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px] mt-[0.6em]">Ver bases de la convocatoria</a>
+          <a href="#" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px mt-4">
+            Ver bases de la convocatoria
+          </a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Semana tipo -->
-  <section id="semana" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+  <section id="semana" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
       <Eyebrow>Vida de un competidor</Eyebrow>
-      <h2 class="mb-[1.4em]">Semana tipo de entrenamiento</h2>
-      <div class="grid grid-cols-4 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
-        {
-          semana.map((dia) => (
-            <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
-              <div class="p-[1.2em_1.3em_1.4em]">
-                <Tag variant={dia.variante}>{dia.dias}</Tag>
-                <h4 class="text-[1rem] mt-[0.7em]">{dia.nombre}</h4>
-                <p class="text-text-soft text-[0.85rem]">{dia.texto}</p>
-              </div>
+      <h2 class="mb-6">Semana tipo de entrenamiento</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {semana.map((dia) => (
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <div class="p-4 md:p-5">
+              <Tag variant={dia.variante}>{dia.dias}</Tag>
+              <h4 class="text-sm md:text-base mt-3">{dia.nombre}</h4>
+              <p class="text-text-soft text-sm">{dia.texto}</p>
             </div>
-          ))
-        }
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section class="py-[4.4em] bg-white">
-    <div
-      class="max-w-[var(--maxw)] mx-auto px-[28px] flex justify-between items-center flex-wrap gap-[1.6em]"
-    >
-      <div><Eyebrow>¿Vas en serio?</Eyebrow><h2 class="max-w-[18ch] m-0">Habla con el director técnico de tu dojang</h2></div>
-      <a href="/federacion#directivos" class="inline-flex items-center gap-[0.5em] bg-ink text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-black hover:-translate-y-[1px]">Ver directorio técnico</a>
+  <section class="py-10 md:py-[4.4em] bg-white">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div>
+        <Eyebrow>¿Vas en serio?</Eyebrow>
+        <h2 class="max-w-[18ch] m-0">Habla con el director técnico de tu dojang</h2>
+      </div>
+      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px whitespace-nowrap">
+        Ver directorio técnico
+      </a>
     </div>
   </section>
 </BaseLayout>

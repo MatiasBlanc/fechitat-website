@@ -1,6 +1,4 @@
 ---
-// Hero de páginas interiores: miga, título, descripción y contenido extra
-// (acciones, imagen). Si se pasa `image` se muestra en grilla de 2 columnas.
 interface Props {
   title: string;
   description?: string;
@@ -13,21 +11,23 @@ interface Props {
 const { title, description, crumb, image, imageAlt, imageStyle } = Astro.props;
 ---
 
-<section class="bg-ink text-white py-[3.4em] pb-[2.4em]">
+<section class="bg-ink text-white py-10 md:py-[3.4em] pb-8 md:pb-[2.4em]">
   <div
-    class:list={['max-w-[var(--maxw)] mx-auto px-[28px]', { 'grid grid-cols-2 gap-[1.6em] items-center': Boolean(image) }]}
-    style={image ? 'align-items:center;' : undefined}
+    class:list={[
+      'max-w-[1180px] mx-auto px-5 md:px-7',
+      image ? 'grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center' : '',
+    ]}
   >
     <div>
       {crumb && (
-        <div class="font-mono text-[0.72rem] tracking-[0.1em] uppercase text-[#8b93a4] mb-[1em]">
+        <div class="font-mono text-xs tracking-[0.1em] uppercase text-[#8b93a4] mb-4">
           <a href="/" class="hover:text-white transition-colors duration-150">Inicio</a> / {crumb}
         </div>
       )}
-      <h1 class="text-white text-[clamp(2rem,4.4vw,3.2rem)]" set:html={title} />
-      {description && <p class="text-[#c9cdd6] max-w-[60ch]">{description}</p>}
+      <h1 class="text-white text-[clamp(1.8rem,5vw,3.2rem)]" set:html={title} />
+      {description && <p class="text-[#c9cdd6] max-w-[60ch] mt-2">{description}</p>}
       <slot />
     </div>
-    {image && <img src={image} alt={imageAlt ?? ''} style={imageStyle} class="rounded-[var(--radius-sm)]" />}
+    {image && <img src={image} alt={imageAlt ?? ''} style={imageStyle} class="rounded-sm w-full" />}
   </div>
 </section>

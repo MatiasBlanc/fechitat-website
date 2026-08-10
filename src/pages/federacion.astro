@@ -1,5 +1,4 @@
 ---
-// Federación — historia, directorio, salón de campeones y afiliación.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
 import Eyebrow from '../components/Eyebrow.astro';
@@ -50,8 +49,8 @@ const hitos = [
   />
 
   <!-- Quiénes somos -->
-  <section id="quienes" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] items-center max-[900px]:grid-cols-1">
+  <section id="quienes" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <div>
         <Eyebrow>Quiénes somos</Eyebrow>
         <h2>Una organización nacional con vocación internacional</h2>
@@ -70,102 +69,99 @@ const hitos = [
       <img
         src={img.equipoNacional}
         alt="Equipo nacional de Taekwon-Do ITF junto a la bandera de Chile"
-        class="rounded-[var(--radius-sm)]"
+        class="rounded-sm w-full"
       />
     </div>
   </section>
 
   <!-- Línea de tiempo -->
-  <section class="py-[4.4em] bg-white" id="historia">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+  <section class="py-10 md:py-[4.4em] bg-white" id="historia">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
       <Eyebrow>Nuestra historia</Eyebrow>
-      <h2 class="mb-[1.4em]">Línea de tiempo de la federación</h2>
+      <h2 class="mb-6">Línea de tiempo de la federación</h2>
     </div>
-    <div class="timeline-track overflow-x-auto cursor-grab px-[28px] pb-[1em]">
-      <div class="flex gap-0 min-w-[1100px] max-w-[var(--maxw)] mx-auto relative">
+    <div class="timeline-track overflow-x-auto cursor-grab px-5 md:px-7 pb-4">
+      <div class="flex gap-0 min-w-[900px] md:min-w-[1100px] max-w-[1180px] mx-auto relative">
         <div class="absolute top-[27px] left-0 right-0 h-[2px] bg-line"></div>
-        {
-          hitos.map((hito) => (
-            <div class="flex-1 relative pt-[2.6em]">
-              <div
-                class:list={[
-                  'absolute top-[20px] left-0 w-[14px] h-[14px] rounded-full border-[3px] border-white shadow-[0_0_0_1px_var(--color-line)]',
-                  hito.ultimo ? 'bg-ink' : 'bg-red',
-                ]}
-              ></div>
-              <Eyebrow>{hito.anio}</Eyebrow>
-              <h4 class="text-[1rem]">{hito.tituloHito}</h4>
-              <p class="text-[0.88rem] text-text-soft max-w-[22ch]">{hito.texto}</p>
-            </div>
-          ))
-        }
+        {hitos.map((hito) => (
+          <div class="flex-1 relative pt-10">
+            <div
+              class:list={[
+                'absolute top-5 left-0 w-3.5 h-3.5 rounded-full border-[3px] border-white shadow-[0_0_0_1px_var(--color-line)]',
+                hito.ultimo ? 'bg-ink' : 'bg-red',
+              ]}
+            ></div>
+            <Eyebrow>{hito.anio}</Eyebrow>
+            <h4 class="text-sm md:text-base">{hito.tituloHito}</h4>
+            <p class="text-xs md:text-[0.88rem] text-text-soft max-w-[22ch]">{hito.texto}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Directorio -->
-  <section id="directivos" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+  <section id="directivos" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
       <Eyebrow>Quiénes lideran</Eyebrow>
-      <h2 class="mb-[1.2em]">Directorio</h2>
-      <div class="grid grid-cols-4 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
-        {
-          directivos.map((directivo) => (
-            <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
-              <div class="p-[1.2em_1.3em_1.4em] text-center">
-                <div
-                  class="w-[64px] h-[64px] rounded-full bg-blue text-white flex items-center justify-center font-heading font-extrabold text-[1.3rem] mx-auto mb-[0.8em]"
-                  style={directivo.color ? `background:${directivo.color};` : undefined}
-                >
-                  {directivo.iniciales}
-                </div>
-                <h4 class="text-[1.02rem]">{directivo.nombre}</h4>
-                <p class="text-text-soft text-[0.85rem] m-0 mb-[0.8em]">{directivo.cargo}</p>
-                <a
-                  href={`mailto:${directivo.email}`}
-                  class="font-mono text-[0.72rem] tracking-[0.06em] uppercase border border-line px-[1em] py-[0.5em] rounded-[20px] bg-white cursor-pointer transition-all duration-150 hover:bg-ink hover:text-white hover:border-ink"
-                >Contactar</a>
+      <h2 class="mb-6">Directorio</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {directivos.map((d) => (
+          <div class="bg-white border border-line rounded-sm overflow-hidden">
+            <div class="p-4 md:p-5 text-center">
+              <div
+                class="w-16 h-16 rounded-full bg-blue text-white flex items-center justify-center font-heading font-extrabold text-xl mx-auto mb-3"
+                style={d.color ? `background:${d.color};` : undefined}
+              >
+                {d.iniciales}
               </div>
+              <h4 class="text-sm md:text-base">{d.nombre}</h4>
+              <p class="text-text-soft text-sm mb-3">{d.cargo}</p>
+              <a
+                href={`mailto:${d.email}`}
+                class="font-mono text-xs tracking-wider uppercase border border-line px-4 py-2 rounded-full bg-white inline-block transition-all duration-150 hover:bg-ink hover:text-white hover:border-ink"
+              >Contactar</a>
             </div>
-          ))
-        }
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Salón de campeones -->
-  <section class="py-[4.4em] bg-ink text-[#e6e8ee]" id="campeones">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
-      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
-        <div><Eyebrow>Salón de campeones</Eyebrow><h2 class="text-white">Maestros que marcaron escuela</h2></div>
+  <section class="py-10 md:py-[4.4em] bg-ink text-[#e6e8ee]" id="campeones">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+      <div class="mb-8">
+        <Eyebrow>Salón de campeones</Eyebrow>
+        <h2 class="text-white">Maestros que marcaron escuela</h2>
       </div>
-      <div class="grid grid-cols-2 gap-[1.6em] max-[900px]:grid-cols-1">
-        {
-          campeones.map((campeon) => (
-            <div class="flex gap-[1em] items-center py-[1em] border-b border-white/10">
-              <div
-                class="w-[64px] h-[64px] rounded-full bg-blue text-white flex items-center justify-center font-heading font-extrabold text-[1.3rem] flex-none"
-                style={`background:${campeon.color};`}
-              >
-                {campeon.iniciales}
-              </div>
-              <div>
-                <Eyebrow>{campeon.grado}</Eyebrow>
-                <h4 class="text-white text-[1.05rem] m-0">{campeon.nombre}</h4>
-              </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {campeones.map((c) => (
+          <div class="flex gap-4 items-center py-4 border-b border-white/10">
+            <div
+              class="w-14 h-14 md:w-16 md:h-16 rounded-full text-white flex items-center justify-center font-heading font-extrabold text-lg flex-none"
+              style={`background:${c.color};`}
+            >
+              {c.iniciales}
             </div>
-          ))
-        }
+            <div>
+              <Eyebrow>{c.grado}</Eyebrow>
+              <h4 class="text-white text-sm md:text-base m-0">{c.nombre}</h4>
+            </div>
+          </div>
+        ))}
       </div>
-      <div class="text-center mt-[2em]">
-        <a href="#" class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-red-dark hover:-translate-y-[1px]">Conocer más maestros</a>
+      <div class="text-center mt-8">
+        <a href="#" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+          Conocer más maestros
+        </a>
       </div>
     </div>
   </section>
 
   <!-- Beneficios de afiliación -->
-  <section id="afiliacion" class="py-[4.4em]">
-    <div class="max-w-[var(--maxw)] mx-auto px-[28px] grid grid-cols-2 gap-[3em] max-[900px]:grid-cols-1">
+  <section id="afiliacion" class="py-10 md:py-[4.4em]">
+    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       <div>
         <Eyebrow>Beneficios de afiliación</Eyebrow>
         <h2>Por qué ser parte de FECHITAT</h2>
@@ -175,31 +171,32 @@ const hitos = [
           oficiales y la posibilidad de representar a Chile en torneos
           panamericanos y mundiales.
         </p>
-        <ul class="text-text-soft pl-[1.1em] leading-8">
+        <ul class="text-text-soft pl-5 leading-8 text-sm md:text-base">
           <li>Presencia activa a nivel internacional</li>
           <li>Certificación oficial de grados y cinturones negros</li>
           <li>Acceso a seminarios técnicos con maestros invitados</li>
           <li>Cobertura en el calendario nacional de competencias</li>
         </ul>
-        <a href="#" class="inline-flex items-center gap-[0.5em] bg-ink text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-black hover:-translate-y-[1px] mt-[0.6em]">Afiliar mi escuela</a>
+        <a href="#" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px mt-4">
+          Afiliar mi escuela
+        </a>
       </div>
-      <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden">
-        <div class="p-[1.2em_1.3em_1.4em]">
+      <div class="bg-white border border-line rounded-sm overflow-hidden">
+        <div class="p-5 md:p-6">
           <Eyebrow>ITF Affiliated</Eyebrow>
-          <h3 class="text-[1.6rem]">Reconocimiento internacional garantizado</h3>
-          <p class="text-text-soft text-[0.92rem]">
+          <h3 class="text-lg md:text-xl">Reconocimiento internacional garantizado</h3>
+          <p class="text-text-soft text-sm">
             Nuestros exámenes, torneos y grados son válidos ante la
             International Taekwon-Do Federation, permitiendo la movilidad de
             tus alumnos hacia cualquier país afiliado.
           </p>
           <BeltBar />
-          <p class="text-[0.8rem] text-text-soft font-mono mt-[1.4em]">10° GUP → 1° DAN</p>
+          <p class="text-xs text-text-soft font-mono mt-4">10° GUP → 1° DAN</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Arrastre horizontal de la línea de tiempo -->
   <script>
     const tl = document.querySelector('.timeline-track');
     if (tl) {

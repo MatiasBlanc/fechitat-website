@@ -1,9 +1,9 @@
 ---
 // Layout base: estructura HTML común a las 6 páginas (header, belt bar,
 // contenido, footer, fuentes y estilos globales).
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import '../styles/global.css';
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -12,7 +12,7 @@ interface Props {
 
 const {
   title,
-  description = 'Federación Chilena de Taekwon-Do Tradicional ITF. Dojangs afiliados, competidores nacionales y formación con disciplina, respeto y proyección internacional.',
+  description = "Federación Chilena de Taekwon-Do Tradicional ITF. Dojangs afiliados, competidores nacionales y formación con disciplina, respeto y proyección internacional.",
 } = Astro.props;
 ---
 
@@ -24,7 +24,6 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,6 +37,8 @@ const {
       <slot />
     </main>
     <Footer />
-    <script>import '../scripts/main.js';</script>
+    <script>
+      import "../scripts/main.js";
+    </script>
   </body>
 </html>
