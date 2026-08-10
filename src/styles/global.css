@@ -31,6 +31,9 @@
 
   /* Radios */
   --radius-sm: 2px;
+
+  /* Ancho máximo */
+  --maxw: 1180px;
 }
 
 /* ---------- Estilos base ---------- */
@@ -90,6 +93,11 @@
   }
 }
 
+/* ---------- Utilidades personalizadas ---------- */
+@utility writing-mode-vertical {
+  writing-mode: vertical-rl;
+}
+
 /* ---------- Componentes reutilizables ---------- */
 @layer components {
   /* Franja simbólica de colores del cinturón (no es decoración: mantener) */
@@ -105,5 +113,16 @@
       var(--color-red) 66.4% 83%,
       var(--color-ink) 83% 100%
     );
+  }
+
+  /* Riel hangul — variante oscura sobre hero */
+  .hangul-rail--dark a {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .hangul-rail--dark a.active,
+  .hangul-rail--dark a:hover {
+    color: #fff;
+    opacity: 1;
   }
 }

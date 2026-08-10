@@ -10,7 +10,6 @@ import { img } from '../lib/imagenes';
 
 const titulo = 'Eventos — FECHITAT';
 
-// TODO: eventos desde Sanity (schema evento).
 const eventoPrincipal = {
   mes: 'OCT',
   dia: '03',
@@ -47,46 +46,47 @@ const colorTipo = (tipo) => {
   />
 
   <!-- Evento principal -->
-  <section>
-    <div class="wrap">
-      <a href="#" class="evento-destacado">
-        <div class="evento-destacado__imagen" style={`background-image:url('${eventoPrincipal.imagen}');`}></div>
-        <div class="evento-destacado__info">
+  <section class="py-[4.4em]">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <a href="#" class="grid grid-cols-[1.1fr_1fr] bg-ink rounded-[var(--radius-sm)] overflow-hidden text-white transition-transform duration-200 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_18px_36px_-14px_rgba(11,18,32,0.45)] max-[800px]:grid-cols-1">
+        <div class="min-h-[360px] bg-cover bg-center max-[800px]:min-h-[220px]" style={`background-image:url('${eventoPrincipal.imagen}');`}></div>
+        <div class="p-[2.8em] flex flex-col justify-center max-[800px]:p-[2em]">
           <Eyebrow>Próximo evento</Eyebrow>
-          <h2 style="font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.3em;">{eventoPrincipal.nombre}</h2>
-          <div class="evento-destacado__meta">
-            <span><UIcon name="map-pin" size={16} /> {eventoPrincipal.sede}</span>
+          <h2 class="text-white text-[clamp(1.8rem,4vw,2.8rem)] mb-[0.3em]">{eventoPrincipal.nombre}</h2>
+          <div class="flex gap-[1.6em] font-mono text-[0.78rem] tracking-[0.04em] text-[#c9cdd6]">
+            <span class="flex items-center gap-[0.4em]"><UIcon name="map-pin" size={16} /> {eventoPrincipal.sede}</span>
             <span>{eventoPrincipal.mes} {eventoPrincipal.dia}</span>
           </div>
-          <p style="color:var(--text-soft);margin:1em 0 1.4em;max-width:48ch;">{eventoPrincipal.detalle}</p>
-          <span class="btn">Ver detalle del evento</span>
+          <p class="text-text-soft mt-[1em] mb-[1.4em] max-w-[48ch]">{eventoPrincipal.detalle}</p>
+          <span class="inline-flex items-center gap-[0.5em] bg-red text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)]">Ver detalle del evento</span>
         </div>
       </a>
     </div>
   </section>
 
   <!-- Próximos eventos -->
-  <section class="alt">
-    <div class="wrap">
-      <div class="section-head">
+  <section class="py-[4.4em] bg-white">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
         <div><Eyebrow>Calendario</Eyebrow><h2>Próximos eventos</h2></div>
       </div>
-      <div class="timeline-eventos">
+      <div class="flex flex-col relative">
+        <div class="absolute left-[38px] top-0 bottom-0 w-[2px] bg-line max-[600px]:left-[28px]"></div>
         {
           proximos.map((evento) => (
-            <a href="#" class="timeline-card">
-              <div class="timeline-card__badge">
+            <a href="#" class="flex items-start gap-[1.6em] py-[1.6em] border-b border-line text-inherit transition-bg duration-150 ease-[ease] hover:bg-ink/3 last:border-b-none max-[600px]:gap-[1em]">
+              <div class="flex-none relative z-[1]">
                 <EventBadge mes={evento.mes} dia={evento.dia} large />
               </div>
-              <div class="timeline-card__info">
-                <Tag variant={colorTipo(evento.tipo)} style="margin-bottom:.6em;">{evento.tipo}</Tag>
-                <h3>{evento.nombre}</h3>
-                <div class="timeline-card__meta">
-                  <span><UIcon name="map-pin" size={14} /> {evento.sede}</span>
+              <div class="flex-1 min-w-0">
+                <Tag variant={colorTipo(evento.tipo)} style="margin-bottom:0.6em;">{evento.tipo}</Tag>
+                <h3 class="text-[1.2rem] mb-[0.2em]">{evento.nombre}</h3>
+                <div class="flex gap-[1em] font-mono text-[0.76rem] tracking-[0.04em] text-text-soft">
+                  <span class="flex items-center gap-[0.3em]"><UIcon name="map-pin" size={14} /> {evento.sede}</span>
                 </div>
-                <p style="color:var(--text-soft);font-size:.88rem;margin:.5em 0 0;">{evento.detalle}</p>
+                <p class="text-text-soft text-[0.88rem] mt-[0.5em]">{evento.detalle}</p>
               </div>
-              <div class="timeline-card__arrow">
+              <div class="self-center text-text-soft transition-all duration-150 ease-[ease] hover:text-red hover:translate-x-[3px]">
                 <UIcon name="arrow-right" size={20} />
               </div>
             </a>
@@ -97,20 +97,20 @@ const colorTipo = (tipo) => {
   </section>
 
   <!-- Eventos pasados -->
-  <section>
-    <div class="wrap">
-      <div class="section-head">
+  <section class="py-[4.4em]">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
+      <div class="flex items-end justify-between gap-[2em] flex-wrap mb-[2em]">
         <div><Eyebrow>Archivo</Eyebrow><h2>Eventos pasados</h2></div>
       </div>
-      <div class="grid g-3">
+      <div class="grid grid-cols-3 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
         {
           pasados.map((evento) => (
-            <div class="card">
-              <div class="media" style={`background-image:url('${evento.imagen}');`}></div>
-              <div class="body">
+            <div class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]">
+              <div class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover" style={`background-image:url('${evento.imagen}');`}></div>
+              <div class="p-[1.2em_1.3em_1.4em]">
                 <Tag>{evento.anio}</Tag>
-                <h4 style="font-size:1rem;margin:.6em 0 .2em;">{evento.nombre}</h4>
-                <p style="color:var(--text-soft);font-size:.85rem;margin:0;">
+                <h4 class="text-[1rem] mt-[0.6em] mb-[0.2em]">{evento.nombre}</h4>
+                <p class="text-text-soft text-[0.85rem] m-0">
                   <UIcon name="map-pin" size={13} /> {evento.sede}
                 </p>
               </div>

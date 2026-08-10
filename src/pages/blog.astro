@@ -8,7 +8,6 @@ import { img } from '../lib/imagenes';
 
 const titulo = 'Blog — FECHITAT';
 
-// TODO: posts desde Sanity (schema post).
 const postDestacado = {
   titulo: 'Principios de la defensa personal en el Taekwon-Do tradicional',
   etiqueta: 'Destacado · Ensayos',
@@ -39,30 +38,36 @@ const slugEtiqueta = (etiqueta) =>
     description="Historia, técnica y noticias del Taekwon-Do ITF en Chile — escrito por instructores y la propia federación."
   />
 
-  <section>
-    <div class="wrap">
+  <section class="py-[4.4em]">
+    <div class="max-w-[var(--maxw)] mx-auto px-[28px]">
       <!-- Artículo destacado -->
       <a
         href="#"
-        class="card"
-        style="display:grid;grid-template-columns:1.3fr 1fr;margin-bottom:2.6em;"
+        class="grid grid-cols-[1.3fr_1fr] bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden mb-[2.6em] transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)] max-[800px]:grid-cols-1"
       >
-        <div class="media" style={`aspect-ratio:auto;background-image:url('${postDestacado.imagen}');`}></div>
-        <div class="body" style="display:flex;flex-direction:column;justify-content:center;padding:2em;">
+        <div class="aspect-auto bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover" style={`background-image:url('${postDestacado.imagen}');`}></div>
+        <div class="flex flex-col justify-center p-[2em]">
           <Tag variant={postDestacado.variante} style="width:fit-content;">{postDestacado.etiqueta}</Tag>
-          <h2 style="font-size:1.7rem;margin:.6em 0 .4em;">{postDestacado.titulo}</h2>
-          <p style="color:var(--text-soft);font-size:.92rem;">{postDestacado.extracto}</p>
-          <p style="font-family:'JetBrains Mono';font-size:.72rem;color:var(--text-soft);margin-top:.8em;">
-            {postDestacado.fecha}
-          </p>
+          <h2 class="text-[1.7rem] mt-[0.6em] mb-[0.4em]">{postDestacado.titulo}</h2>
+          <p class="text-text-soft text-[0.92rem]">{postDestacado.extracto}</p>
+          <p class="font-mono text-[0.72rem] text-text-soft mt-[0.8em]">{postDestacado.fecha}</p>
         </div>
       </a>
 
       <!-- Filtro por etiquetas (barra horizontal) -->
-      <div class="blog-filter" role="toolbar" aria-label="Filtrar por categoría">
+      <div class="flex flex-wrap gap-[0.5em] mb-[2em]" role="toolbar" aria-label="Filtrar por categoría">
         {
           etiquetas.map((etiqueta, indice) => (
-            <button class:list={['pill', { active: indice === 0 }]} data-tag={slugEtiqueta(etiqueta)} type="button">
+            <button
+              class:list={[
+                'font-mono text-[0.72rem] tracking-[0.06em] uppercase border border-line px-[1em] py-[0.5em] rounded-[20px] bg-white cursor-pointer transition-all duration-150',
+                indice === 0
+                  ? 'bg-ink text-white border-ink'
+                  : 'hover:bg-ink hover:text-white hover:border-ink',
+              ]}
+              data-tag={slugEtiqueta(etiqueta)}
+              type="button"
+            >
               {etiqueta}
             </button>
           ))
@@ -70,25 +75,23 @@ const slugEtiqueta = (etiqueta) =>
       </div>
 
       <!-- Grilla de posts -->
-      <div id="post-grid" class="grid g-3">
+      <div id="post-grid" class="grid grid-cols-3 gap-[1.6em] max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
         {
           posts.map((post) => (
-            <a class="card" href="#" data-post-tags={post.tags}>
-              <div class="media" style={`background-image:url('${post.imagen}');`}></div>
-              <div class="body">
+            <a class="bg-white border border-line rounded-[var(--radius-sm)] overflow-hidden transition-transform duration-180 ease-[ease] hover:-translate-y-[3px] hover:shadow-[0_14px_28px_-14px_rgba(11,18,32,0.35)]" href="#" data-post-tags={post.tags}>
+              <div class="aspect-[16/10] bg-[linear-gradient(135deg,#26365a,#0d1524)] relative flex items-center justify-center bg-cover" style={`background-image:url('${post.imagen}');`}></div>
+              <div class="p-[1.2em_1.3em_1.4em]">
                 <Tag variant={post.variante}>{post.etiqueta}</Tag>
-                <h4 style="font-size:1rem;margin:.7em 0 .4em;">{post.titulo}</h4>
-                <p style="font-family:'JetBrains Mono';font-size:.7rem;color:var(--text-soft);">
-                  {post.fecha}
-                </p>
+                <h4 class="text-[1rem] mt-[0.7em] mb-[0.4em]">{post.titulo}</h4>
+                <p class="font-mono text-[0.7rem] text-text-soft">{post.fecha}</p>
               </div>
             </a>
           ))
         }
       </div>
-      <div style="text-align:center;margin-top:2.4em;">
+      <div class="text-center mt-[2.4em]">
         <!-- TODO: paginación / carga incremental desde Sanity -->
-        <button class="btn dark">Cargar más artículos</button>
+        <button class="inline-flex items-center gap-[0.5em] bg-ink text-white font-mono text-[0.78rem] tracking-[0.08em] uppercase py-[0.9em] px-[1.5em] rounded-[var(--radius-sm)] cursor-pointer transition-transform duration-150 ease-[ease] hover:bg-black hover:-translate-y-[1px]">Cargar más artículos</button>
       </div>
     </div>
   </section>
