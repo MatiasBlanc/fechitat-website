@@ -117,13 +117,6 @@
 
 /* ---------- Componentes reutilizables ---------- */
 @layer components {
-  /* Botón base — tipografía Kumbh Sans */
-  .btn {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
   .belt-bar {
     height: 6px;
     width: 100%;

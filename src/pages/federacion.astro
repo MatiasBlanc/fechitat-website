@@ -4,6 +4,7 @@ import HangulRail from '../components/HangulRail.astro';
 import PageHero from '../components/PageHero.astro';
 import BeltBar from '../components/BeltBar.astro';
 import Timeline from '../components/Timeline.astro';
+import Button from '../components/ui/Button.astro';
 import { img } from '../lib/imagenes';
 import { getOrganigrama, getCampeones, getHitoHistorico, getEscuelasPorRegion } from '../lib/sanityQueries';
 import { urlFor } from '../lib/sanity';
@@ -107,10 +108,9 @@ const regiones = Object.keys(escuelasPorRegion).sort();
 
                   {/* Botón de contacto */}
                   {d.email && (
-                    <a
-                      href={`mailto:${d.email}`}
-                      class="font-mono text-xs tracking-wider uppercase border border-line px-4 py-2 rounded-sm bg-white inline-block transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink"
-                    >Contactar</a>
+                    <Button href={`mailto:${d.email}`} variant="dark-ghost" size="sm">
+                      Contactar
+                    </Button>
                   )}
                 </div>
               </div>
@@ -151,9 +151,9 @@ const regiones = Object.keys(escuelasPorRegion).sort();
           ))}
         </div>
         <div class="text-center mt-8">
-          <a href="#" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
+          <Button href="#" variant="primary" size="md">
             Conocer más maestros
-          </a>
+          </Button>
         </div>
       </div>
     </section>
@@ -176,9 +176,9 @@ const regiones = Object.keys(escuelasPorRegion).sort();
           <li>Acceso a seminarios técnicos con maestros invitados</li>
           <li>Cobertura en el calendario nacional de competencias</li>
         </ul>
-        <a href="#" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px mt-4">
+        <Button href="#" variant="secondary" size="md" class="mt-4">
           Afiliar mi escuela
-        </a>
+        </Button>
       </div>
 
     </div>

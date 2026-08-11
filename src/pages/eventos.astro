@@ -3,6 +3,7 @@ import EventBadge from "../components/EventBadge.astro";
 import PageHero from "../components/PageHero.astro";
 import Tag from "../components/Tag.astro";
 import UIcon from "../components/icons/UIcon.astro";
+import Button from "../components/ui/Button.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { urlFor } from "../lib/sanity";
 import {
@@ -101,9 +102,9 @@ const puedeAbrirEvento = (evento) =>
                     {eventoPrincipal.descripcion}
                   </p>
                 )}
-                <span class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
+                <Button variant="primary" size="sm">
                   Ver detalle del evento
-                </span>
+                </Button>
               </div>
             </div>
           </a>
