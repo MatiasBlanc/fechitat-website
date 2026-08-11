@@ -16,11 +16,7 @@ const titulo = "Eventos — FECHITAT";
 
 // Datos de Sanity
 const eventoPrincipal = await getProximoEventoDestacado();
-const proximosRaw = await getProximosEventos();
-// Excluir el evento destacado de la lista de próximos
-const proximos = eventoPrincipal
-  ? proximosRaw.filter((e) => e._id !== eventoPrincipal._id)
-  : proximosRaw;
+const proximos = await getProximosEventos();
 const pasados = await getEventosPasados();
 
 const labelTipo = (tipo: string) => {
