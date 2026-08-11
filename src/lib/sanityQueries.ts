@@ -89,6 +89,19 @@ export async function getGaleriaBySlug(slug: string) {
   return sanity.fetch(`*[_type == "galeria" && slug.current == $slug][0]`, {slug})
 }
 
+/**
+ * Obtiene el álbum de galería relacionado con un evento.
+ *
+ * @param eventoId - Identificador del documento de evento en Sanity.
+ * @returns El álbum relacionado o null cuando el evento no tiene álbum.
+ */
+export async function getGaleriaByEventoId(eventoId: string) {
+  return sanity.fetch(
+    `*[_type == "galeria" && evento._ref == $eventoId][0]`,
+    {eventoId}
+  )
+}
+
 /** Obtener métricas de la federación */
 export async function getMetricas() {
   return sanity.fetch(`*[_type == "metrica" && activo == true] | order(orden asc)`)

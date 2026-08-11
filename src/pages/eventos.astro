@@ -42,7 +42,7 @@ const labelTipo = (tipo: string) => {
   {eventoPrincipal && (
     <section class="py-10 md:py-[4.4em]">
       <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-        <a href="#" class="block bg-ink rounded-sm overflow-hidden text-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
+        <a href={`/eventos/${eventoPrincipal.slug.current}`} class="block bg-ink rounded-sm overflow-hidden text-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
           <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
             {eventoPrincipal.flyer && (
               <div class="aspect-[16/9] lg:aspect-auto lg:min-h-[360px] bg-cover bg-center" style={`background-image:url('${urlFor(eventoPrincipal.flyer).width(800).url()}');`}></div>
@@ -75,7 +75,7 @@ const labelTipo = (tipo: string) => {
       <div class="flex flex-col">
         {proximos.length > 0 ? (
           proximos.map((evento) => (
-            <a href="#" class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line transition-colors duration-150 hover:bg-ink/3 last:border-b-none group">
+            <a href={`/eventos/${evento.slug.current}`} class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line transition-colors duration-150 hover:bg-ink/3 last:border-b-none group">
               <div class="flex-none relative z-[1]">
                 <EventBadge
                   mes={new Date(evento.fecha).toLocaleDateString('es-CL', {month: 'short'}).toUpperCase()}
@@ -113,7 +113,7 @@ const labelTipo = (tipo: string) => {
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {pasados.map((evento) => (
-            <div class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
+            <a href={`/eventos/${evento.slug.current}`} class="block bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
               {evento.flyer && (
                 <div class="aspect-[16/10] bg-cover" style={`background-image:url('${urlFor(evento.flyer).width(400).url()}');`}></div>
               )}
@@ -126,7 +126,7 @@ const labelTipo = (tipo: string) => {
                   </p>
                 )}
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>

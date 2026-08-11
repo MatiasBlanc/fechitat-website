@@ -7,15 +7,6 @@ import { img } from '../lib/imagenes';
 
 const titulo = 'Blog — FECHITAT';
 
-const postDestacado = {
-  titulo: 'Principios de la defensa personal en el Taekwon-Do tradicional',
-  etiqueta: 'Destacado · Ensayos',
-  variante: 'red',
-  extracto: 'Un repaso de los fundamentos de Ap Chagi, Momtong Makgi y el control mental detrás de cada técnica de autodefensa ITF.',
-  fecha: '30 ene 2025 · 6 min',
-  imagen: img.postDefensa,
-};
-
 const posts = [
   { titulo: 'Resultados del campeonato nacional 2025', etiqueta: 'Noticias', variante: 'default', fecha: '30 ene 2025', imagen: img.postNacional, tags: 'noticias,historia' },
   { titulo: '5 deportistas chilenos destacados de 2025', etiqueta: 'Historia', variante: 'gold', fecha: '30 ene 2025', imagen: img.postHistoria, tags: 'historia' },
@@ -60,18 +51,28 @@ const recursos = [
 
   <section class="py-10 md:py-[4.4em]">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <!-- Artículo destacado -->
-      <a href="#" class="block bg-white border border-line rounded-sm overflow-hidden mb-8 md:mb-10 transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-        <div class="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
-          <div class="aspect-[16/9] lg:aspect-auto bg-cover" style={`background-image:url('${postDestacado.imagen}');`}></div>
-          <div class="flex flex-col justify-center p-5 md:p-8">
-            <Tag variant={postDestacado.variante} style="width:fit-content;">{postDestacado.etiqueta}</Tag>
-            <h2 class="text-lg md:text-xl mt-3 mb-2">{postDestacado.titulo}</h2>
-            <p class="text-text-soft text-sm md:text-base">{postDestacado.extracto}</p>
-            <p class="font-mono text-xs text-text-soft mt-3">{postDestacado.fecha}</p>
+      <!-- Recursos de aprendizaje para estudiantes -->
+      <section id="recursos" class="bg-ink text-light-soft rounded-sm p-5 md:p-8 mb-10">
+        <Eyebrow>Documentos y guías</Eyebrow>
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+          <div>
+            <h2 class="text-white text-xl md:text-2xl">Aprende para tu próximo grado</h2>
+            <p class="text-light-muted text-sm md:text-base mt-2 max-w-[60ch]">
+              Material de apoyo para estudiar en casa y complementar el trabajo de tu dojang.
+            </p>
           </div>
+          <span class="font-mono text-[0.65rem] tracking-widest uppercase text-light-muted">Material de estudio</span>
         </div>
-      </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {recursos.map((recurso) => (
+            <article class="bg-white text-ink border border-white/15 rounded-sm p-4 hover:border-red transition-colors duration-150">
+              <span class="font-mono text-[0.65rem] tracking-widest uppercase text-red">{recurso.tipo}</span>
+              <h3 class="text-ink text-sm md:text-base mt-3 mb-2">{recurso.titulo}</h3>
+              <p class="text-text-soft text-sm leading-relaxed">{recurso.descripcion}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <!-- Filtro por etiquetas -->
       <div class="flex flex-wrap gap-2 mb-8" role="toolbar" aria-label="Filtrar por categoría">
@@ -90,29 +91,6 @@ const recursos = [
           </button>
         ))}
       </div>
-
-      <!-- Recursos de aprendizaje para estudiantes -->
-      <section id="recursos" class="bg-ink text-light-soft rounded-sm p-5 md:p-8 mb-10">
-        <Eyebrow>Documentos y guías</Eyebrow>
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
-          <div>
-            <h2 class="text-white text-xl md:text-2xl">Aprende para tu próximo grado</h2>
-            <p class="text-light-muted text-sm md:text-base mt-2 max-w-[60ch]">
-              Material de apoyo para estudiar en casa y complementar el trabajo de tu dojang.
-            </p>
-          </div>
-          <span class="font-mono text-[0.65rem] tracking-widest uppercase text-light-muted">Material de estudio</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {recursos.map((recurso) => (
-            <article class="border border-white/15 rounded-sm p-4 hover:border-red transition-colors duration-150">
-              <span class="font-mono text-[0.65rem] tracking-widest uppercase text-red">{recurso.tipo}</span>
-              <h3 class="text-white text-sm md:text-base mt-3 mb-2">{recurso.titulo}</h3>
-              <p class="text-light-muted text-sm leading-relaxed">{recurso.descripcion}</p>
-            </article>
-          ))}
-        </div>
-      </section>
 
       <!-- Grilla de posts -->
       <div id="post-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
