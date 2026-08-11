@@ -102,10 +102,10 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                       )}
                       <div>
                         <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
-                        {escuela.sensei && (
+                        {escuela.instructor && (
                           <p class="text-text-soft text-xs flex items-center gap-1">
                             <UIcon name="user" size={12} />
-                            {escuela.sensei}
+                            {escuela.instructor}
                           </p>
                         )}
                       </div>
@@ -119,12 +119,6 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                     )}
 
                     <div class="flex flex-wrap gap-2 border-t border-line pt-4">
-                      {escuela.telefono && (
-                        <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
-                          <UIcon name="phone" size={12} />
-                          Teléfono
-                        </a>
-                      )}
                       {escuela.email && (
                         <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
                           <UIcon name="mail" size={12} />

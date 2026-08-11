@@ -19,13 +19,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'sensei',
+      name: 'instructor',
       title: 'Instructor principal',
       type: 'string',
     }),
     defineField({
       name: 'foto',
-      title: 'Foto del dojo',
+      title: 'Foto del dojang',
       type: 'image',
       options: {hotspot: true},
     }),
@@ -49,11 +49,7 @@ export default defineType({
       title: 'Región',
       type: 'string',
     }),
-    defineField({
-      name: 'telefono',
-      title: 'Teléfono',
-      type: 'string',
-    }),
+
     defineField({
       name: 'email',
       title: 'Email',
