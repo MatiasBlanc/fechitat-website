@@ -15,7 +15,11 @@ const titulo = "Eventos — FECHITAT";
 
 // Datos de Sanity
 const eventoPrincipal = await getProximoEventoDestacado();
-const proximos = await getProximosEventos();
+const proximosRaw = await getProximosEventos();
+// Excluir el evento destacado de la lista de próximos
+const proximos = eventoPrincipal
+  ? proximosRaw.filter((e) => e._id !== eventoPrincipal._id)
+  : proximosRaw;
 const pasados = await getEventosPasados();
 
 const labelTipo = (tipo: string) => {
@@ -77,16 +81,18 @@ const puedeAbrirEvento = (evento) =>
                 <h3 class="text-ink text-2xl md:text-5xl mb-2">
                   {eventoPrincipal.titulo}
                 </h3>
-                <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-text-soft">
+                <div class="flex flex-wrap gap-x-5 gap-y-2 items-center mt-3">
                   {eventoPrincipal.lugar && (
-                    <span class="flex items-center gap-1">
-                      <UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}
+                    <span class="flex items-center gap-1.5 font-heading font-bold text-sm md:text-base text-ink">
+                      <UIcon name="map-pin" size={16} class="text-red" />
+                      {eventoPrincipal.lugar}
                     </span>
                   )}
-                  <span class="py-5">
+                  <span class="flex items-center gap-1.5 font-heading font-bold text-sm md:text-base text-ink">
+                    <UIcon name="calendar" size={16} class="text-red" />
                     {new Date(eventoPrincipal.fecha).toLocaleDateString(
                       "es-CL",
-                      { day: "numeric", month: "short", year: "numeric" },
+                      { weekday: "long", day: "numeric", month: "long", year: "numeric" },
                     )}
                   </span>
                 </div>
@@ -140,12 +146,22 @@ const puedeAbrirEvento = (evento) =>
                     {labelTipo(evento.tipo)}
                   </span>
                   <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
-                  <div class="flex gap-3 font-mono text-xs tracking-wider text-text-soft">
+                  <div class="flex flex-wrap gap-x-4 gap-y-1 items-center mt-1">
                     {evento.lugar && (
-                      <span class="flex items-center gap-1">
-                        <UIcon name="map-pin" size={12} /> {evento.lugar}
+                      <span class="flex items-center gap-1.5 font-heading font-bold text-sm text-ink">
+                        <UIcon name="map-pin" size={14} class="text-red" />
+                        {evento.lugar}
                       </span>
                     )}
+                    <span class="flex items-center gap-1.5 font-heading font-semibold text-sm text-text-soft">
+                      <UIcon name="calendar" size={14} class="text-red" />
+                      {new Date(evento.fecha).toLocaleDateString("es-CL", {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                      })}
+                    </span>
                   </div>
                   {evento.descripcion && (
                     <p class="text-text-soft text-sm mt-2">
