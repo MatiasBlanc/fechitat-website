@@ -27,6 +27,29 @@ const posts = [
 
 const etiquetas = ['Todos', 'Noticias', 'Historia', 'Documentos', 'Ensayos', 'Teoría'];
 const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
+
+const recursos = [
+  {
+    titulo: 'Principios del Taekwon-Do',
+    descripcion: 'Repasa cortesía, integridad, perseverancia, autocontrol y espíritu indomable.',
+    tipo: 'Fundamentos',
+  },
+  {
+    titulo: 'Terminología coreana',
+    descripcion: 'Aprende los nombres de las posiciones, bloqueos, golpes, patadas y desplazamientos.',
+    tipo: 'Vocabulario',
+  },
+  {
+    titulo: 'Tuls y movimientos fundamentales',
+    descripcion: 'Organiza tu estudio con los conceptos técnicos que corresponden a cada etapa.',
+    tipo: 'Técnica',
+  },
+  {
+    titulo: 'Preparación para el examen',
+    descripcion: 'Una lista de repaso para llegar preparado a tu próximo examen de grado.',
+    tipo: 'Grados',
+  },
+];
 ---
 
 <BaseLayout title={titulo}>
@@ -55,8 +78,10 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
         {etiquetas.map((etiqueta, i) => (
           <button
             class:list={[
-              'font-mono text-xs tracking-wider uppercase border border-line px-4 py-2 rounded-full bg-white cursor-pointer transition-all duration-150',
-              i === 0 ? 'bg-ink text-white border-ink' : 'hover:bg-ink hover:text-white hover:border-ink',
+              'font-mono text-xs tracking-wider uppercase border px-4 py-2 rounded-full cursor-pointer transition-all duration-150',
+              i === 0
+                ? 'bg-red text-white border-red'
+                : 'bg-white text-ink border-line hover:bg-ink hover:text-white hover:border-ink',
             ]}
             data-tag={slugEtiqueta(etiqueta)}
             type="button"
@@ -65,6 +90,29 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
           </button>
         ))}
       </div>
+
+      <!-- Recursos de aprendizaje para estudiantes -->
+      <section id="recursos" class="bg-ink text-light-soft rounded-sm p-5 md:p-8 mb-10">
+        <Eyebrow>Documentos y guías</Eyebrow>
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+          <div>
+            <h2 class="text-white text-xl md:text-2xl">Aprende para tu próximo grado</h2>
+            <p class="text-light-muted text-sm md:text-base mt-2 max-w-[60ch]">
+              Material de apoyo para estudiar en casa y complementar el trabajo de tu dojang.
+            </p>
+          </div>
+          <span class="font-mono text-[0.65rem] tracking-widest uppercase text-light-muted">Material de estudio</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {recursos.map((recurso) => (
+            <article class="border border-white/15 rounded-sm p-4 hover:border-red transition-colors duration-150">
+              <span class="font-mono text-[0.65rem] tracking-widest uppercase text-red">{recurso.tipo}</span>
+              <h3 class="text-white text-sm md:text-base mt-3 mb-2">{recurso.titulo}</h3>
+              <p class="text-light-muted text-sm leading-relaxed">{recurso.descripcion}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <!-- Grilla de posts -->
       <div id="post-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -94,9 +142,11 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
       pills.forEach((pill) => {
         pill.addEventListener('click', () => {
           pills.forEach((p) => {
-            p.classList.remove('bg-ink', 'text-white', 'border-ink');
+            p.classList.remove('bg-red', 'text-white', 'border-red');
+            p.classList.add('bg-white', 'text-ink', 'border-line');
           });
-          pill.classList.add('bg-ink', 'text-white', 'border-ink');
+          pill.classList.remove('bg-white', 'text-ink', 'border-line');
+          pill.classList.add('bg-red', 'text-white', 'border-red');
           const tag = pill.dataset.tag;
           posts.forEach((post) => {
             const tags = post.dataset.postTags?.split(',') ?? [];
