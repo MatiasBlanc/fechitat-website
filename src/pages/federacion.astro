@@ -225,7 +225,7 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                           <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
                           {escuela.sensei && (
                             <p class="text-text-soft text-xs flex items-center gap-1">
-                              {escuela.sensei}
+                              Instructor: {escuela.sensei}
                             </p>
                           )}
                         </div>
@@ -234,11 +234,6 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                         <p class="text-text-soft text-sm mb-4">{[escuela.direccion, escuela.ciudad].filter(Boolean).join(', ')}</p>
                       )}
                       <div class="flex flex-wrap gap-2 border-t border-line pt-4">
-                        {escuela.telefono && (
-                          <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm">
-                            Teléfono
-                          </a>
-                        )}
                         {escuela.email && (
                           <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm">
                             Email
