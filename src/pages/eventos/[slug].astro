@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
-import Tag from '../../components/Tag.astro';
 import UIcon from '../../components/icons/UIcon.astro';
 import { getEventoBySlug, getGaleriaByEventoId } from '../../lib/sanityQueries';
 import { urlFor } from '../../lib/sanity';
@@ -47,49 +46,89 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
 
   <main class="py-10 md:py-[4.4em]">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <a href="/eventos" class="inline-flex items-center gap-2 text-text-soft hover:text-red font-mono text-xs tracking-widest uppercase mb-8 transition-colors duration-150">
+      <a href="/eventos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm mb-8 transition-all duration-150 hover:bg-black hover:-translate-y-px">
         <UIcon name="arrow-left" size={16} />
         Volver a eventos
       </a>
 
       <div class="flex flex-wrap items-center gap-3 mb-8">
-        <Tag variant={evento.tipo === 'competencia' ? 'red' : evento.tipo === 'examen' ? 'blue' : evento.tipo === 'seminario' ? 'gold' : 'default'}>
-          {labelTipo(evento.tipo)}
-        </Tag>
+        <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{labelTipo(evento.tipo)}</span>
         <span class="font-mono text-xs tracking-wider text-text-soft">{fecha}</span>
         {evento.lugar && <span class="font-mono text-xs tracking-wider text-text-soft">{evento.lugar}</span>}
       </div>
 
       {evento.descripcion && <p class="text-text-soft max-w-[70ch] mb-10">{evento.descripcion}</p>}
 
-      <section aria-labelledby="galeria-titulo">
-        <div class="flex items-end justify-between gap-4 mb-5">
-          <div>
-            <p class="font-mono text-[0.7rem] tracking-[0.14em] uppercase text-red mb-2">Memoria del evento</p>
+      {fotosConUrl.length > 0 && (
+        <section aria-labelledby="galeria-titulo">
+          <div class="flex items-end justify-between gap-4 mb-5">
             <h2 id="galeria-titulo">Galería de fotos</h2>
+            <span class="font-mono text-xs text-text-soft">{fotosConUrl.length} fotos</span>
           </div>
-          {fotosConUrl.length > 0 && <span class="font-mono text-xs text-text-soft">{fotosConUrl.length} fotos</span>}
-        </div>
-
-        {fotosConUrl.length > 0 ? (
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fotosConUrl.map((foto) => (
-              <a href={foto.original} target="_blank" rel="noreferrer" class="group block bg-white border border-line rounded-sm overflow-hidden">
-                <div class="aspect-[4/3] overflow-hidden bg-ink/5">
-                  <img src={foto.miniatura} alt={foto.alt} loading="lazy" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                </div>
-                <span class="block px-4 py-3 font-mono text-[0.65rem] tracking-wider uppercase text-text-soft group-hover:text-red transition-colors duration-150">
-                  Ver foto completa
-                </span>
-              </a>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {fotosConUrl.map((foto, indice) => (
+              <button
+                type="button"
+                class="block w-full bg-white border border-line rounded-sm overflow-hidden cursor-zoom-in p-0 border-none"
+                data-galeria-boton={indice}
+                aria-label={`Ver foto en tamaño completo`}
+              >
+                <img
+                  src={foto.miniatura}
+                  alt={foto.alt}
+                  loading="lazy"
+                  class="w-full aspect-[4/3] object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </button>
             ))}
           </div>
-        ) : (
-          <div class="bg-white border border-line rounded-sm p-6 text-text-soft">
-            Aún no hay fotos publicadas para este evento.
-          </div>
-        )}
-      </section>
+        </section>
+      )}
+
+      <dialog id="galeria-dialogo" class="m-auto bg-ink p-2 rounded-sm border-none max-w-[92vw] max-h-[90vh]">
+        <div class="relative">
+          <button
+            type="button"
+            id="galeria-cerrar"
+            class="absolute -top-3 -right-3 w-9 h-9 bg-red text-white rounded-full flex items-center justify-center cursor-pointer border-none text-base"
+            aria-label="Cerrar foto"
+          >
+            ✕
+          </button>
+          <img id="galeria-imagen" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-sm" />
+        </div>
+      </dialog>
     </div>
   </main>
+  <script>
+    const dialogo = document.getElementById('galeria-dialogo');
+    const imagen = document.getElementById('galeria-imagen');
+    const botones = document.querySelectorAll('[data-galeria-boton]');
+    const cerrar = document.getElementById('galeria-cerrar');
+
+    if (dialogo && imagen && botones.length && cerrar) {
+      const fotos = fotosConUrl;
+
+      botones.forEach((boton) => {
+        boton.addEventListener('click', () => {
+          const indice = Number(boton.dataset.galeriaBoton);
+          const foto = fotos[indice];
+          if (!foto) return;
+          imagen.src = foto.original;
+          imagen.alt = foto.alt;
+          dialogo.showModal();
+        });
+      });
+
+      cerrar.addEventListener('click', () => dialogo.close());
+
+      dialogo.addEventListener('click', (eventoClick) => {
+        if (eventoClick.target === dialogo) dialogo.close();
+      });
+
+      document.addEventListener('keydown', (eventoTeclado) => {
+        if (eventoTeclado.key === 'Escape' && dialogo.open) dialogo.close();
+      });
+    }
+  </script>
 </BaseLayout>

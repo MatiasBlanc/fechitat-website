@@ -52,20 +52,20 @@ const recursos = [
   <section class="py-10 md:py-[4.4em]">
     <div class="max-w-[1180px] mx-auto px-5 md:px-7">
       <!-- Recursos de aprendizaje para estudiantes -->
-      <section id="recursos" class="bg-ink text-light-soft rounded-sm p-5 md:p-8 mb-10">
+      <section id="recursos" class="bg-white text-ink border border-line rounded-sm p-5 md:p-8 mb-10">
         <Eyebrow>Documentos y guías</Eyebrow>
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
           <div>
-            <h2 class="text-white text-xl md:text-2xl">Aprende para tu próximo grado</h2>
-            <p class="text-light-muted text-sm md:text-base mt-2 max-w-[60ch]">
+            <h2 class="text-ink text-xl md:text-2xl">Aprende para tu próximo grado</h2>
+            <p class="text-text-soft text-sm md:text-base mt-2 max-w-[60ch]">
               Material de apoyo para estudiar en casa y complementar el trabajo de tu dojang.
             </p>
           </div>
-          <span class="font-mono text-[0.65rem] tracking-widest uppercase text-light-muted">Material de estudio</span>
+          <span class="font-mono text-[0.65rem] tracking-widest uppercase text-text-soft">Material de estudio</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {recursos.map((recurso) => (
-            <article class="bg-white text-ink border border-white/15 rounded-sm p-4 hover:border-red transition-colors duration-150">
+            <article class="bg-paper text-ink border border-line rounded-sm p-4 hover:border-red transition-colors duration-150">
               <span class="font-mono text-[0.65rem] tracking-widest uppercase text-red">{recurso.tipo}</span>
               <h3 class="text-ink text-sm md:text-base mt-3 mb-2">{recurso.titulo}</h3>
               <p class="text-text-soft text-sm leading-relaxed">{recurso.descripcion}</p>

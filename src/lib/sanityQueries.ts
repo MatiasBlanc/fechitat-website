@@ -8,14 +8,20 @@ export async function getEventos() {
 /** Obtener eventos próximos (excluye el destacado) */
 export async function getProximosEventos() {
   return sanity.fetch(
-    `*[_type == "evento" && estado == "proximo" && fecha >= now() && destacado != true] | order(fecha asc)`
+    `*[_type == "evento" && estado == "proximo" && fecha >= now() && destacado != true] | order(fecha asc) {
+      ...,
+      "tieneGaleria": count(galeria) > 0 || count(*[_type == "galeria" && evento._ref == ^._id][0].fotos) > 0
+    }`
   )
 }
 
 /** Obtener eventos pasados */
 export async function getEventosPasados() {
   return sanity.fetch(
-    `*[_type == "evento" && (estado == "finalizado" || fecha < now())] | order(fecha desc)`
+    `*[_type == "evento" && (estado == "finalizado" || fecha < now())] | order(fecha desc) {
+      ...,
+      "tieneGaleria": count(galeria) > 0 || count(*[_type == "galeria" && evento._ref == ^._id][0].fotos) > 0
+    }`
   )
 }
 
@@ -110,7 +116,10 @@ export async function getMetricas() {
 /** Obtener el próximo evento destacado */
 export async function getProximoEventoDestacado() {
   return sanity.fetch(
-    `*[_type == "evento" && estado == "proximo" && fecha >= now()] | order(fecha asc)[0]`
+    `*[_type == "evento" && estado == "proximo" && fecha >= now()] | order(fecha asc)[0] {
+      ...,
+      "tieneGaleria": count(galeria) > 0 || count(*[_type == "galeria" && evento._ref == ^._id][0].fotos) > 0
+    }`
   )
 }
 
