@@ -59,11 +59,6 @@ export default defineType({
       initialValue: 'proximo',
     }),
     defineField({
-      name: 'lugar',
-      title: 'Lugar / Venue',
-      type: 'string',
-    }),
-    defineField({
       name: 'direccion',
       title: 'Dirección',
       type: 'string',

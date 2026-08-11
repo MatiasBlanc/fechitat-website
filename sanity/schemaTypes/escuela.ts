@@ -20,7 +20,7 @@ export default defineType({
     }),
     defineField({
       name: 'sensei',
-      title: 'Sensei / Instructor principal',
+      title: 'Instructor principal',
       type: 'string',
     }),
     defineField({
@@ -78,21 +78,6 @@ export default defineType({
       name: 'descripcion',
       title: 'Descripción',
       type: 'text',
-    }),
-    defineField({
-      name: 'estilos',
-      title: 'Estilos que enseñan',
-      type: 'array',
-      of: [{type: 'string'}],
-      options: {
-        list: [
-          {title: 'Karate', value: 'karate'},
-          {title: 'Kobudo', value: 'kobudo'},
-          {title: 'Jiu Jitsu', value: 'jiu_jitsu'},
-          {title: 'Kickboxing', value: 'kickboxing'},
-          {title: 'Otro', value: 'otro'},
-        ],
-      },
     }),
     defineField({
       name: 'activo',

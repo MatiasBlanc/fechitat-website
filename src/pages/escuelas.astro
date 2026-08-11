@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import Tag from '../components/Tag.astro';
 import PageHero from '../components/PageHero.astro';
 import UIcon from '../components/icons/UIcon.astro';
 import { getEscuelas } from '../lib/sanityQueries';
+import { urlFor } from '../lib/sanity';
 
 const titulo = 'Escuelas Afiliadas — FECHITAT';
 
@@ -30,14 +30,14 @@ const regiones = Object.keys(escuelasPorRegion).sort();
   />
 
   {/* Buscador */}
-  <section class="py-8 md:py-[2.6em] bg-white border-b border-line">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <section class="py-10 md:py-16 border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
           <input
             id="buscar-escuela"
             type="text"
-            class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]"
+            class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
             placeholder="Buscar por nombre, ciudad o región..."
           />
         </div>
@@ -62,8 +62,8 @@ const regiones = Object.keys(escuelasPorRegion).sort();
   </section>
 
   {/* Listado de escuelas */}
-  <section class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <section class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       {/* Contador */}
       <div class="mb-6">
         <p class="text-text-soft text-sm">
@@ -76,47 +76,64 @@ const regiones = Object.keys(escuelasPorRegion).sort();
         {regiones.map((region) => (
           <div class="region-grupo mb-10" data-region={region}>
             <div class="flex items-center gap-3 mb-4">
-              <Eyebrow>{region}</Eyebrow>
+              <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{region}</span>
               <span class="text-text-soft text-sm font-mono">({escuelasPorRegion[region].length})</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {escuelasPorRegion[region].map((escuela: any) => (
-                <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
+                <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
+                  {/* Foto del dojo como cover */}
+                  {escuela.foto && (
+                    <div
+                      class="aspect-[16/9] bg-cover bg-center"
+                      style={`background-image:url('${urlFor(escuela.foto).width(500).url()}');`}
+                    />
+                  )}
+
+                  {/* Contenido */}
                   <div class="p-5">
-                    <div class="flex items-start justify-between gap-3 mb-3">
-                      <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
+                    <div class="flex items-center gap-3 mb-3">
+                      {escuela.logo && (
+                        <img
+                          src={urlFor(escuela.logo).width(80).height(80).url()}
+                          alt={escuela.nombre}
+                          class="w-12 h-12 object-contain rounded-sm flex-none bg-paper"
+                        />
+                      )}
+                      <div>
+                        <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
+                        {escuela.sensei && (
+                          <p class="text-text-soft text-xs flex items-center gap-1">
+                            <UIcon name="user" size={12} />
+                            {escuela.sensei}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     {escuela.ciudad && (
-                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-2">
+                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-4">
                         <UIcon name="map-pin" size={14} />
                         {escuela.ciudad}
                       </p>
                     )}
 
-                    {escuela.sensei && (
-                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-3">
-                        <UIcon name="user" size={14} />
-                        {escuela.sensei}
-                      </p>
-                    )}
-
-                    <div class="flex flex-wrap gap-2 mt-4">
+                    <div class="flex flex-wrap gap-2 border-t border-line pt-4">
                       {escuela.telefono && (
-                        <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
                           <UIcon name="phone" size={12} />
                           Teléfono
                         </a>
                       )}
                       {escuela.email && (
-                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
                           <UIcon name="mail" size={12} />
                           Email
                         </a>
                       )}
                       {escuela.whatsapp && (
-                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm bg-white transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
-                          <UIcon name="phone" size={12} />
+                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                          <UIcon name="whatsapp" size={12} />
                           WhatsApp
                         </a>
                       )}
@@ -138,9 +155,8 @@ const regiones = Object.keys(escuelasPorRegion).sort();
   </section>
 
   {/* CTA */}
-  <section class="py-10 md:py-[4.4em] bg-white">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 text-center">
-      <Eyebrow>¿No encuentras tu dojang?</Eyebrow>
+  <section class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 text-center">
       <h2 class="max-w-[20ch] mx-auto mb-4">Afilia tu escuela a FECHITAT</h2>
       <p class="text-text-soft max-w-[50ch] mx-auto mb-6">
         Si tienes una escuela de Taekwon-Do ITF y quieres ser parte de la federación, contáctanos para conocer los requisitos de afiliación.

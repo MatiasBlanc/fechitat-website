@@ -1,27 +1,33 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import PageHero from '../components/PageHero.astro';
 import BeltBar from '../components/BeltBar.astro';
+import Timeline from '../components/Timeline.astro';
 import { img } from '../lib/imagenes';
-import { getOrganigrama, getCampeones, getHitoHistorico } from '../lib/sanityQueries';
+import { getOrganigrama, getCampeones, getHitoHistorico, getEscuelasPorRegion } from '../lib/sanityQueries';
 import { urlFor } from '../lib/sanity';
 
 const titulo = 'La Federación — FECHITAT';
 
 const riel = [
-  { href: '#quienes', kr: '우리', label: 'Quiénes somos' },
   { href: '#historia', kr: '역사', label: 'Historia' },
   { href: '#directivos', kr: '임원', label: 'Directivos' },
   { href: '#campeones', kr: '챔피언', label: 'Campeones' },
-  { href: '#afiliacion', kr: '가입', label: 'Afiliación' },
+  { href: '#escuelas', kr: '도장', label: 'Escuelas' },
 ];
 
 // Obtener datos de Sanity
 const directivos = await getOrganigrama();
 const campeones = await getCampeones();
 const hitos = await getHitoHistorico();
+const escuelas = await getEscuelasPorRegion();
+const escuelasPorRegion = escuelas.reduce((acc: any, escuela: any) => {
+  const region = escuela.region || 'Sin región';
+  (acc[region] = acc[region] || []).push(escuela);
+  return acc;
+}, {} as Record<string, any[]>);
+const regiones = Object.keys(escuelasPorRegion).sort();
 ---
 
 <BaseLayout title={titulo}>
@@ -34,10 +40,9 @@ const hitos = await getHitoHistorico();
   />
 
   <!-- Quiénes somos -->
-  <section id="quienes" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+  <section id="quienes" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <div>
-        <Eyebrow>Quiénes somos</Eyebrow>
         <h2>Una organización nacional con vocación internacional</h2>
         <p class="text-text-soft">
           Reunimos a los dojangs, instructores y practicantes del país para
@@ -61,68 +66,53 @@ const hitos = await getHitoHistorico();
 
   <!-- Línea de tiempo -->
   {hitos.length > 0 && (
-    <section class="py-10 md:py-[4.4em] bg-white" id="historia">
-      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-        <Eyebrow>Nuestra historia</Eyebrow>
+    <section class="py-10 md:py-16" id="historia">
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
         <h2 class="mb-6">Línea de tiempo de la federación</h2>
       </div>
-      <div class="timeline-track overflow-x-auto cursor-grab px-5 md:px-7 pb-4">
-        <div class="flex gap-0 min-w-[900px] md:min-w-[1100px] max-w-[1180px] mx-auto relative">
-          <div class="absolute top-[27px] left-0 right-0 h-[2px] bg-line"></div>
-          {hitos.map((hito, i) => (
-            <div class="flex-1 relative pt-10">
-              <div
-                class:list={[
-                  'absolute top-5 left-0 w-3.5 h-3.5 rounded-full border-[3px] border-white shadow-[0_0_0_1px_var(--color-line)]',
-                  i === hitos.length - 1 ? 'bg-ink' : 'bg-red',
-                ]}
-              ></div>
-              <Eyebrow>{hito.anio}</Eyebrow>
-              <h4 class="text-sm md:text-base">{hito.titulo}</h4>
-              <p class="text-xs md:text-[0.88rem] text-text-soft max-w-[22ch]">{hito.descripcion}</p>
-            </div>
-          ))}
-        </div>
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
+        <Timeline hitos={hitos} />
       </div>
     </section>
   )}
 
   <!-- Directorio -->
   {directivos.length > 0 && (
-    <section id="directivos" class="py-10 md:py-[4.4em]">
-      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-        <Eyebrow>Organigrama</Eyebrow>
+    <section id="directivos" class="py-10 md:py-16">
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
         <h2 class="mb-6">Directorio</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {directivos.map((d) => (
             <div class="bg-white border border-line rounded-sm overflow-hidden">
-              <div class="p-5 md:p-6 text-center">
+              <div class="text-center">
                 {/* Foto o iniciales */}
-                <div class="mb-4">
+                <div>
                   {d.foto ? (
                     <img
                       src={urlFor(d.foto).width(240).height(300).url()}
                       alt={d.nombre}
-                      class="w-full aspect-[4/5] object-cover rounded-sm"
+                      class="w-full aspect-[4/5] object-cover"
                     />
                   ) : (
-                    <div class="w-full aspect-[4/5] bg-ink text-white flex items-center justify-center font-heading font-extrabold text-3xl rounded-sm">
+                    <div class="w-full aspect-[4/5] bg-ink text-white flex items-center justify-center font-heading font-extrabold text-3xl">
                       {d.nombre.split(' ').map((n: string) => n[0]).join('')}
                     </div>
                   )}
                 </div>
 
                 {/* Info */}
-                <h4 class="text-base md:text-lg mb-1">{d.nombre}</h4>
-                <p class="text-red font-mono text-xs tracking-wider uppercase mb-4">{d.cargo}</p>
+                <div class="px-4 pb-5 pt-3">
+                  <h4 class="text-base md:text-lg mb-1">{d.nombre}</h4>
+                  <p class="text-red font-mono text-xs tracking-wider uppercase mb-4">{d.cargo}</p>
 
-                {/* Botón de contacto */}
-                {d.email && (
-                  <a
-                    href={`mailto:${d.email}`}
-                    class="font-mono text-xs tracking-wider uppercase border border-line px-4 py-2 rounded-sm bg-white inline-block transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink"
-                  >Contactar</a>
-                )}
+                  {/* Botón de contacto */}
+                  {d.email && (
+                    <a
+                      href={`mailto:${d.email}`}
+                      class="font-mono text-xs tracking-wider uppercase border border-line px-4 py-2 rounded-sm bg-white inline-block transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink"
+                    >Contactar</a>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -133,10 +123,9 @@ const hitos = await getHitoHistorico();
 
   <!-- Salón de campeones -->
   {campeones.length > 0 && (
-    <section class="py-10 md:py-[4.4em] bg-ink text-light" id="campeones">
-      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+    <section class="py-10 md:py-16 bg-ink text-light" id="campeones">
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
         <div class="mb-8">
-          <Eyebrow>Salón de campeones</Eyebrow>
           <h2 class="text-white">Maestros que marcaron escuela</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -154,7 +143,7 @@ const hitos = await getHitoHistorico();
                 </div>
               )}
               <div>
-                <Eyebrow>{c.grado}{c.titulo ? ` · ${c.titulo}` : ''}</Eyebrow>
+                <span class="font-mono text-xs tracking-wider uppercase text-light-muted">{c.grado}{c.titulo ? ` · ${c.titulo}` : ''}</span>
                 <h4 class="text-white text-sm md:text-base m-0">{c.nombre}</h4>
                 {c.competencia && <p class="text-white/60 text-xs mt-1">{c.competencia} {c.anio}</p>}
               </div>
@@ -171,10 +160,9 @@ const hitos = await getHitoHistorico();
   )}
 
   <!-- Beneficios de afiliación -->
-  <section id="afiliacion" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+  <section id="afiliacion" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div>
-        <Eyebrow>Beneficios de afiliación</Eyebrow>
         <h2>Por qué ser parte de FECHITAT</h2>
         <p class="text-text-soft">
           Al afiliar tu escuela a la federación, tus alumnos acceden a exámenes
@@ -196,25 +184,82 @@ const hitos = await getHitoHistorico();
     </div>
   </section>
 
-  <script>
-    const tl = document.querySelector('.timeline-track');
-    if (tl) {
-      let isDown = false;
-      let startX = 0;
-      let scrollLeft = 0;
-      tl.addEventListener('mousedown', (e) => {
-        isDown = true;
-        startX = e.pageX - tl.offsetLeft;
-        scrollLeft = tl.scrollLeft;
-      });
-      tl.addEventListener('mouseleave', () => { isDown = false; });
-      tl.addEventListener('mouseup', () => { isDown = false; });
-      tl.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - tl.offsetLeft;
-        tl.scrollLeft = scrollLeft - (x - startX) * 1.4;
-      });
-    }
-  </script>
+  <!-- Escuelas afiliadas -->
+  {regiones.length > 0 && (
+    <section class="py-10 md:py-16" id="escuelas">
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
+        <div class="mb-10">
+          <h2>Escuelas afiliadas</h2>
+          <p class="text-text-soft text-sm md:text-base max-w-[60ch] mt-2">
+            Red de dojangs de FECHITAT a lo largo de Chile. Cada escuela está
+            dirigida por un instructor certificado por la ITF.
+          </p>
+        </div>
+
+        <div class="space-y-10">
+          {regiones.map((region) => (
+            <div>
+              <div class="flex items-center gap-3 mb-4">
+                <h3 class="text-base md:text-lg m-0">{region}</h3>
+                <span class="font-mono text-xs text-text-soft">({escuelasPorRegion[region].length})</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {escuelasPorRegion[region].map((escuela: any) => (
+                  <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden">
+                    {escuela.foto && (
+                      <div
+                        class="aspect-[16/9] bg-cover bg-center"
+                        style={`background-image:url('${urlFor(escuela.foto).width(500).url()}');`}
+                      />
+                    )}
+                    <div class="p-5">
+                      <div class="flex items-center gap-3 mb-3">
+                        {escuela.logo && (
+                          <img
+                            src={urlFor(escuela.logo).width(80).height(80).url()}
+                            alt={escuela.nombre}
+                            class="w-12 h-12 object-contain rounded-sm flex-none bg-paper"
+                          />
+                        )}
+                        <div>
+                          <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
+                          {escuela.sensei && (
+                            <p class="text-text-soft text-xs flex items-center gap-1">
+                              {escuela.sensei}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      {escuela.ciudad && (
+                        <p class="text-text-soft text-sm mb-4">{escuela.ciudad}</p>
+                      )}
+                      <div class="flex flex-wrap gap-2 border-t border-line pt-4">
+                        {escuela.telefono && (
+                          <a href={`tel:${escuela.telefono}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm">
+                            Teléfono
+                          </a>
+                        )}
+                        {escuela.email && (
+                          <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm">
+                            Email
+                          </a>
+                        )}
+                        {escuela.whatsapp && (
+                          <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm">
+                            WhatsApp
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+
 </BaseLayout>

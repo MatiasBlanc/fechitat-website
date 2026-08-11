@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import Tag from '../components/Tag.astro';
 import Stat from '../components/Stat.astro';
 import PageHero from '../components/PageHero.astro';
@@ -50,11 +49,10 @@ const semana = [
   </PageHero>
 
   <!-- Camino de grados -->
-  <section id="camino" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <section id="camino" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-6">
         <div>
-          <Eyebrow>Sistema de grados ITF</Eyebrow>
           <h2>Tu camino de cinturón</h2>
         </div>
         <p class="text-text-soft text-sm md:text-base">10 Gup hasta llegar a cinturón negro, y desde ahí, los grados Dan.</p>
@@ -63,8 +61,8 @@ const semana = [
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {grados.map((grado) => (
           <div class="bg-white border border-line rounded-sm overflow-hidden">
-            <div class="p-4 md:p-5">
-              <Eyebrow>{grado.rango}</Eyebrow>
+            <div class="p-5">
+              <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{grado.rango}</span>
               <h4 class="text-sm md:text-base">{grado.nombre}</h4>
               <p class="text-text-soft text-sm">{grado.texto}</p>
             </div>
@@ -75,10 +73,9 @@ const semana = [
   </section>
 
   <!-- Selección nacional -->
-  <section class="py-10 md:py-[4.4em] bg-ink text-light" id="seleccion">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+  <section class="py-10 md:py-16 bg-ink text-light" id="seleccion">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <div>
-        <Eyebrow>Alto rendimiento</Eyebrow>
         <h2 class="text-white">Camino a la selección nacional</h2>
         <p class="text-light-soft">
           Cada año, FECHITAT convoca clasificatorios nacionales en Poomsae (Tul)
@@ -91,8 +88,7 @@ const semana = [
         </div>
       </div>
       <div class="bg-ink-soft border border-dark-soft rounded-sm overflow-hidden">
-        <div class="p-5 md:p-6">
-          <Eyebrow>Requisitos para postular</Eyebrow>
+        <div class="p-5">
           <ul class="text-light-soft pl-5 leading-8 text-sm">
             <li>Mínimo 1° Gup vigente</li>
             <li>Dojang afiliado a FECHITAT</li>
@@ -108,14 +104,13 @@ const semana = [
   </section>
 
   <!-- Semana tipo -->
-  <section id="semana" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <Eyebrow>Vida de un competidor</Eyebrow>
+  <section id="semana" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <h2 class="mb-6">Semana tipo de entrenamiento</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {semana.map((dia) => (
           <div class="bg-white border border-line rounded-sm overflow-hidden">
-            <div class="p-4 md:p-5">
+            <div class="p-5">
               <Tag variant={dia.variante}>{dia.dias}</Tag>
               <h4 class="text-sm md:text-base mt-3">{dia.nombre}</h4>
               <p class="text-text-soft text-sm">{dia.texto}</p>
@@ -127,10 +122,9 @@ const semana = [
   </section>
 
   <!-- CTA -->
-  <section class="py-10 md:py-[4.4em] bg-white">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+  <section class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div>
-        <Eyebrow>¿Vas en serio?</Eyebrow>
         <h2 class="max-w-[18ch] m-0">Habla con el director técnico de tu dojang</h2>
       </div>
       <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px whitespace-nowrap">

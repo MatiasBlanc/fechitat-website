@@ -1,6 +1,5 @@
 ---
 import EventBadge from "../components/EventBadge.astro";
-import Eyebrow from "../components/Eyebrow.astro";
 import HangulRail from "../components/HangulRail.astro";
 import Stat from "../components/Stat.astro";
 import Tag from "../components/Tag.astro";
@@ -42,14 +41,13 @@ const escuelas = await getEscuelasPorRegion();
     >
     </div>
     <div
-      class="relative z-[2] py-12 md:py-[5.5em] pb-8 md:pb-[3.2em] w-full max-w-[1180px] mx-auto px-5 md:px-7"
+      class="relative z-[2] py-12 md:py-20 pb-8 md:pb-12 w-full max-w-7xl mx-auto px-5 md:px-7"
     >
-      <Eyebrow>Fechitat · ITF Chile</Eyebrow>
-      <h1 class="text-white text-[clamp(2rem,6vw,4.6rem)] max-w-[14ch]">
+      <h1 class="text-white text-4xl md:text-7xl max-w-[14ch]">
         Encuentra tu camino<br />en el Taekwon-Do
       </h1>
       <p
-        class="text-base md:text-[1.05rem] text-light max-w-[46ch] mb-6 font-normal"
+        class="text-base md:text-base text-light max-w-[46ch] mb-6 font-normal"
       >
         Dojangs de Arica a Punta Arenas, instructores certificados por ITF y una
         comunidad que entrena con disciplina, respeto y proyección
@@ -74,8 +72,8 @@ const escuelas = await getEscuelasPorRegion();
 
   {/* Próximo evento */}
   {proximoEvento && (
-    <section class="py-6 md:py-[2.6em] bg-paper" id="eventos">
-      <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+    <section class="py-6 md:py-10 bg-white" id="eventos">
+      <div class="max-w-7xl mx-auto px-5 md:px-7">
         <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 justify-between">
           <div class="flex items-center gap-4">
             <EventBadge
@@ -83,8 +81,10 @@ const escuelas = await getEscuelasPorRegion();
               dia={new Date(proximoEvento.fecha).getDate().toString()}
             />
             <div>
-              <Eyebrow>Próximo evento</Eyebrow>
-              <div class="font-heading font-bold text-base md:text-[1.15rem] uppercase">
+            <span class="font-mono text-xs tracking-wider uppercase text-red">
+              Próximo evento
+            </span>
+              <div class="font-heading font-bold text-base md:text-lg uppercase">
                 {proximoEvento.titulo}
               </div>
             </div>
@@ -93,7 +93,7 @@ const escuelas = await getEscuelasPorRegion();
             <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
               Ver evento
             </a>
-            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-transparent border border-ink text-ink font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-ink hover:text-white hover:-translate-y-px">
+            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-transparent border border-ink text-ink font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
               Ver calendario completo
             </a>
           </div>
@@ -103,10 +103,9 @@ const escuelas = await getEscuelasPorRegion();
   )}
 
   <!-- Camino -->
-  <section id="camino" class="py-10 md:py-[4.4em] bg-white">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <section id="camino" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="mb-8">
-        <Eyebrow>Elige tu camino</Eyebrow>
         <h2>¿Qué estás buscando?</h2>
       </div>
 
@@ -120,9 +119,9 @@ const escuelas = await getEscuelasPorRegion();
             style={`background-image:url('${img.ninosClase}');`}
           >
           </div>
-          <div class="p-4 md:p-5">
+          <div class="p-5">
             <Tag variant="red">Familias</Tag>
-            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">
+            <h3 class="text-xl md:text-3xl mt-2">
               Busco una actividad para mi hijo/a
             </h3>
             <p class="text-text-soft text-sm md:text-base">
@@ -146,9 +145,9 @@ const escuelas = await getEscuelasPorRegion();
             style={`background-image:url('${img.jovenCompetidor}');`}
           >
           </div>
-          <div class="p-4 md:p-5">
+          <div class="p-5">
             <Tag variant="blue">Competidores</Tag>
-            <h3 class="text-[clamp(1.3rem,3vw,2rem)] mt-2">
+            <h3 class="text-xl md:text-3xl mt-2">
               Quiero avanzar y competir
             </h3>
             <p class="text-text-soft text-sm md:text-base">
@@ -167,9 +166,9 @@ const escuelas = await getEscuelasPorRegion();
   </section>
 
   <!-- Quiénes somos -->
-  <section class="py-10 md:py-[4.4em] bg-paper">
+  <section class="py-10 md:py-16">
     <div
-      class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+      class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
     >
       <div>
         <h2 class="text-[clamp(1.6rem,5vw,3.2rem)]">
@@ -206,107 +205,138 @@ const escuelas = await getEscuelasPorRegion();
   </section>
 
   {/* Red de dojangs */}
-  <section class="py-10 md:py-[4.4em] bg-white" id="dojangs">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <h2 class="text-[clamp(1.5rem,4vw,2.8rem)] mb-4">
-        Encuentra tu escuela más cercana
-      </h2>
-      <div class="mb-8">
-        <input
-          id="ciudad"
-          type="text"
-          class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]"
-          placeholder="Ej. La Serena, Coquimbo…"
-        />
-      </div>
-      {escuelas.length > 0 ? (
-        <>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {escuelas.slice(0, 3).map((escuela) => (
-              <a href="#" class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-                <div class="p-4 md:p-5">
-                  {escuela.region && <Tag variant="blue">{escuela.region}</Tag>}
-                  <h4 class="text-sm md:text-base mt-2">{escuela.nombre}</h4>
-                  {escuela.ciudad && <p class="text-text-soft text-sm">{escuela.ciudad}</p>}
-                </div>
-              </a>
-            ))}
-          </div>
-          <div class="mt-6 text-center">
-            <a href="/escuelas" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
-              Ver todas las escuelas ({escuelas.length})
-            </a>
-          </div>
-        </>
-      ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {region: 'Coquimbo', ciudades: 'La Serena · Coquimbo · Ovalle', count: '6 dojangs'},
-            {region: 'Metropolitana', ciudades: 'Santiago · Cerro Navia', count: '4 dojangs'},
-            {region: 'Tarapacá', ciudades: 'Iquique', count: '1 dojang'},
-          ].map((zona) => (
-            <div class="bg-white border border-line rounded-sm overflow-hidden">
-              <div class="p-4 md:p-5">
-                <Tag variant="blue">{zona.region}</Tag>
-                <h4 class="text-sm md:text-base mt-2">{zona.ciudades}</h4>
-                <p class="text-text-soft text-sm">{zona.count}</p>
-              </div>
-            </div>
-          ))}
+  <section class="py-10 md:py-16" id="dojangs">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+        <div>
+          <h2>Encuentra tu escuela más cercana</h2>
+          <p class="text-text-soft text-sm md:text-base mt-2">
+            Escuelas afiliadas a FECHITAT en todo el país.
+          </p>
         </div>
-      )}
+        <a href="/federacion#escuelas" class="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-red">
+          Ver todas las escuelas
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="relative">
+        <input
+          id="buscar-escuela"
+          type="text"
+          class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
+          placeholder="Buscar por ciudad o nombre…"
+          autocomplete="off"
+        />
+        <div id="sugerencias" class="hidden absolute z-10 left-0 right-0 mt-1 bg-white border border-line rounded-sm shadow-lg max-h-60 overflow-y-auto"></div>
+      </div>
     </div>
   </section>
 
+  <script define:vars={{ escuelasData: escuelas.map((e: any) => ({ nombre: e.nombre, ciudad: e.ciudad || '', region: e.region || '' })) }}>
+    const input = document.getElementById('buscar-escuela') as HTMLInputElement;
+    const sugerencias = document.getElementById('sugerencias');
+
+    if (input && sugerencias) {
+      input.addEventListener('input', () => {
+        const q = input.value.toLowerCase().trim();
+        if (!q) {
+          sugerencias.classList.add('hidden');
+          sugerencias.innerHTML = '';
+          return;
+        }
+
+        const matches = escuelasData.filter((e: any) =>
+          e.nombre.toLowerCase().includes(q) ||
+          e.ciudad.toLowerCase().includes(q) ||
+          e.region.toLowerCase().includes(q)
+        );
+
+        if (matches.length === 0) {
+          sugerencias.innerHTML = '<p class="p-4 text-sm text-text-soft">No se encontraron escuelas.</p>';
+          sugerencias.classList.remove('hidden');
+          return;
+        }
+
+        sugerencias.innerHTML = matches
+          .slice(0, 6)
+          .map((e: any) => `
+            <a href="/federacion#escuelas" class="flex items-center gap-3 p-3 hover:bg-paper transition-colors">
+              <div class="min-w-0">
+                <p class="text-sm font-medium truncate">${e.nombre}</p>
+                <p class="text-xs text-text-soft truncate">${e.ciudad}${e.region ? ' · ' + e.region : ''}</p>
+              </div>
+            </a>
+          `)
+          .join('');
+        sugerencias.classList.remove('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target as Node) && !sugerencias.contains(e.target as Node)) {
+          sugerencias.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+
   <!-- Últimas noticias -->
-  <section class="py-10 md:py-[4.4em] bg-paper" id="noticias">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-      <div
-        class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8"
-      >
+  {/* Últimas noticias */}
+  <section class="py-10 md:py-16" id="noticias">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
         <div>
           <h2>Últimas noticias</h2>
         </div>
         <a
           href="/blog"
-          class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px"
+          class="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-red"
         >
           Ver todo el blog
+          <span>→</span>
         </a>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {noticias.length > 0 ? (
           noticias.map((post) => (
             <a
-              class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+              class="bg-white border border-line rounded-sm overflow-hidden"
               href={`/blog/${post.slug?.current || '#'}`}
             >
               {post.imagen && (
                 <div
                   class="aspect-[16/10] bg-cover"
-                  style={`background-image:url('${urlFor(post.imagen).width(400).url()}');`}
+                  style={`background-image:url('${urlFor(post.imagen).width(600).url()}');`}
                 />
               )}
-              <div class="p-4 md:p-5">
-                {post.categorias?.[0] && <Tag>{post.categorias[0]}</Tag>}
-                <h4 class="text-sm md:text-base mt-2">{post.titulo}</h4>
+              <div class="p-5">
+                <div class="flex items-center gap-3 mb-2">
+                  {post.categorias?.[0] && <Tag>{post.categorias[0]}</Tag>}
+                  {post.fecha && (
+                    <span class="font-mono text-xs text-text-soft">
+                      {new Date(post.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+                <h4 class="text-base md:text-lg">{post.titulo}</h4>
               </div>
             </a>
           ))
         ) : (
           <>
-            <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/blog">
+            <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
               <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postDefensa}');`} />
-              <div class="p-4 md:p-5">
+              <div class="p-5">
                 <Tag variant="red">Ensayos</Tag>
-                <h4 class="text-sm md:text-base mt-2">Principios de la defensa personal</h4>
+                <h4 class="text-base md:text-lg mt-2">Principios de la defensa personal</h4>
               </div>
             </a>
-            <a class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="/blog">
+            <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
               <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postNacional}');`} />
-              <div class="p-4 md:p-5">
+              <div class="p-5">
                 <Tag>Noticias</Tag>
-                <h4 class="text-sm md:text-base mt-2">Resultados del campeonato nacional</h4>
+                <h4 class="text-base md:text-lg mt-2">Resultados del campeonato nacional</h4>
               </div>
             </a>
           </>

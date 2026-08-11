@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import Tag from '../components/Tag.astro';
 import PageHero from '../components/PageHero.astro';
 import { img } from '../lib/imagenes';
@@ -53,16 +52,15 @@ const faqs = [
   </PageHero>
 
   <!-- Beneficios -->
-  <section id="beneficios" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <section id="beneficios" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="mb-8">
-        <Eyebrow>Por qué Taekwon-Do</Eyebrow>
         <h2>Lo que tu hijo/a se lleva a casa</h2>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {beneficios.map((b) => (
           <div class="bg-white border border-line rounded-sm overflow-hidden">
-            <div class="p-4 md:p-5">
+            <div class="p-5">
               <Tag variant={b.variante} style="margin-bottom:0.6em;">{b.etiqueta}</Tag>
               <p class="text-text-soft text-sm">{b.texto}</p>
             </div>
@@ -73,15 +71,14 @@ const faqs = [
   </section>
 
   <!-- Seguridad -->
-  <section class="py-10 md:py-[4.4em] bg-white" id="seguridad">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+  <section class="py-10 md:py-16" id="seguridad">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <img
         src={img.instructorInfantil}
         alt="Instructor supervisando entrenamiento infantil"
         class="rounded-sm w-full order-2 lg:order-1"
       />
       <div class="order-1 lg:order-2">
-        <Eyebrow>Tranquilidad para ti</Eyebrow>
         <h2>Un ambiente seguro y supervisado</h2>
         <ul class="text-text-soft pl-5 leading-8 text-sm md:text-base">
           <li>Instructores certificados por FECHITAT e ITF</li>
@@ -95,9 +92,8 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="py-10 md:py-[4.4em]">
-    <div class="max-w-[820px] mx-auto px-5 md:px-7">
-      <Eyebrow>Preguntas frecuentes</Eyebrow>
+  <section class="py-10 md:py-16">
+    <div class="max-w-3xl mx-auto px-5 md:px-7">
       <h2 class="mb-6">Antes de inscribir</h2>
       <div class="border-t border-line">
         {faqs.map((faq) => (
@@ -114,51 +110,50 @@ const faqs = [
   </section>
 
   <!-- Testimonios -->
-  <section class="py-10 md:py-[4.4em] bg-ink text-light" id="testimonios">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 md:grid-cols-3 gap-8">
+  <section class="py-10 md:py-16 bg-ink text-light" id="testimonios">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 md:grid-cols-3 gap-8">
       {testimonios.map((t) => (
         <div>
           <p class="text-base md:text-lg text-light">{t.texto}</p>
-          <Eyebrow>— {t.autor}</Eyebrow>
+          <span class="font-mono text-xs tracking-wider uppercase text-text-soft">— {t.autor}</span>
         </div>
       ))}
     </div>
   </section>
 
   <!-- Inscripción / clase de prueba -->
-  <section id="inscribir" class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+  <section id="inscribir" class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       <div>
-        <Eyebrow>Da el primer paso</Eyebrow>
         <h2>Reserva una clase de prueba gratuita</h2>
         <p class="text-text-soft">
           Completa el formulario y te contactaremos con el dojang más cercano a
           tu domicilio para coordinar la primera clase, sin costo ni compromiso.
         </p>
       </div>
-      <form class="bg-white border border-line rounded-sm overflow-hidden p-5 md:p-6" id="form-clase-prueba">
+      <form class="bg-white border border-line rounded-sm overflow-hidden p-5" id="form-clase-prueba">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="mb-4">
             <label for="nombre" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Nombre del niño/a</label>
-            <input id="nombre" type="text" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+            <input id="nombre" type="text" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1" />
           </div>
           <div class="mb-4">
             <label for="edad" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Edad</label>
-            <input id="edad" type="number" min="4" max="17" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+            <input id="edad" type="number" min="4" max="17" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1" />
           </div>
         </div>
         <div class="mb-4">
           <label for="comuna" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Comuna</label>
-          <input id="comuna" type="text" placeholder="Ej. La Serena" class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+          <input id="comuna" type="text" placeholder="Ej. La Serena" class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1" />
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="mb-4">
             <label for="tel" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Teléfono de contacto</label>
-            <input id="tel" type="tel" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+            <input id="tel" type="tel" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1" />
           </div>
           <div class="mb-4">
             <label for="mail" class="block font-mono text-xs tracking-wider uppercase text-text-soft mb-2">Correo</label>
-            <input id="mail" type="email" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-[1px]" />
+            <input id="mail" type="email" required class="w-full border border-line bg-white p-3 font-body text-sm rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1" />
           </div>
         </div>
         <button type="submit" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px w-full">

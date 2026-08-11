@@ -53,6 +53,7 @@
 
   body {
     margin: 0;
+    /* Fondo de página: paper. Las secciones blancas destacan sobre él. */
     background: var(--color-paper);
     color: var(--color-text);
     font-family: var(--font-body);
@@ -82,6 +83,11 @@
     margin: 0 0 0.4em;
     line-height: 1.02;
     color: var(--color-ink);
+  }
+
+  /* Tamaño base de títulos de sección (h2) más grande y responsivo */
+  h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   }
 
   ::selection {

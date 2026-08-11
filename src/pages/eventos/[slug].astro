@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import UIcon from '../../components/icons/UIcon.astro';
-import { getEventoBySlug, getGaleriaByEventoId } from '../../lib/sanityQueries';
+import { getEventoBySlug } from '../../lib/sanityQueries';
 import { urlFor } from '../../lib/sanity';
 
 const slug = Astro.params.slug;
@@ -12,8 +12,7 @@ if (!evento) {
   return Astro.redirect('/eventos');
 }
 
-const albumRelacionado = evento._id ? await getGaleriaByEventoId(evento._id) : null;
-const fotos = [...(evento.galeria ?? []), ...(albumRelacionado?.fotos ?? [])];
+const fotos = evento.galeria ?? [];
 const fotosConUrl = fotos.map((foto, indice) => ({
   alt: foto.alt || `${evento.titulo} — foto ${indice + 1}`,
   miniatura: urlFor(foto).width(900).height(650).fit('crop').url(),
@@ -39,13 +38,12 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
   <PageHero
     title={evento.titulo}
     crumb="Eventos"
-    description={evento.descripcion}
     image={evento.flyer ? urlFor(evento.flyer).width(900).url() : undefined}
     imageAlt={`Flyer de ${evento.titulo}`}
   />
 
-  <main class="py-10 md:py-[4.4em]">
-    <div class="max-w-[1180px] mx-auto px-5 md:px-7">
+  <main class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
       <a href="/eventos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm mb-8 transition-all duration-150 hover:bg-black hover:-translate-y-px">
         <UIcon name="arrow-left" size={16} />
         Volver a eventos
@@ -57,7 +55,7 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
         {evento.lugar && <span class="font-mono text-xs tracking-wider text-text-soft">{evento.lugar}</span>}
       </div>
 
-      {evento.descripcion && <p class="text-text-soft max-w-[70ch] mb-10">{evento.descripcion}</p>}
+      {evento.descripcion && <p class="text-text-soft mb-10">{evento.descripcion}</p>}
 
       {fotosConUrl.length > 0 && (
         <section aria-labelledby="galeria-titulo">
@@ -100,34 +98,32 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
       </dialog>
     </div>
   </main>
-  <script>
+  <script define:vars={{ fotos: fotosConUrl }}>
     const dialogo = document.getElementById('galeria-dialogo');
     const imagen = document.getElementById('galeria-imagen');
     const botones = document.querySelectorAll('[data-galeria-boton]');
     const cerrar = document.getElementById('galeria-cerrar');
 
     if (dialogo && imagen && botones.length && cerrar) {
-      const fotos = fotosConUrl;
-
       botones.forEach((boton) => {
         boton.addEventListener('click', () => {
-          const indice = Number(boton.dataset.galeriaBoton);
+          const indice = Number((boton as HTMLElement).dataset.galeriaBoton);
           const foto = fotos[indice];
           if (!foto) return;
           imagen.src = foto.original;
           imagen.alt = foto.alt;
-          dialogo.showModal();
+          (dialogo as HTMLDialogElement).showModal();
         });
       });
 
-      cerrar.addEventListener('click', () => dialogo.close());
+      cerrar.addEventListener('click', () => (dialogo as HTMLDialogElement).close());
 
       dialogo.addEventListener('click', (eventoClick) => {
-        if (eventoClick.target === dialogo) dialogo.close();
+        if (eventoClick.target === dialogo) (dialogo as HTMLDialogElement).close();
       });
 
       document.addEventListener('keydown', (eventoTeclado) => {
-        if (eventoTeclado.key === 'Escape' && dialogo.open) dialogo.close();
+        if (eventoTeclado.key === 'Escape' && (dialogo as HTMLDialogElement).open) (dialogo as HTMLDialogElement).close();
       });
     }
   </script>

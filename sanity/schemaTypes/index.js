@@ -5,7 +5,6 @@ import blogPost from './blogPost'
 import miembroOrganigrama from './miembroOrganigrama'
 import campeon from './campeon'
 import hitoHistorico from './hitoHistorico'
-import galeria from './galeria'
 import metrica from './metrica'
 import testimonio from './testimonio'
 
@@ -17,7 +16,6 @@ export const schemaTypes = [
   miembroOrganigrama,
   campeon,
   hitoHistorico,
-  galeria,
   metrica,
   testimonio,
 ]
