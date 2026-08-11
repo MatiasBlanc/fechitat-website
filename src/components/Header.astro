@@ -78,6 +78,28 @@ const esActivo = (href) =>
       Encuentra tu dojang
     </a>
   </nav>
+  <script>
+    const botonMenu = document.querySelector<HTMLButtonElement>('[data-burger]');
+    const menuMovil = document.querySelector<HTMLElement>('.mobile-nav');
+
+    if (botonMenu && menuMovil) {
+      const alternarMenu = () => {
+        const estaAbierto = menuMovil.classList.toggle('open');
+        botonMenu.setAttribute('aria-expanded', String(estaAbierto));
+        botonMenu.setAttribute('aria-label', estaAbierto ? 'Cerrar menú' : 'Abrir menú');
+      };
+
+      botonMenu.addEventListener('click', alternarMenu);
+
+      menuMovil.querySelectorAll('a').forEach((enlace) => {
+        enlace.addEventListener('click', () => {
+          menuMovil.classList.remove('open');
+          botonMenu.setAttribute('aria-expanded', 'false');
+          botonMenu.setAttribute('aria-label', 'Abrir menú');
+        });
+      });
+    }
+  </script>
 </header>
 
 <style>
