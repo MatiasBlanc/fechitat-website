@@ -16,7 +16,11 @@ const titulo = "Eventos — FECHITAT";
 
 // Datos de Sanity
 const eventoPrincipal = await getProximoEventoDestacado();
-const proximos = await getProximosEventos();
+const proximosRaw = await getProximosEventos();
+// Excluir el evento destacado de la lista de próximos
+const proximos = eventoPrincipal
+  ? proximosRaw.filter((e) => e._id !== eventoPrincipal._id)
+  : proximosRaw;
 const pasados = await getEventosPasados();
 
 const labelTipo = (tipo: string) => {
@@ -75,8 +79,8 @@ const puedeAbrirEvento = (evento) =>
                 <span class="font-mono text-xs tracking-wider uppercase text-red">
                   Próximo evento
                 </span>
-                <h2 class="text-ink text-[clamp(1.5rem,4vw,2.8rem)] mb-2">{eventoPrincipal.titulo}</h2>
-                <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-text-soft">
+                <h2 class="text-ink text-[clamp(1.5rem,4vw,2.8rem)] mb-4">{eventoPrincipal.titulo}</h2>
+                <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-text-soft mb-6">
                   {eventoPrincipal.lugar && <span class="flex items-center gap-1"><UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}</span>}
                   <span>{new Date(eventoPrincipal.fecha).toLocaleDateString('es-CL', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
                 </div>
