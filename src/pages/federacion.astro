@@ -231,7 +231,10 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                         </div>
                       </div>
                       {escuela.direccion && (
-                        <p class="text-text-soft text-sm mb-4">{escuela.direccion}</p>
+                        <p class="text-text-soft text-sm mb-1">{escuela.direccion}</p>
+                      )}
+                      {escuela.ciudad && (
+                        <p class="text-text-soft text-sm mb-4">{escuela.ciudad}</p>
                       )}
                       <div class="flex flex-wrap gap-2 border-t border-line pt-4">
                         {escuela.telefono && (
