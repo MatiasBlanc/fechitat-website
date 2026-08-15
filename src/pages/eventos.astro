@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero.astro";
 import Tag from "../components/Tag.astro";
 import UIcon from "../components/icons/UIcon.astro";
 import Button from "../components/ui/Button.astro";
+import BotonCalendario from "../components/ui/BotonCalendario.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { urlFor } from "../lib/sanity";
 import {
@@ -12,16 +13,24 @@ import {
   getProximosEventos,
 } from "../lib/sanityQueries";
 
+export const prerender = true;
+export const revalidate = 3600; // ISR: los eventos se refrescan como máximo 1×/hora
+
 const titulo = "Eventos — FECHITAT";
+const descripcion =
+  "Consulta el calendario de campeonatos, seminarios y exámenes de Taekwon-Do ITF organizados por FECHITAT en Chile.";
 
 // Datos de Sanity
-const eventoPrincipal = await getProximoEventoDestacado();
-const proximosRaw = await getProximosEventos();
+const [eventoPrincipal, proximosRaw, pasados] = await Promise.all([
+  getProximoEventoDestacado(),
+  getProximosEventos(),
+  getEventosPasados(12),
+]);
 // Excluir el evento destacado de la lista de próximos
 const proximos = eventoPrincipal
   ? proximosRaw.filter((e) => e._id !== eventoPrincipal._id)
   : proximosRaw;
-const pasados = await getEventosPasados();
+// Los eventos pasados restantes se cargan bajo demanda desde el endpoint.
 
 const labelTipo = (tipo: string) => {
   if (tipo === "competencia") return "Competencia";
@@ -37,11 +46,47 @@ const labelTipo = (tipo: string) => {
  * @param evento - Evento recibido desde Sanity.
  * @returns true cuando tiene descripción o una galería con fotos.
  */
-const puedeAbrirEvento = (evento) =>
-  Boolean(evento.descripcion || evento.galeria?.length || evento.tieneGaleria);
+const puedeAbrirEvento = (evento) => Boolean(evento.slug?.current);
+
+const fechaLarga = (fecha: string) =>
+  new Date(fecha).toLocaleDateString("es-CL", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+const jsonLdEventoPrincipal = eventoPrincipal
+  ? JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: eventoPrincipal.titulo,
+      startDate: eventoPrincipal.fecha,
+      endDate: eventoPrincipal.fechaFin ?? undefined,
+      ...(eventoPrincipal.direccion || eventoPrincipal.ciudad
+        ? {
+            location: {
+              "@type": "Place",
+              name: eventoPrincipal.direccion ?? eventoPrincipal.ciudad,
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: eventoPrincipal.ciudad ?? "",
+                addressCountry: "CL",
+              },
+            },
+          }
+        : {}),
+      description: eventoPrincipal.descripcion ?? eventoPrincipal.titulo,
+      eventStatus: "https://schema.org/EventScheduled",
+      organizer: {
+        "@type": "SportsOrganization",
+        name: "FECHITAT",
+        url: "https://fechitat.cl",
+      },
+    })
+  : null;
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEventoPrincipal ? JSON.parse(jsonLdEventoPrincipal) : undefined}>
   <PageHero
     title="Eventos y competencias"
     description="Campeonatos, seminarios técnicos y exámenes de grado de FECHITAT."
@@ -52,45 +97,62 @@ const puedeAbrirEvento = (evento) =>
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       {
         eventoPrincipal && (
-          <a
-            href={
-              puedeAbrirEvento(eventoPrincipal)
-                ? `/eventos/${eventoPrincipal.slug.current}`
-                : undefined
-            }
-            aria-disabled={
-              !puedeAbrirEvento(eventoPrincipal) ? "true" : undefined
-            }
-            class:list={[
-              "block bg-white border border-line rounded-sm overflow-hidden text-ink transition-transform duration-200",
-              puedeAbrirEvento(eventoPrincipal)
-                ? "hover:-translate-y-1 hover:shadow-xl"
-                : "cursor-default",
-            ]}
-          >
+          <article class="bg-white border border-line rounded-sm overflow-hidden text-ink">
             <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
               {eventoPrincipal.flyer && (
-                <div
-                  class="aspect-[16/9] lg:aspect-auto lg:min-h-96 bg-cover bg-center"
-                  style={`background-image:url('${urlFor(eventoPrincipal.flyer).width(800).url()}');`}
+                <img
+                  src={urlFor(eventoPrincipal.flyer).width(1000).auto('format').url()}
+                  alt={`Afiche de ${eventoPrincipal.titulo}`}
+                  class="w-full h-full min-h-64 object-cover"
                 />
               )}
-              <div class="p-6 md:p-10">
+              <div class="p-6 md:p-10 flex flex-col">
                 <span class="font-mono text-xs tracking-wider uppercase text-red">
                   Próximo evento
                 </span>
-                <h2 class="text-ink text-[clamp(1.5rem,4vw,2.8rem)] mb-4">{eventoPrincipal.titulo}</h2>
+                <h2 class="text-ink text-[clamp(1.5rem,4vw,2.8rem)] mb-4 m-0">
+                  {eventoPrincipal.titulo}
+                </h2>
                 <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-text-soft mb-6">
-                  {eventoPrincipal.lugar && <span class="flex items-center gap-1"><UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}</span>}
-                  <span>{new Date(eventoPrincipal.fecha).toLocaleDateString('es-CL', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+                  {eventoPrincipal.lugar && (
+                    <span class="flex items-center gap-1">
+                      <UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}
+                    </span>
+                  )}
+                  <time datetime={eventoPrincipal.fecha}>
+                    {fechaLarga(eventoPrincipal.fecha)}
+                  </time>
                 </div>
-                {eventoPrincipal.descripcion && <p class="text-text-soft mt-4 mb-6 max-w-[48ch] text-sm md:text-base">{eventoPrincipal.descripcion}</p>}
-                <span class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
-                  Ver detalle del evento
-                </span>
+                {eventoPrincipal.descripcion && (
+                  <p class="text-text-soft mt-4 mb-6 max-w-[48ch] text-sm md:text-base">
+                    {eventoPrincipal.descripcion}
+                  </p>
+                )}
+                <div class="mt-auto flex flex-wrap gap-3">
+                  <a
+                    href={
+                      puedeAbrirEvento(eventoPrincipal)
+                        ? `/eventos/${eventoPrincipal.slug.current}`
+                        : undefined
+                    }
+                    aria-disabled={
+                      !puedeAbrirEvento(eventoPrincipal) ? "true" : undefined
+                    }
+                    class:list={[
+                      "inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px",
+                      !puedeAbrirEvento(eventoPrincipal) && "pointer-events-none opacity-60",
+                    ]}
+                  >
+                    Ver detalle del evento
+                  </a>
+                  <BotonCalendario
+                    evento={eventoPrincipal}
+                    className="border border-ink text-ink"
+                  />
+                </div>
               </div>
             </div>
-          </a>
+          </article>
         )
       }
 
@@ -100,45 +162,55 @@ const puedeAbrirEvento = (evento) =>
 
       {
         proximos.length > 0 ? (
-          <div class="flex flex-col mt-8">
+          <ul class="flex flex-col mt-8 list-none p-0 m-0">
             {proximos.map((evento) => (
-              <a
-                href={
-                  puedeAbrirEvento(evento)
-                    ? `/eventos/${evento.slug.current}`
-                    : undefined
-                }
-                aria-disabled={!puedeAbrirEvento(evento) ? "true" : undefined}
-                class:list={[
-                  "flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line transition-colors duration-150 group",
-                  puedeAbrirEvento(evento)
-                    ? "hover:bg-ink/3"
-                    : "cursor-default",
-                ]}
-              >
-                <div class="flex-none relative z-[1]">
-                  <EventBadge
-                    mes={new Date(evento.fecha)
-                      .toLocaleDateString("es-CL", { month: "short" })
-                      .toUpperCase()}
-                    dia={new Date(evento.fecha).getDate().toString()}
-                    large
-                  />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{labelTipo(evento.tipo)}</span>
-                  <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
-                  <div class="flex gap-3 font-mono text-xs tracking-wider text-text-soft">
-                    {evento.lugar && <span class="flex items-center gap-1"><UIcon name="map-pin" size={12} /> {evento.lugar}</span>}
+              <li>
+                <div class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line">
+                  <div class="flex-none relative z-[1]">
+                    <EventBadge
+                      mes={new Date(evento.fecha)
+                        .toLocaleDateString("es-CL", { month: "short" })
+                        .toUpperCase()}
+                      dia={new Date(evento.fecha).getDate().toString()}
+                      large
+                    />
                   </div>
-                  {evento.descripcion && <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>}
+                  <div class="flex-1 min-w-0">
+                    <span class="font-mono text-xs tracking-wider uppercase text-text-soft">
+                      {labelTipo(evento.tipo)}
+                    </span>
+                    {puedeAbrirEvento(evento) ? (
+                      <a
+                        href={`/eventos/${evento.slug.current}`}
+                        class="text-ink hover:text-red"
+                      >
+                        <h3 class="text-base md:text-lg mb-1 inline">{evento.titulo}</h3>
+                      </a>
+                    ) : (
+                      <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
+                    )}
+                    <div class="flex flex-wrap gap-3 font-mono text-xs tracking-wider text-text-soft">
+                      {evento.lugar && (
+                        <span class="flex items-center gap-1">
+                          <UIcon name="map-pin" size={12} /> {evento.lugar}
+                        </span>
+                      )}
+                      <time datetime={evento.fecha}>{fechaLarga(evento.fecha)}</time>
+                    </div>
+                    {evento.descripcion && (
+                      <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>
+                    )}
+                    <div class="mt-3">
+                      <BotonCalendario
+                        evento={evento}
+                        className="border border-line text-ink px-4 py-2"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div class="self-center text-text-soft transition-all duration-150 group-hover:text-red group-hover:translate-x-1 hidden md:block">
-                  <UIcon name="arrow-right" size={20} />
-                </div>
-              </a>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
           <p class="text-text-soft py-8">
             No hay eventos próximos programados.
@@ -148,7 +220,7 @@ const puedeAbrirEvento = (evento) =>
     </div>
   </section>
 
-  <!-- Eventos pasados -->
+  <!-- Eventos pasados (con "Ver más" client-side) -->
   {
     pasados.length > 0 && (
       <section class="py-10 md:py-16">
@@ -156,35 +228,34 @@ const puedeAbrirEvento = (evento) =>
           <div class="mb-8">
             <h2>Eventos pasados</h2>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div id="eventos-pasados" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {pasados.map((evento) => (
-              <a
-                href={
-                  puedeAbrirEvento(evento)
-                    ? `/eventos/${evento.slug.current}`
-                    : undefined
-                }
-                aria-disabled={!puedeAbrirEvento(evento) ? "true" : undefined}
-                class:list={[
-                  "block bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200",
-                  puedeAbrirEvento(evento)
-                    ? "hover:-translate-y-1 hover:shadow-lg"
-                    : "cursor-default",
-                ]}
-              >
+              <article class="bg-white border border-line rounded-sm overflow-hidden flex flex-col">
                 {evento.flyer && (
-                  <div
-                    class="aspect-[16/10] bg-cover"
-                    style={`background-image:url('${urlFor(evento.flyer).width(400).url()}');`}
+                  <img
+                    src={urlFor(evento.flyer).width(600).auto('format').url()}
+                    alt={`Afiche de ${evento.titulo}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full aspect-[16/10] object-cover"
                   />
                 )}
-                <div class="p-4 md:p-5">
-                  <h4 class="text-sm md:text-base mb-1">
-                    {evento.titulo}
-                  </h4>
-                  <div class="flex items-center gap-2 text-text-soft text-sm">
+                <div class="p-4 md:p-5 flex-1 flex flex-col">
+                  {puedeAbrirEvento(evento) ? (
+                    <a href={`/eventos/${evento.slug.current}`} class="text-ink hover:text-red">
+                      <h3 class="text-sm md:text-base mb-1">{evento.titulo}</h3>
+                    </a>
+                  ) : (
+                    <h3 class="text-sm md:text-base mb-1">{evento.titulo}</h3>
+                  )}
+                  <div class="flex items-center gap-2 text-text-soft text-sm mt-auto">
                     <span>
-                      {new Date(evento.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}
+                      <time datetime={evento.fecha}>
+                        {new Date(evento.fecha).toLocaleDateString("es-CL", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </time>
                     </span>
                     {evento.lugar && (
                       <>
@@ -197,11 +268,76 @@ const puedeAbrirEvento = (evento) =>
                     )}
                   </div>
                 </div>
-              </a>
+              </article>
             ))}
           </div>
+
+          <div class="text-center mt-8">
+            <button
+              id="ver-mas-eventos"
+              type="button"
+              class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px cursor-pointer"
+            >
+              Ver más eventos
+            </button>
+          </div>
+          <p id="estado-eventos" class="sr-only" role="status" aria-live="polite"></p>
         </div>
       </section>
     )
   }
+
+  <script>
+    // "Ver más" eventos pasados: carga el siguiente bloque desde el endpoint JSON
+    const boton = document.getElementById('ver-mas-eventos');
+    const contenedor = document.getElementById('eventos-pasados');
+    const estado = document.getElementById('estado-eventos');
+
+    if (boton && contenedor) {
+      let offset = 12;
+
+      boton.addEventListener('click', async () => {
+        boton.disabled = true;
+        boton.textContent = 'Cargando…';
+        try {
+          const respuesta = await fetch(`/api/eventos-pasados?offset=${offset}`);
+          if (!respuesta.ok) throw new Error('Error de red');
+          const datos = await respuesta.json();
+
+          const fragmento = document.createElement('div');
+          fragmento.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 col-span-full';
+          fragmento.innerHTML = datos.eventos.map((e: any) => {
+            const conDetalle = Boolean(e.descripcion || e.tieneGaleria);
+            const href = conDetalle && e.slug?.current ? `/eventos/${e.slug.current}` : null;
+            return `
+            <article class="bg-white border border-line rounded-sm overflow-hidden flex flex-col">
+              ${e.flyerUrl ? `<div class="aspect-[16/10] bg-cover" style="background-image:url('${e.flyerUrl}');"></div>` : ''}
+              <div class="p-4 md:p-5 flex-1 flex flex-col">
+                ${href ? `<a href="${href}" class="text-ink hover:text-red"><h3 class="text-sm md:text-base mb-1">${e.titulo}</h3></a>` : `<h3 class="text-sm md:text-base mb-1">${e.titulo}</h3>`}
+                <div class="flex items-center gap-2 text-text-soft text-sm mt-auto">
+                  <span>${new Date(e.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}</span>
+                </div>
+              </div>
+            </article>
+          `;
+          }).join('');
+
+          contenedor.appendChild(fragmento);
+          offset += datos.eventos.length;
+          estado.textContent = `Se mostraron ${Math.min(offset, datos.total)} de ${datos.total} eventos.`;
+
+          if (offset >= datos.total) {
+            boton.remove();
+          } else {
+            boton.disabled = false;
+            boton.textContent = 'Ver más eventos';
+          }
+        } catch {
+          estado.textContent = 'No se pudieron cargar más eventos.';
+          boton.disabled = false;
+          boton.textContent = 'Ver más eventos';
+        }
+      });
+    }
+  </script>
 </BaseLayout>

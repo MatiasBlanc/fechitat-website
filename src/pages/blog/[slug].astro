@@ -1,0 +1,92 @@
+---
+// Detalle de un artículo del blog, renderizado desde Portable Text de Sanity.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import UIcon from '../../components/icons/UIcon.astro';
+import SocialShare from '../../components/SocialShare.astro';
+import { getBlogPostBySlug, getBlogPosts } from '../../lib/sanityQueries';
+import { urlFor } from '../../lib/sanity';
+import { renderPortableText } from '../../lib/portableText';
+
+export const prerender = true;
+export const revalidate = 3600;
+
+/** Pre-renderiza todos los artículos publicados. */
+export async function getStaticPaths() {
+  const posts = await getBlogPosts(1, 500);
+  return posts
+    .filter((p: any) => p.slug?.current)
+    .map((p: any) => ({ params: { slug: p.slug.current } }));
+}
+
+const post = await getBlogPostBySlug(Astro.params.slug!);
+
+if (!post) {
+  return Astro.redirect('/blog');
+}
+
+const html = renderPortableText(post.contenido);
+
+const fecha = post.fecha
+  ? new Date(post.fecha).toLocaleDateString('es-CL', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  : null;
+
+const imagenUrl = post.imagen ? urlFor(post.imagen).width(1200).format('jpg').url() : undefined;
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.titulo,
+  ...(post.fecha ? { datePublished: post.fecha } : {}),
+  ...(post.autor ? { author: { '@type': 'Person', name: post.autor } } : {}),
+  ...(post.extracto ? { description: post.extracto } : {}),
+  ...(imagenUrl ? { image: imagenUrl } : {}),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://fechitat.cl/blog/${post.slug?.current ?? ''}`,
+  },
+});
+---
+
+<BaseLayout
+  title={`${post.titulo} — Blog FECHITAT`}
+  description={post.extracto ?? `Lee ${post.titulo} en el blog de FECHITAT.`}
+  ogImage={imagenUrl}
+  structuredData={JSON.parse(jsonLd)}
+>
+  <PageHero
+    title={post.titulo}
+    crumb="Blog"
+    image={imagenUrl}
+    imageAlt={`Imagen del artículo: ${post.titulo}`}
+  />
+
+  <article class="py-10 md:py-16">
+    <div class="max-w-3xl mx-auto px-5 md:px-7">
+      <a href="/blog" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm mb-8 transition-all duration-150 hover:bg-black hover:-translate-y-px">
+        <UIcon name="arrow-left" size={16} />
+        Volver al blog
+      </a>
+
+      {post.autor || fecha ? (
+        <p class="text-text-soft text-sm flex flex-wrap items-center gap-x-3 gap-y-1 mb-6">
+          {post.autor && <span>Por {post.autor}</span>}
+          {fecha && <time datetime={post.fecha}>{fecha}</time>}
+        </p>
+      ) : null}
+
+      {html ? (
+        <div class="contenido-articulo" set:html={html} />
+      ) : (
+        <p class="text-text-soft">
+          Este artículo aún no tiene contenido publicado.
+        </p>
+      )}
+      <SocialShare title={post.titulo} />
+    </div>
+  </article>
+</BaseLayout>

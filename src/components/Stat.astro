@@ -19,7 +19,7 @@ const { count, suffix = '', label, dark = false } = Astro.props;
     ]}
     data-count={count}
     data-suffix={suffix}
-  >0</div>
+  >{count}{suffix}</div>
   <div
     class:list={[
       'font-mono text-[0.72rem] tracking-[0.06em] uppercase',

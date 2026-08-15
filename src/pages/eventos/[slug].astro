@@ -32,9 +32,38 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
   month: 'long',
   year: 'numeric',
 });
+const imagenUrl = evento.flyer ? urlFor(evento.flyer).width(1200).url() : undefined;
+const jsonLdEvento = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: evento.titulo,
+  startDate: evento.fecha,
+  ...(evento.fechaFin ? { endDate: evento.fechaFin } : {}),
+  ...(imagenUrl ? { image: imagenUrl } : {}),
+  ...(evento.descripcion ? { description: evento.descripcion } : {}),
+  ...(evento.lugar || evento.ciudad
+    ? {
+        location: {
+          '@type': 'Place',
+          name: evento.lugar ?? evento.ciudad,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: evento.ciudad ?? '',
+            addressCountry: 'CL',
+          },
+        },
+      }
+    : {}),
+  organizer: { '@type': 'SportsOrganization', name: 'FECHITAT', url: 'https://fechitat.cl' },
+};
 ---
 
-<BaseLayout title={`${evento.titulo} — Eventos`}>
+<BaseLayout
+  title={`${evento.titulo} — Eventos`}
+  description={evento.descripcion ?? `${evento.titulo}: fecha, lugar y detalles del evento de FECHITAT.`}
+  ogImage={imagenUrl}
+  structuredData={jsonLdEvento}
+>
   <PageHero
     title={evento.titulo}
     crumb="Eventos"
@@ -42,7 +71,7 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
     imageAlt={`Flyer de ${evento.titulo}`}
   />
 
-  <main class="py-10 md:py-16">
+  <article class="py-10 md:py-16">
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       <a href="/eventos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm mb-8 transition-all duration-150 hover:bg-black hover:-translate-y-px">
         <UIcon name="arrow-left" size={16} />
@@ -97,7 +126,7 @@ const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
         </div>
       </dialog>
     </div>
-  </main>
+  </article>
   <script define:vars={{ fotos: fotosConUrl }}>
     const dialogo = document.getElementById('galeria-dialogo');
     const imagen = document.getElementById('galeria-imagen');

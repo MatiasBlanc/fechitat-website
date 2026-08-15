@@ -40,11 +40,6 @@
   --breakpoint-xl: 1280px;
 }
 
-/* ---------- Variables CSS globales ---------- */
-:root {
-  --maxw: 1180px;
-}
-
 /* ---------- Estilos base ---------- */
 @layer base {
   html {

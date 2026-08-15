@@ -1,0 +1,95 @@
+---
+// Grilla de posts del blog, semántica y accesible.
+import { urlFor } from "../lib/sanity";
+
+interface Props {
+  posts: Array<{
+    _id: string;
+    titulo: string;
+    slug?: { current?: string };
+    fecha?: string;
+    autor?: string;
+    extracto?: string;
+    imagen?: unknown;
+    categorias?: string[];
+  }>;
+}
+
+const { posts } = Astro.props;
+
+/** Nombres legibles de las categorías de Sanity. */
+const NOMBRES_CATEGORIAS: Record<string, string> = {
+  noticias: "Noticias",
+  tecnica: "Técnica",
+  entrevistas: "Entrevistas",
+  eventos: "Eventos",
+  historia: "Historia",
+};
+---
+
+{
+  posts.length > 0 ? (
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0 m-0">
+      {posts.map((post) => {
+        const href = post.slug?.current
+          ? `/blog/${post.slug.current}`
+          : "/blog";
+        const categoria = post.categorias?.[0];
+        return (
+          <li data-post-categoria={post.categorias?.join(',') ?? ''}>
+            <a
+              href={href}
+              class="block bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg h-full"
+            >
+              {post.imagen && (
+                <div class="aspect-[16/10] overflow-hidden">
+                  <img
+                    src={urlFor(post.imagen).width(600).auto("format").url()}
+                    alt={`Imagen de ${post.titulo}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div class="p-5">
+                <div class="flex items-center gap-3 mb-2">
+                  {categoria && (
+                    <span class="font-mono text-[0.65rem] tracking-[0.08em] uppercase text-red">
+                      {NOMBRES_CATEGORIAS[categoria] ?? categoria}
+                    </span>
+                  )}
+                  {post.fecha && (
+                    <time
+                      class="font-mono text-xs text-text-soft"
+                      datetime={post.fecha}
+                    >
+                      {new Date(post.fecha).toLocaleDateString("es-CL", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </time>
+                  )}
+                </div>
+                <h3 class="text-base md:text-lg m-0">{post.titulo}</h3>
+                {post.extracto && (
+                  <p class="text-text-soft text-sm mt-2 line-clamp-2">
+                    {post.extracto}
+                  </p>
+                )}
+              </div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <div class="text-center py-16">
+      <p class="text-text-soft text-lg mb-2">Todavía no hay artículos publicados.</p>
+      <p class="text-text-soft text-sm">
+        El blog de la federación estará disponible muy pronto.
+      </p>
+    </div>
+  )
+}

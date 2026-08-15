@@ -1,26 +1,40 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Tag from '../components/Tag.astro';
 import UIcon from '../components/icons/UIcon.astro';
 import PageHero from '../components/PageHero.astro';
-import { img } from '../lib/imagenes';
+import BlogGrid from '../components/BlogGrid.astro';
+import Paginacion from '../components/Paginacion.astro';
+import { getBlogPosts, getTotalBlogPosts } from '../lib/sanityQueries';
+
+export const prerender = true;
+export const revalidate = 3600; // ISR: regenerar como máximo 1 vez por hora
+
+const POR_PAGINA = 12;
 
 const titulo = 'Blog — FECHITAT';
+const descripcion =
+  'Noticias, técnica, historia y entrevistas sobre Taekwon-Do ITF en Chile, publicadas por FECHITAT.';
 
-const posts = [
-  { titulo: 'Resultados del campeonato nacional 2025', etiqueta: 'Noticias', variante: 'default', fecha: '30 ene 2025', imagen: img.postNacional, tags: 'noticias,historia' },
-  { titulo: '5 deportistas chilenos destacados de 2025', etiqueta: 'Historia', variante: 'gold', fecha: '30 ene 2025', imagen: img.postHistoria, tags: 'historia' },
-  { titulo: 'El Taekwon-Do ITF en Chile: una línea de tiempo', etiqueta: 'Documentos', variante: 'blue', fecha: '28 ene 2025', imagen: img.postDocumento, tags: 'documentos,historia' },
-  { titulo: 'Los 11 principios del entrenamiento según el General Choi', etiqueta: 'Teoría', variante: 'red', fecha: '22 ene 2025', imagen: img.competidora, tags: 'teoria,ensayos' },
-  { titulo: 'Convocatoria: selección nacional rumbo a Jesolo', etiqueta: 'Noticias', variante: 'default', fecha: '18 ene 2025', imagen: img.postConvocatoria, tags: 'noticias' },
-  { titulo: 'Nuevo reglamento de exámenes de grado 2025', etiqueta: 'Documentos', variante: 'blue', fecha: '12 ene 2025', imagen: img.postReglamento, tags: 'documentos' },
-];
+// Datos reales desde Sanity (página 1)
+const [posts, totalPosts] = await Promise.all([
+  getBlogPosts(1, POR_PAGINA),
+  getTotalBlogPosts(),
+]);
+const totalPaginas = Math.max(1, Math.ceil(totalPosts / POR_PAGINA));
 
-const etiquetas = ['Todos', 'Noticias', 'Historia', 'Documentos', 'Ensayos', 'Teoría'];
-const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
+const NOMBRES_CATEGORIAS: Record<string, string> = {
+  noticias: 'Noticias',
+  tecnica: 'Técnica',
+  entrevistas: 'Entrevistas',
+  eventos: 'Eventos',
+  historia: 'Historia',
+};
+
+// Etiquetas detectadas de los posts de esta página
+const etiquetas = ['todos', ...new Set(posts.flatMap((p) => p.categorias ?? []))];
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion}>
   <PageHero
     title="Blog"
     description="Historia, técnica y noticias del Taekwon-Do ITF en Chile — escrito por instructores y la propia federación."
@@ -32,13 +46,13 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
       <section id="recursos" class="bg-white text-ink border border-line rounded-sm p-5 mb-10">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h2 class="text-ink text-xl md:text-2xl">Aprende para tu próximo grado</h2>
+            <h2 class="text-ink text-xl md:text-2xl m-0">Aprende para tu próximo grado</h2>
             <p class="text-text-soft text-sm md:text-base mt-2 max-w-[60ch]">
               Material de apoyo para estudiar en casa y complementar el trabajo de tu dojang. Todas las guías están reunidas en una página dedicada.
             </p>
           </div>
           <a
-            href="/material-de-estudio"
+            href="/estudio"
             class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px flex-none"
           >
             Ver material de estudio
@@ -47,49 +61,45 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
         </div>
       </section>
 
-      <!-- Filtro por etiquetas -->
-      <div class="flex flex-wrap gap-2 mb-8" role="toolbar" aria-label="Filtrar por categoría">
-        {etiquetas.map((etiqueta, i) => (
-          <button
-            class:list={[
-              'font-mono text-xs tracking-wider uppercase border px-4 py-2 rounded-full cursor-pointer transition-all duration-150',
-              i === 0
-                ? 'bg-red text-white border-red'
-                : 'bg-white text-ink border-line hover:bg-ink hover:text-white hover:border-ink',
-            ]}
-            data-tag={slugEtiqueta(etiqueta)}
-            type="button"
+      {
+        etiquetas.length > 1 && (
+          <div
+            class="flex flex-wrap gap-2 mb-8"
+            role="group"
+            aria-label="Filtrar por categoría"
           >
-            {etiqueta}
-          </button>
-        ))}
-      </div>
+            {etiquetas.map((etiqueta, i) => (
+              <button
+                class:list={[
+                  'font-mono text-xs tracking-wider uppercase border px-4 py-2 rounded-full cursor-pointer transition-all duration-150',
+                  i === 0
+                    ? 'bg-red text-white border-red'
+                    : 'bg-white text-ink border-line hover:bg-ink hover:text-white hover:border-ink',
+                ]}
+                data-tag={etiqueta}
+                type="button"
+              >
+                {NOMBRES_CATEGORIAS[etiqueta] ?? 'Todos'}
+              </button>
+            ))}
+          </div>
+        )
+      }
 
       <!-- Grilla de posts -->
-      <div id="post-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {posts.map((post) => (
-          <a class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" href="#" data-post-tags={post.tags}>
-            <div class="aspect-[16/10] bg-cover" style={`background-image:url('${post.imagen}');`}></div>
-            <div class="p-5">
-              <Tag variant={post.variante}>{post.etiqueta}</Tag>
-              <h4 class="text-sm md:text-base mt-2 mb-1">{post.titulo}</h4>
-              <p class="font-mono text-xs text-text-soft">{post.fecha}</p>
-            </div>
-          </a>
-        ))}
+      <div id="post-grid">
+        <BlogGrid posts={posts} />
       </div>
-      <div class="text-center mt-8">
-        <button class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
-          Cargar más artículos
-        </button>
-      </div>
+
+      <Paginacion actual={1} total={totalPaginas} base="/blog" />
     </div>
   </section>
 
   <script>
+    // Filtro client-side por categoría (sobre la página visible)
     const pills = document.querySelectorAll('[data-tag]');
-    const posts = document.querySelectorAll('[data-post-tags]');
-    if (pills.length && posts.length) {
+    const cards = document.querySelectorAll('#post-grid [data-post-categoria]') || [];
+    if (pills.length) {
       pills.forEach((pill) => {
         pill.addEventListener('click', () => {
           pills.forEach((p) => {
@@ -99,9 +109,9 @@ const slugEtiqueta = (e) => e === 'Todos' ? 'todos' : e.toLowerCase();
           pill.classList.remove('bg-white', 'text-ink', 'border-line');
           pill.classList.add('bg-red', 'text-white', 'border-red');
           const tag = pill.dataset.tag;
-          posts.forEach((post) => {
-            const tags = post.dataset.postTags?.split(',') ?? [];
-            post.style.display = tag === 'todos' || tags.includes(tag) ? '' : 'none';
+          document.querySelectorAll('#post-grid li').forEach((item) => {
+            const cats = (item.dataset.postCategoria ?? '').split(',');
+            item.style.display = tag === 'todos' || cats.includes(tag) ? '' : 'none';
           });
         });
       });

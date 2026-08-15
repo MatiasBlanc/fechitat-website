@@ -1,52 +1,117 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HangulRail from '../components/HangulRail.astro';
-import Tag from '../components/Tag.astro';
 import Stat from '../components/Stat.astro';
 import PageHero from '../components/PageHero.astro';
 import BeltBar from '../components/BeltBar.astro';
 import { img } from '../lib/imagenes';
 
+export const prerender = true;
+export const revalidate = 3600;
+
 const titulo = 'Para jóvenes competidores — FECHITAT';
+const descripcion =
+  'Descubre cómo competir en Taekwon-Do ITF, avanzar de cinturón y llegar a la selección nacional con FECHITAT.';
 
 const riel = [
+  { href: '#logros', kr: '세계', label: 'Logros mundiales' },
   { href: '#camino', kr: '단계', label: 'Camino de grados' },
   { href: '#seleccion', kr: '국가대표', label: 'Selección nacional' },
-  { href: '#semana', kr: '일정', label: 'Semana tipo' },
 ];
 
 const grados = [
-  { rango: '10° – 7° Gup', nombre: 'Fundamentos', texto: 'Posturas base, primeros Tul (formas) y disciplina de dojang.' },
-  { rango: '6° – 3° Gup', nombre: 'Técnica intermedia', texto: 'Combinaciones, primeras competencias locales y trabajo de combate controlado.' },
-  { rango: '2° – 1° Gup', nombre: 'Preparación a Dan', texto: 'Tul avanzados, liderazgo en clase y elegibilidad para torneos nacionales.' },
-  { rango: '1° Dan +', nombre: 'Cinturón negro', texto: 'Certificación ITF internacional y camino hacia instructor o selección nacional.' },
-];
-
-const semana = [
-  { dias: 'Lun / Mié / Vie', variante: 'red', nombre: 'Técnica y Tul', texto: 'Trabajo de formas, precisión y examen progresivo.' },
-  { dias: 'Martes / Jueves', variante: 'blue', nombre: 'Combate y táctica', texto: 'Sparring controlado, reglas de competencia y estrategia.' },
-  { dias: 'Sábado', variante: 'gold', nombre: 'Preparación física', texto: 'Fuerza, velocidad y flexibilidad específica del deporte.' },
-  { dias: 'Domingo', variante: 'default', nombre: 'Descanso activo', texto: 'Recuperación, movilidad y análisis de video con el instructor.' },
+  {
+    rango: '10° – 7° Gup',
+    nombre: 'Fundamentos',
+    texto: 'Posturas base, primeros Tul y disciplina de dojang.',
+  },
+  {
+    rango: '6° – 3° Gup',
+    nombre: 'Técnica intermedia',
+    texto: 'Combinaciones, precisión y primeras experiencias competitivas.',
+  },
+  {
+    rango: '2° – 1° Gup',
+    nombre: 'Preparación a Dan',
+    texto: 'Tul avanzados, liderazgo y preparación para competencias nacionales.',
+  },
+  {
+    rango: '1° Dan +',
+    nombre: 'Cinturón negro',
+    texto: 'Proyección hacia la competencia internacional, la enseñanza y el liderazgo.',
+  },
 ];
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion}>
   <HangulRail links={riel} />
 
   <PageHero
-    title="Del cinturón blanco<br />a la selección nacional"
+    title="Entrena, compite<br />y representa a Chile"
     crumb="Para jóvenes"
-    description="Si ya entrenas y quieres llevarlo en serio: esta es la ruta técnica y competitiva que sigue todo deportista de FECHITAT."
+    description="Una ruta de formación para jóvenes que quieren crecer en el Taekwon-Do ITF y alcanzar nuevos desafíos deportivos."
     image={img.jovenCompetidor}
     imageAlt="Joven competidor de Taekwon-Do ITF"
     imageStyle="border-radius:2px;"
   >
     <div class="flex flex-wrap gap-3 mt-5">
-      <a href="/eventos" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
-        Ver calendario de competencias
+      <a
+        href="/eventos"
+        class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px"
+      >
+        Ver competencias
+      </a>
+      <a
+        href="#seleccion"
+        class="inline-flex items-center gap-2 border border-white text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-white hover:text-ink"
+      >
+        Conocer el proceso
       </a>
     </div>
   </PageHero>
+
+  <!-- Respuesta breve a la intención de búsqueda competitiva -->
+  <section class="py-8 md:py-10 bg-white" aria-labelledby="resumen-jovenes">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <h2 id="resumen-jovenes" class="text-xl md:text-2xl">Cómo avanzar y competir en Taekwon-Do ITF</h2>
+      <p class="text-text-soft max-w-[68ch] mt-3">
+        Entrena en un dojang afiliado, progresa por grados, participa en competencias y desarrolla la técnica, la preparación física y la disciplina necesarias para postular a procesos de selección.
+      </p>
+      <ul class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5 text-sm text-text-soft">
+        <li><strong class="text-ink">1. Forma tu base:</strong> domina fundamentos y Tuls.</li>
+        <li><strong class="text-ink">2. Compite:</strong> suma experiencia en torneos nacionales.</li>
+        <li><strong class="text-ink">3. Proyéctate:</strong> participa en el proceso de selección.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Logros internacionales -->
+  <section id="logros" class="py-10 md:py-16 bg-ink text-light">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <div class="max-w-2xl mb-8">
+        <span class="font-mono text-xs tracking-widest uppercase text-light-muted">Resultados internacionales</span>
+        <h2 class="text-white mt-3">El trabajo también se mide en el escenario mundial</h2>
+        <p class="text-light-soft">
+          Jóvenes deportistas de FECHITAT ya han llevado el trabajo de sus dojangs a competencias internacionales y han conseguido resultados para Chile.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        <article class="bg-ink-soft border border-dark-soft rounded-sm p-6 md:p-8">
+          <Stat count={2} label="Medallas mundiales" dark />
+        </article>
+        <article class="bg-ink-soft border border-dark-soft rounded-sm p-6 md:p-8">
+          <div class="border-l-2 border-gold pl-4">
+            <div class="font-heading font-extrabold text-5xl leading-none text-white">3.er</div>
+            <div class="font-mono text-xs tracking-widest uppercase text-light-muted mt-2">Lugar mundial</div>
+          </div>
+          <p class="text-light-muted text-sm mt-5">
+            Un podio mundial que demuestra el nivel y la proyección del Taekwon-Do chileno.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
 
   <!-- Camino de grados -->
   <section id="camino" class="py-10 md:py-16">
@@ -55,68 +120,51 @@ const semana = [
         <div>
           <h2>Tu camino de cinturón</h2>
         </div>
-        <p class="text-text-soft text-sm md:text-base">10 Gup hasta llegar a cinturón negro, y desde ahí, los grados Dan.</p>
+        <p class="text-text-soft text-sm md:text-base">
+          Avanza desde los fundamentos hasta el cinturón negro con una base técnica sólida.
+        </p>
       </div>
       <BeltBar />
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {grados.map((grado) => (
-          <div class="bg-white border border-line rounded-sm overflow-hidden">
+          <article class="bg-white border border-line rounded-sm overflow-hidden">
             <div class="p-5">
               <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{grado.rango}</span>
-              <h4 class="text-sm md:text-base">{grado.nombre}</h4>
+              <h3 class="text-sm md:text-base">{grado.nombre}</h3>
               <p class="text-text-soft text-sm">{grado.texto}</p>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </div>
   </section>
 
   <!-- Selección nacional -->
-  <section class="py-10 md:py-16 bg-ink text-light" id="seleccion">
-    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+  <section class="py-10 md:py-16 bg-paper" id="seleccion">
+    <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
       <div>
-        <h2 class="text-white">Camino a la selección nacional</h2>
-        <p class="text-light-soft">
-          Cada año, FECHITAT convoca clasificatorios nacionales en Poomsae (Tul)
-          y Combate. Los mejores resultados definen la nómina que representa a
-          Chile en campeonatos panamericanos y mundiales ITF.
+        <span class="font-mono text-xs tracking-widest uppercase text-red">Proyección deportiva</span>
+        <h2 class="mt-3">Camino a la selección nacional</h2>
+        <p class="text-text-soft">
+          La selección se construye con entrenamiento constante, participación en competencias y el acompañamiento de instructores y equipos técnicos. Los mejores procesos representan a Chile en campeonatos panamericanos y mundiales ITF.
         </p>
-        <div class="grid grid-cols-2 gap-4 md:gap-6 mt-6">
-          <Stat count={12} label="Deportistas en la nómina actual" dark />
-          <Stat count={3} label="Medallas panamericanas 2018–2024" dark />
-        </div>
+        <a
+          href="/eventos"
+          class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px mt-6"
+        >
+          Ver calendario de competencias
+        </a>
       </div>
-      <div class="bg-ink-soft border border-dark-soft rounded-sm overflow-hidden">
-        <div class="p-5">
-          <ul class="text-light-soft pl-5 leading-8 text-sm">
-            <li>Mínimo 1° Gup vigente</li>
-            <li>Dojang afiliado a FECHITAT</li>
-            <li>Participación en clasificatorio nacional</li>
-            <li>Certificado médico deportivo al día</li>
-          </ul>
-          <a href="#" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px mt-4">
-            Ver bases de la convocatoria
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Semana tipo -->
-  <section id="semana" class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <h2 class="mb-6">Semana tipo de entrenamiento</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {semana.map((dia) => (
-          <div class="bg-white border border-line rounded-sm overflow-hidden">
-            <div class="p-5">
-              <Tag variant={dia.variante}>{dia.dias}</Tag>
-              <h4 class="text-sm md:text-base mt-3">{dia.nombre}</h4>
-              <p class="text-text-soft text-sm">{dia.texto}</p>
-            </div>
-          </div>
-        ))}
+      <div class="bg-white border border-line rounded-sm p-5 md:p-6">
+        <h3 class="text-base md:text-lg mb-4">Qué desarrolla un competidor</h3>
+        <ul class="list-disc pl-5 space-y-3 text-text-soft text-sm md:text-base">
+          <li>Dominio técnico de Tul y combate.</li>
+          <li>Lectura táctica y toma de decisiones.</li>
+          <li>Preparación física específica para competir.</li>
+          <li>Disciplina, autocontrol y espíritu indomable.</li>
+          <li>Experiencia en competencias nacionales e internacionales.</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -125,11 +173,19 @@ const semana = [
   <section class="py-10 md:py-16">
     <div class="max-w-7xl mx-auto px-5 md:px-7 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div>
-        <h2 class="max-w-[18ch] m-0">Habla con el director técnico de tu dojang</h2>
+        <h2 class="max-w-[18ch] m-0">Empieza tu próximo desafío</h2>
+        <p class="text-text-soft mt-3 max-w-[48ch]">
+          Encuentra un dojang afiliado y conversa con tu instructor sobre tu camino competitivo.
+        </p>
       </div>
-      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px whitespace-nowrap">
-        Ver directorio técnico
-      </a>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href="/federacion#directivos"
+          class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px whitespace-nowrap"
+        >
+          Ver directorio técnico
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>

@@ -17,6 +17,7 @@ const { links } = Astro.props;
     links.map((enlace, index) => (
       <a
         href={enlace.href}
+        data-side-nav-link
         class:list={[
           'writing-mode-vertical font-mono text-[0.68rem] tracking-[0.08em] flex items-center gap-[0.6em] transition-all duration-200',
           index === 0
@@ -30,3 +31,32 @@ const { links } = Astro.props;
     ))
   }
 </div>
+
+<script>
+  const enlaces = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-side-nav-link]'));
+  const secciones = enlaces
+    .map((enlace) => document.getElementById(enlace.hash.slice(1)))
+    .filter((seccion): seccion is HTMLElement => Boolean(seccion));
+
+  const activarEnlace = (seccionActiva: HTMLElement) => {
+    enlaces.forEach((enlace) => {
+      const estaActivo = enlace.hash === `#${seccionActiva.id}`;
+      enlace.classList.toggle('active', estaActivo);
+      enlace.classList.toggle('opacity-100', estaActivo);
+      enlace.classList.toggle('text-red', estaActivo);
+      enlace.classList.toggle('opacity-55', !estaActivo);
+      enlace.classList.toggle('text-text-soft', !estaActivo);
+    });
+  };
+
+  if (secciones.length && 'IntersectionObserver' in window) {
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        const visible = entradas.find((entrada) => entrada.isIntersecting)?.target;
+        if (visible instanceof HTMLElement) activarEnlace(visible);
+      },
+      { rootMargin: '-35% 0px -55% 0px', threshold: 0 },
+    );
+    secciones.forEach((seccion) => observador.observe(seccion));
+  }
+</script>

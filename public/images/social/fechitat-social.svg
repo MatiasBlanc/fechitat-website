@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="titulo descripcion">
+  <title id="titulo">FECHITAT</title>
+  <desc id="descripcion">Federación Chilena de Taekwon-Do Tradicional</desc>
+  <rect width="1200" height="630" fill="#0b1220"/>
+  <rect x="0" y="0" width="18" height="630" fill="#d72d36"/>
+  <circle cx="1010" cy="315" r="210" fill="#17243a"/>
+  <circle cx="1010" cy="315" r="150" fill="none" stroke="#d72d36" stroke-width="8" opacity=".8"/>
+  <text x="90" y="260" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="700" letter-spacing="6">FECHITAT</text>
+  <text x="94" y="330" fill="#d9e1ee" font-family="Arial, Helvetica, sans-serif" font-size="30">Federación Chilena de</text>
+  <text x="94" y="375" fill="#d9e1ee" font-family="Arial, Helvetica, sans-serif" font-size="30">Taekwon-Do Tradicional ITF</text>
+  <text x="94" y="505" fill="#d72d36" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" letter-spacing="3">DISCIPLINA · RESPETO · SUPERACIÓN</text>
+</svg>

@@ -15,14 +15,48 @@ export async function getProximosEventos() {
   )
 }
 
-/** Obtener eventos pasados */
-export async function getEventosPasados() {
+/** Obtener eventos pasados (limitado; el resto se carga con "Ver más") */
+export async function getEventosPasados(limite = 12) {
   return sanity.fetch(
-    `*[_type == "evento" && (estado == "finalizado" || fecha < now())] | order(fecha desc) {
-      ...,
+    `*[_type == "evento" && (estado == "finalizado" || fecha < now())] | order(fecha desc) [0...${limite}] {
+      _id,
+      titulo,
+      slug,
+      fecha,
+      tipo,
+      direccion,
+      ciudad,
+      lugar,
+      flyer,
+      descripcion,
       "tieneGaleria": count(galeria) > 0
     }`
   )
+}
+
+/** Obtener eventos pasados paginados (offset/limite) para "Ver más" */
+export async function getEventosPasadosPaginados(offset = 0, limite = 12) {
+  return sanity.fetch(
+    `*[_type == "evento" && (estado == "finalizado" || fecha < now())] | order(fecha desc) [${offset}...${offset + limite}] {
+      _id,
+      titulo,
+      slug,
+      fecha,
+      tipo,
+      direccion,
+      ciudad,
+      lugar,
+      flyer,
+      descripcion,
+      "tieneGaleria": count(galeria) > 0,
+      "flyerUrl": flyer.asset->url
+    }`
+  )
+}
+
+/** Contar eventos pasados (para saber si hay más) */
+export async function getTotalEventosPasados() {
+  return sanity.fetch(`count(*[_type == "evento" && (estado == "finalizado" || fecha < now())])`)
 }
 
 /** Obtener evento por slug */
@@ -55,9 +89,69 @@ export async function getCompetidorBySlug(slug: string) {
   return sanity.fetch(`*[_type == "competidor" && slug.current == $slug][0]`, {slug})
 }
 
-/** Obtener posts del blog */
-export async function getBlogPosts() {
-  return sanity.fetch(`*[_type == "blogPost"] | order(fecha desc)`)
+/** Obtener posts del blog con paginación */
+export async function getBlogPosts(pagina = 1, porPagina = 12) {
+  const inicio = (pagina - 1) * porPagina
+  return sanity.fetch(
+    `*[_type == "blogPost"] | order(fecha desc) [${inicio}...${inicio + porPagina}] {
+      _id,
+      titulo,
+      slug,
+      fecha,
+      autor,
+      extracto,
+      imagen,
+      categorias,
+      destacado
+    }`
+  )
+}
+
+/** Contar posts del blog (para paginación) */
+export async function getTotalBlogPosts() {
+  return sanity.fetch(`count(*[_type == "blogPost"])`)
+}
+
+/** Obtener material de estudio activo, ordenado manualmente */
+export async function getMaterialEstudio() {
+  return sanity.fetch(
+    `*[_type == "materialEstudio" && activo == true] | order(orden asc) {
+      _id,
+      titulo,
+      tipo,
+      grado,
+      descripcion,
+      archivo,
+      contenido,
+      recursos,
+      "archivoUrl": archivo.asset->url,
+      "archivoNombre": archivo.asset->originalFilename
+    }`
+  )
+}
+
+/** Obtener el programa de examen activo. */
+export async function getProgramaExamen() {
+  return sanity.fetch(
+    `*[_type == "programaExamen" && activo == true] | order(_updatedAt desc)[0] {
+      titulo,
+      descripcion,
+      grados[]{
+        _key,
+        rango,
+        cinturon,
+        posiciones,
+        ataquesBrazo,
+        ataquesPierna,
+        defensas,
+        formas,
+        combate,
+        defensaPersonal,
+        rotura,
+        teoria
+      }
+    }`,
+  )
 }
 
 /** Obtener post por slug */
@@ -65,9 +159,60 @@ export async function getBlogPostBySlug(slug: string) {
   return sanity.fetch(`*[_type == "blogPost" && slug.current == $slug][0]`, {slug})
 }
 
-/** Obtener miembros del organigrama */
+/** Obtener integrantes del directorio, excluyendo las comisiones */
 export async function getOrganigrama() {
-  return sanity.fetch(`*[_type == "miembroOrganigrama" && activo == true] | order(orden asc)`)
+  return sanity.fetch(
+    `*[_type == "miembroOrganigrama" && activo == true && nivel != "comision"] | order(orden asc, nombre asc) {
+      _id,
+      nombre,
+      cargo,
+      nivel,
+      grado,
+      foto,
+      email,
+      bio
+    }`
+  )
+}
+
+/** Obtener las comisiones activas y sus integrantes */
+export async function getComisiones() {
+  return sanity.fetch(
+    `*[_type == "comision" && activo == true] | order(orden asc, nombre asc) {
+      _id,
+      nombre,
+      descripcion,
+      miembros[]->{
+        _id,
+        nombre,
+        cargo,
+        grado,
+        foto,
+        email,
+        bio
+      }
+    }`
+  )
+}
+
+/** Obtener los documentos oficiales visibles en el sitio */
+export async function getDocumentosOficiales() {
+  return sanity.fetch(
+    `*[_type == "documentoOficial" && activo == true] | order(fechaPublicacion desc, orden asc) {
+      _id,
+      titulo,
+      slug,
+      tipo,
+      descripcion,
+      version,
+      fechaPublicacion,
+      fechaVigencia,
+      estado,
+      "archivoUrl": archivo.asset->url,
+      "archivoNombre": archivo.asset->originalFilename,
+      "comisionNombre": comision->nombre
+    }`
+  )
 }
 
 /** Obtener campeones del salón de campeones */

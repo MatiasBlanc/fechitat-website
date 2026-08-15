@@ -1,0 +1,89 @@
+---
+import SocialIcon from "./icons/SocialIcon.astro";
+import UIcon from "./icons/UIcon.astro";
+
+interface Props {
+  title: string;
+  url?: string;
+}
+
+const { title, url = Astro.url.href } = Astro.props;
+const urlCodificada = encodeURIComponent(url);
+const tituloCodificado = encodeURIComponent(title);
+const enlaces: Array<{
+  href: string;
+  label: string;
+  icon?: "facebook" | "x" | "linkedin";
+  whatsapp?: boolean;
+  color: string;
+}> = [
+  {
+    href: `https://www.facebook.com/sharer/sharer.php?u=${urlCodificada}`,
+    label: "Compartir en Facebook",
+    icon: "facebook",
+    color: "bg-[#1877f2] text-white border-transparent",
+  },
+  {
+    href: `https://twitter.com/intent/tweet?url=${urlCodificada}&text=${tituloCodificado}`,
+    label: "Compartir en X",
+    icon: "x",
+    color: "bg-black text-white border-transparent",
+  },
+  {
+    href: `https://wa.me/?text=${tituloCodificado}%20${urlCodificada}`,
+    label: "Compartir en WhatsApp",
+    whatsapp: true,
+    color: "bg-[#25d366] text-white border-transparent",
+  },
+  {
+    href: `https://www.linkedin.com/sharing/share-offsite/?url=${urlCodificada}`,
+    label: "Compartir en LinkedIn",
+    icon: "linkedin",
+    color: "bg-[#0a66c2] text-white border-transparent",
+  },
+];
+---
+
+<aside class="border-y border-line py-4 my-8" aria-label="Compartir artículo">
+  <div class="flex items-center gap-3">
+    <span class="font-mono text-xs tracking-widest uppercase text-text-soft mr-1">Compartir</span>
+    {enlaces.map((enlace) => (
+      <a
+        href={enlace.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class:list={[
+          "inline-flex items-center justify-center w-9 h-9 rounded-full focus-visible:outline-2 focus-visible:outline-blue",
+          enlace.color,
+        ]}
+        aria-label={enlace.label}
+        title={enlace.label}
+      >
+        {enlace.whatsapp ? (
+          <UIcon name="whatsapp" size={18} />
+        ) : (
+          <SocialIcon name={enlace.icon!} size={17} />
+        )}
+      </a>
+    ))}
+    <button
+      type="button"
+      data-compartir-nativo
+      class="hidden items-center justify-center w-9 h-9 border border-line rounded-full text-ink focus-visible:outline-2 focus-visible:outline-blue"
+      aria-label="Más opciones para compartir"
+      title="Más opciones para compartir"
+    >
+      <UIcon name="share" size={18} />
+    </button>
+  </div>
+</aside>
+
+<script define:vars={{ title, url }}>
+  const boton = document.querySelector('[data-compartir-nativo]');
+  if (boton && 'share' in navigator) {
+    boton.classList.add('inline-flex');
+    boton.addEventListener('click', () => {
+      navigator.share({ title, url }).catch(() => undefined);
+    });
+  }
+</script>

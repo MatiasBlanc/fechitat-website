@@ -6,11 +6,17 @@ import PageHero from '../components/PageHero.astro';
 import { img } from '../lib/imagenes';
 import { getTestimonios } from '../lib/sanityQueries';
 
+export const prerender = true;
+export const revalidate = 3600;
+
 const titulo = 'Para padres — FECHITAT';
+const descripcion =
+  'Conoce los beneficios, edades, seguridad y pasos para inscribir a tu hijo o hija en Taekwon-Do ITF con FECHITAT.';
 
 const riel = [
   { href: '#beneficios', kr: '혜택', label: 'Beneficios' },
   { href: '#seguridad', kr: '안전', label: 'Seguridad' },
+  { href: '#faq', kr: '질문', label: 'Preguntas frecuentes' },
   { href: '#testimonios', kr: '후기', label: 'Testimonios' },
   { href: '#inscribir', kr: '등록', label: 'Inscribir' },
 ];
@@ -31,9 +37,18 @@ const faqs = [
   { pregunta: '¿Cuántas veces por semana se entrena?', respuesta: 'Los dojangs afiliados ofrecen entre 2 y 3 clases semanales; cada escuela define su propio horario.' },
   { pregunta: '¿Pueden competir a nivel nacional?', respuesta: 'Sí, una vez alcanzado el nivel adecuado pueden participar en el calendario nacional y, con buen desempeño, en la selección para torneos internacionales.' },
 ];
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.pregunta,
+    acceptedAnswer: { "@type": "Answer", text: faq.respuesta },
+  })),
+};
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion} structuredData={faqJsonLd}>
   <HangulRail links={riel} />
 
   <PageHero
@@ -50,6 +65,21 @@ const faqs = [
       </a>
     </div>
   </PageHero>
+
+  <!-- Respuesta breve a la intención informativa y transaccional -->
+  <section class="py-8 md:py-10 bg-white" aria-labelledby="resumen-padres">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <h2 id="resumen-padres" class="text-xl md:text-2xl">¿Por qué elegir Taekwon-Do para tu hijo o hija?</h2>
+      <p class="text-text-soft max-w-[68ch] mt-3">
+        Es una actividad marcial guiada que combina ejercicio, disciplina, respeto y confianza. Las escuelas afiliadas trabajan por edades y niveles, con instructores certificados y opciones para probar una clase antes de inscribirse.
+      </p>
+      <ul class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5 text-sm text-text-soft">
+        <li><strong class="text-ink">Edad:</strong> clases infantiles desde los 5 años, según cada dojang.</li>
+        <li><strong class="text-ink">Seguridad:</strong> grupos por nivel, supervisión y protecciones en contacto.</li>
+        <li><strong class="text-ink">Primer paso:</strong> encuentra una escuela y solicita una clase de prueba.</li>
+      </ul>
+    </div>
+  </section>
 
   <!-- Beneficios -->
   <section id="beneficios" class="py-10 md:py-16">
@@ -92,7 +122,7 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="py-10 md:py-16">
+  <section class="py-10 md:py-16" id="faq">
     <div class="max-w-3xl mx-auto px-5 md:px-7">
       <h2 class="mb-6">Antes de inscribir</h2>
       <div class="border-t border-line">

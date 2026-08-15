@@ -6,38 +6,59 @@ import Tag from "../components/Tag.astro";
 import UIcon from "../components/icons/UIcon.astro";
 import Button from "../components/ui/Button.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import heroImg from "../assets/hero/hero.webp";
 import { img } from "../lib/imagenes";
 import { getMetricas, getProximoEventoDestacado, getBlogPostsDestacados, getEscuelasPorRegion } from "../lib/sanityQueries";
 import { urlFor } from "../lib/sanity";
+import "leaflet/dist/leaflet.css";
+
+export const prerender = true;
+export const revalidate = 3600;
 
 const titulo = "FECHITAT — Federación Chilena de Taekwon-Do Tradicional";
-
-const riel = [
-  { href: "#eventos", kr: "대회", label: "Eventos" },
-  { href: "#camino", kr: "길", label: "Tu camino" },
-  { href: "#dojangs", kr: "도장", label: "Dojangs" },
-  { href: "#noticias", kr: "소식", label: "Noticias" },
-];
+const descripcion =
+  "Encuentra dojangs afiliados, eventos y formación de Taekwon-Do ITF en Chile. Entrena con FECHITAT desde tu ciudad.";
 
 // Datos de Sanity
-const metricas = await getMetricas();
-const proximoEvento = await getProximoEventoDestacado();
-const noticias = await getBlogPostsDestacados();
-const escuelas = await getEscuelasPorRegion();
+const [metricas, proximoEvento, noticias, escuelas] = await Promise.all([
+  getMetricas(),
+  getProximoEventoDestacado(),
+  getBlogPostsDestacados(),
+  getEscuelasPorRegion(),
+]);
+const escuelasMapa = escuelas.map((escuela) => ({
+  _id: escuela._id,
+  nombre: escuela.nombre,
+  ciudad: escuela.ciudad ?? '',
+  region: escuela.region ?? '',
+  lat: escuela.ubicacion?.lat ?? null,
+  lng: escuela.ubicacion?.lng ?? null,
+}));
+
+const riel = [
+  ...(proximoEvento ? [{ href: '#eventos', kr: '대회', label: 'Eventos' }] : []),
+  { href: '#camino', kr: '길', label: 'Tu camino' },
+  { href: '#dojangs', kr: '도장', label: 'Dojangs' },
+  { href: '#noticias', kr: '소식', label: 'Noticias' },
+];
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion}>
   <HangulRail links={riel} />
 
   <!-- Hero -->
   <section
     class="hero relative min-h-[60vh] md:min-h-[78vh] flex items-end text-white overflow-hidden bg-dark"
   >
-    <div
-      class="absolute inset-0 bg-cover bg-[center_30%] opacity-55"
-      style="background-image:url('/images/hero/hero.webp');"
-    >
-    </div>
+    <Image
+      src={heroImg}
+      alt=""
+      fill
+      sizes="100vw"
+      fetchpriority="high"
+      class="absolute inset-0 object-cover object-[center_30%] opacity-55"
+    />
     <div
       class="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,0.35)_0%,rgba(11,18,32,0.55)_45%,rgba(11,18,32,0.97)_100%)]"
     >
@@ -77,9 +98,9 @@ const escuelas = await getEscuelasPorRegion();
               dia={new Date(proximoEvento.fecha).getDate().toString()}
             />
             <div>
-            <span class="font-mono text-xs tracking-wider uppercase text-red">
-              Próximo evento
-            </span>
+              <span class="font-mono text-xs tracking-wider uppercase text-red">
+                Próximo evento
+              </span>
               <div class="font-heading font-bold text-base md:text-lg uppercase">
                 {proximoEvento.titulo}
               </div>
@@ -110,13 +131,19 @@ const escuelas = await getEscuelasPorRegion();
           class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
           href="/padres"
         >
-          <div
-            class="aspect-[16/10] bg-cover"
-            style={`background-image:url('${img.ninosClase}');`}
-          >
+          <div class="aspect-[16/10] overflow-hidden">
+            <img
+              src={img.ninosClase}
+              alt="Niños entrenando Taekwon-Do en clase"
+              width="900"
+              height="563"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover"
+            />
           </div>
           <div class="p-5">
-            <Tag variant="red">Familias</Tag>
+            <Tag variant="red" style="padding: 0.5em 0.9em;">Familias</Tag>
             <h3 class="text-xl md:text-3xl mt-2">
               Busco una actividad para mi hijo/a
             </h3>
@@ -136,13 +163,19 @@ const escuelas = await getEscuelasPorRegion();
           class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
           href="/jovenes"
         >
-          <div
-            class="aspect-[16/10] bg-cover"
-            style={`background-image:url('${img.jovenCompetidor}');`}
-          >
+          <div class="aspect-[16/10] overflow-hidden">
+            <img
+              src={img.jovenCompetidor}
+              alt="Competidor joven de Taekwon-Do ITF en competencia"
+              width="900"
+              height="563"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover"
+            />
           </div>
           <div class="p-5">
-            <Tag variant="blue">Competidores</Tag>
+            <Tag variant="blue" style="padding: 0.5em 0.9em;">Competidores</Tag>
             <h3 class="text-xl md:text-3xl mt-2">
               Quiero avanzar y competir
             </h3>
@@ -194,20 +227,24 @@ const escuelas = await getEscuelasPorRegion();
         <img
           src={img.competidora}
           alt="Competidora de Taekwon-Do ITF con el uniforme nacional"
-          class="rounded-sm w-full"
+          width="1000"
+          height="667"
+          loading="lazy"
+          decoding="async"
+          class="rounded-sm w-full h-auto"
         />
       </div>
     </div>
   </section>
 
-  {/* Red de dojangs */}
+  <!-- Red de dojangs: búsqueda + mapa interactivo -->
   <section class="py-10 md:py-16" id="dojangs">
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
         <div>
           <h2>Encuentra tu escuela más cercana</h2>
           <p class="text-text-soft text-sm md:text-base mt-2">
-            Escuelas afiliadas a FECHITAT en todo el país.
+            Escribe una ciudad o nombre y localiza el dojang en el mapa.
           </p>
         </div>
         <a href="/federacion#escuelas" class="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-red">
@@ -216,68 +253,41 @@ const escuelas = await getEscuelasPorRegion();
         </a>
       </div>
 
-      <div class="relative">
-        <input
-          id="buscar-escuela"
-          type="text"
-          class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
-          placeholder="Buscar por ciudad o nombre…"
-          autocomplete="off"
-        />
-        <div id="sugerencias" class="hidden absolute z-10 left-0 right-0 mt-1 bg-white border border-line rounded-sm shadow-lg max-h-60 overflow-y-auto"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <div class="relative">
+            <label for="buscar-escuela" class="sr-only">Buscar escuela por ciudad o nombre</label>
+            <input
+              id="buscar-escuela"
+              type="search"
+              class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
+              placeholder="Buscar por ciudad o nombre…"
+              autocomplete="off"
+            />
+          </div>
+          <ul
+            id="lista-escuelas"
+            class="mt-3 list-none p-0 m-0 max-h-[420px] overflow-y-auto divide-y divide-line border border-line rounded-sm bg-white"
+            aria-label="Resultados de escuelas"
+            aria-live="polite"
+          >
+          </ul>
+          <p id="estado-escuelas" class="sr-only" role="status" aria-live="polite"></p>
+        </div>
+
+        <div
+          id="mapa-dojangs"
+          class="h-[420px] lg:h-full min-h-[380px] rounded-sm border border-line bg-paper z-0"
+          aria-label="Mapa de dojangs afiliados"
+          data-escuelas={JSON.stringify(escuelasMapa)}
+          role="region"
+        >
+        </div>
       </div>
     </div>
   </section>
 
-  <script define:vars={{ escuelasData: escuelas.map((e: any) => ({ nombre: e.nombre, ciudad: e.ciudad || '', region: e.region || '' })) }}>
-    const input = document.getElementById('buscar-escuela') as HTMLInputElement;
-    const sugerencias = document.getElementById('sugerencias');
-
-    if (input && sugerencias) {
-      input.addEventListener('input', () => {
-        const q = input.value.toLowerCase().trim();
-        if (!q) {
-          sugerencias.classList.add('hidden');
-          sugerencias.innerHTML = '';
-          return;
-        }
-
-        const matches = escuelasData.filter((e: any) =>
-          e.nombre.toLowerCase().includes(q) ||
-          e.ciudad.toLowerCase().includes(q) ||
-          e.region.toLowerCase().includes(q)
-        );
-
-        if (matches.length === 0) {
-          sugerencias.innerHTML = '<p class="p-4 text-sm text-text-soft">No se encontraron escuelas.</p>';
-          sugerencias.classList.remove('hidden');
-          return;
-        }
-
-        sugerencias.innerHTML = matches
-          .slice(0, 6)
-          .map((e: any) => `
-            <a href="/federacion#escuelas" class="flex items-center gap-3 p-3 hover:bg-paper transition-colors">
-              <div class="min-w-0">
-                <p class="text-sm font-medium truncate">${e.nombre}</p>
-                <p class="text-xs text-text-soft truncate">${e.ciudad}${e.region ? ' · ' + e.region : ''}</p>
-              </div>
-            </a>
-          `)
-          .join('');
-        sugerencias.classList.remove('hidden');
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!input.contains(e.target as Node) && !sugerencias.contains(e.target as Node)) {
-          sugerencias.classList.add('hidden');
-        }
-      });
-    }
-  </script>
-
   <!-- Últimas noticias -->
-  {/* Últimas noticias */}
   <section class="py-10 md:py-16" id="noticias">
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
@@ -301,38 +311,43 @@ const escuelas = await getEscuelasPorRegion();
               href={`/blog/${post.slug?.current || '#'}`}
             >
               {post.imagen && (
-                <div
-                  class="aspect-[16/10] bg-cover"
-                  style={`background-image:url('${urlFor(post.imagen).width(600).url()}');`}
-                />
+                <div class="aspect-[16/10] overflow-hidden">
+                  <img
+                    src={urlFor(post.imagen).width(600).auto('format').url()}
+                    alt={`Imagen de ${post.titulo}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
               )}
               <div class="p-5">
                 <div class="flex items-center gap-3 mb-2">
                   {post.categorias?.[0] && <Tag>{post.categorias[0]}</Tag>}
                   {post.fecha && (
-                    <span class="font-mono text-xs text-text-soft">
+                    <time class="font-mono text-xs text-text-soft" datetime={post.fecha}>
                       {new Date(post.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </span>
+                    </time>
                   )}
                 </div>
-                <h4 class="text-base md:text-lg">{post.titulo}</h4>
+                <h3 class="text-base md:text-lg m-0">{post.titulo}</h3>
               </div>
             </a>
           ))
         ) : (
           <>
             <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
-              <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postDefensa}');`} />
+              <div class="aspect-[16/10] bg-cover" role="img" aria-label="Practicante realizando una técnica de defensa personal" style={`background-image:url('${img.postDefensa}');`} />
               <div class="p-5">
                 <Tag variant="red">Ensayos</Tag>
-                <h4 class="text-base md:text-lg mt-2">Principios de la defensa personal</h4>
+                <h3 class="text-base md:text-lg mt-2">Principios de la defensa personal</h3>
               </div>
             </a>
             <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
-              <div class="aspect-[16/10] bg-cover" style={`background-image:url('${img.postNacional}');`} />
+              <div class="aspect-[16/10] bg-cover" role="img" aria-label="Competencia de Taekwon-Do ITF" style={`background-image:url('${img.postNacional}');`} />
               <div class="p-5">
                 <Tag>Noticias</Tag>
-                <h4 class="text-base md:text-lg mt-2">Resultados del campeonato nacional</h4>
+                <h3 class="text-base md:text-lg mt-2">Resultados del campeonato nacional</h3>
               </div>
             </a>
           </>
@@ -341,3 +356,130 @@ const escuelas = await getEscuelasPorRegion();
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  import L from 'leaflet';
+
+  const input = document.getElementById('buscar-escuela') as HTMLInputElement;
+  const lista = document.getElementById('lista-escuelas') as HTMLUListElement;
+  const estado = document.getElementById('estado-escuelas') as HTMLParagraphElement;
+  const contenedorMapa = document.getElementById('mapa-dojangs') as HTMLElement;
+  const escuelas = JSON.parse(contenedorMapa?.dataset.escuelas || '[]');
+
+  /** Cache de coordenadas geocodificadas (Nominatim) por ciudad, en localStorage. */
+  const CACHE_GEO = 'fechitat:geo';
+  const leerCache = (): Record<string, [number, number]> => {
+    try { return JSON.parse(localStorage.getItem(CACHE_GEO) || '{}'); }
+    catch { return {}; }
+  };
+  const guardarEnCache = (cache: Record<string, [number, number]>) => {
+    try { localStorage.setItem(CACHE_GEO, JSON.stringify(cache)); } catch { /* sin storage */ }
+  };
+
+  /** Geocodifica una ciudad chilena con Nominatim (1 request/seg, sin API key). */
+  async function geocodificar(ciudad: string, region = ''): Promise<[number, number] | null> {
+    const cache = leerCache();
+    if (cache[ciudad]) return cache[ciudad];
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=cl&accept-language=es&q=${encodeURIComponent(`${ciudad}${region ? ', ' + region : ''}`)}`;
+      const resp = await fetch(url, { headers: { Accept: 'application/json' } });
+      const datos = await resp.json();
+      if (datos?.[0]) {
+        const coord: [number, number] = [parseFloat(datos[0].lat), parseFloat(datos[0].lon)];
+        cache[ciudad] = coord;
+        guardarEnCache(cache);
+        return coord;
+      }
+    } catch { /* red caída: sin coordinadas */ }
+    return null;
+  }
+
+  if (input && lista && contenedorMapa) {
+    // Mapa centrado en Chile
+    const mapa = L.map(contenedorMapa, {
+      center: [-35.6751, -71.5429],
+      zoom: 5,
+      scrollWheelZoom: false,
+    });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(mapa);
+
+    const markers = new Map<string, { marker: L.Marker; coords: [number, number] }>();
+    const tieneCoordenadas = (escuela) =>
+      Number.isFinite(escuela.lat) && Number.isFinite(escuela.lng);
+
+    const agregarMarcador = (escuela, coords: [number, number]) => {
+      if (markers.has(escuela._id)) return;
+      const popup = document.createElement('div');
+      const nombrePopup = document.createElement('strong');
+      nombrePopup.textContent = escuela.nombre;
+      const ciudadPopup = document.createElement('span');
+      ciudadPopup.textContent = escuela.ciudad ?? '';
+      popup.append(nombrePopup, document.createElement('br'), ciudadPopup);
+      const marker = L.marker(coords).addTo(mapa).bindPopup(popup);
+      markers.set(escuela._id, { marker, coords });
+    };
+
+    // Se construye la lista y cada resultado enfoca su marcador.
+    const pintarLista = (filtro: string) => {
+      const q = filtro.toLowerCase().trim();
+      lista.innerHTML = '';
+      let visibles = 0;
+      escuelas.forEach((e) => {
+        const nombre = e.nombre ?? '';
+        const ciudad = e.ciudad ?? '';
+        const region = e.region ?? '';
+        if (q && !nombre.toLowerCase().includes(q) && !ciudad.toLowerCase().includes(q) && !region.toLowerCase().includes(q)) return;
+        visibles++;
+        const li = document.createElement('li');
+        li.className = 'p-3 hover:bg-paper transition-colors';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left cursor-pointer bg-transparent border-none p-0 font-body';
+        const nombreElemento = document.createElement('span');
+        nombreElemento.className = 'block text-sm font-medium';
+        nombreElemento.textContent = nombre;
+        const ubicacionElemento = document.createElement('span');
+        ubicacionElemento.className = 'block text-xs text-text-soft';
+        ubicacionElemento.textContent = `${ciudad}${region ? ` · ${region}` : ''}`;
+        btn.append(nombreElemento, ubicacionElemento);
+        btn.addEventListener('click', () => {
+          const marcador = markers.get(e._id);
+          if (marcador) mapa.flyTo(marcador.coords, 13);
+        });
+        li.appendChild(btn);
+        lista.appendChild(li);
+      });
+      estado.textContent = visibles === 0 ? 'No se encontraron escuelas con ese criterio.' : `${visibles} escuelas encontradas.`;
+    };
+
+    // Las coordenadas exactas de Sanity se muestran inmediatamente.
+    escuelas.filter(tieneCoordenadas).forEach((escuela) => {
+      agregarMarcador(escuela, [escuela.lat, escuela.lng]);
+    });
+
+    // Geocodificar las escuelas restantes, respetando la tasa de Nominatim.
+    const ciudades = [...new Set(
+      escuelas
+        .filter((escuela) => !tieneCoordenadas(escuela))
+        .map((e) => `${e.ciudad ?? ''}|||${e.region ?? ''}`)
+    )].filter((c) => c !== '|||');
+    (async () => {
+      for (const clave of ciudades) {
+        const [ciudad, region] = clave.split('|||');
+        const coord = await geocodificar(ciudad, region);
+        if (coord) {
+          escuelas
+            .filter((e) => !tieneCoordenadas(e) && (e.ciudad ?? '') === ciudad)
+            .forEach((e) => agregarMarcador(e, coord));
+        }
+        await new Promise((r) => setTimeout(r, 1100));
+      }
+    })();
+
+    input.addEventListener('input', () => pintarLista(input.value));
+    pintarLista('');
+  }
+</script>

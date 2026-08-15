@@ -20,12 +20,12 @@ export default defineType({
     }),
     defineField({
       name: 'instructor',
-      title: 'Instructor principal',
+      title: 'Instructor',
       type: 'string',
     }),
     defineField({
       name: 'foto',
-      title: 'Foto del dojang',
+      title: 'Foto del Dojang',
       type: 'image',
       options: {hotspot: true},
     }),
@@ -48,6 +48,17 @@ export default defineType({
       name: 'region',
       title: 'Región',
       type: 'string',
+    }),
+    defineField({
+      name: 'ubicacion',
+      title: 'Ubicación (mapa)',
+      description:
+        'Opcional. Si se completa, la escuela aparece como marcador en el mapa\ninteractivo con sus coordenadas exactas. Si queda vacío, se geocodifica\nla ciudad automáticamente al momento de mostrar el mapa.',
+      type: 'object',
+      fields: [
+        {name: 'lat', title: 'Latitud', type: 'number', validation: (R) => R.min(-90).max(90)},
+        {name: 'lng', title: 'Longitud', type: 'number', validation: (R) => R.min(-180).max(180)},
+      ],
     }),
 
     defineField({

@@ -7,6 +7,10 @@ import campeon from './campeon'
 import hitoHistorico from './hitoHistorico'
 import metrica from './metrica'
 import testimonio from './testimonio'
+import materialEstudio from './materialEstudio'
+import programaExamen from './programaExamen'
+import comision from './comision'
+import documentoOficial from './documentoOficial'
 
 export const schemaTypes = [
   evento,
@@ -18,4 +22,8 @@ export const schemaTypes = [
   hitoHistorico,
   metrica,
   testimonio,
+  materialEstudio,
+  programaExamen,
+  comision,
+  documentoOficial,
 ]

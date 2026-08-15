@@ -10,10 +10,12 @@ const links = [
 
 const esActivo = (href) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
+const federacionActiva = esActivo("/federacion") || esActivo("/escuelas");
+const formacionActiva = esActivo("/estudio") || esActivo("/examen");
 ---
 
 <header class="sticky top-0 z-50 bg-ink border-b border-white/10">
-  <div class="max-w-[1180px] mx-auto px-5 md:px-7 flex items-center justify-between h-16 md:h-[68px]">
+  <div class="max-w-6xl mx-auto px-5 md:px-7 flex items-center justify-between h-16 md:h-17">
     <!-- Logo -->
     <a href="/" class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg" aria-label="FECHITAT — Inicio">
       <img src="/images/general/fechitat-logo.svg" alt="" class="w-9 h-9 object-contain" />
@@ -22,24 +24,62 @@ const esActivo = (href) =>
 
     <!-- Navegación desktop -->
     <nav class="hidden lg:flex items-center gap-8" aria-label="Navegación principal">
-      {
-        links.map((link) => (
-          <a
-            href={link.href}
-            class:list={[
-              'font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150',
-              esActivo(link.href)
-                ? 'text-white border-red'
-                : 'text-light-soft hover:text-white hover:border-red',
-            ]}
-          >
-            {link.label}
-          </a>
-        ))
-      }
-      <a href="/dojangs" class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px">
-        Encuentra tu dojang
+      <a
+        href="/"
+        data-astro-prefetch="hover"
+        class="font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150"
+        class:list={esActivo("/") ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red"}
+      >
+        Inicio
       </a>
+
+      <details class="relative group">
+        <summary
+          class:list={[
+            "list-none cursor-pointer font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150 flex items-center gap-2",
+            federacionActiva ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red",
+          ]}
+        >
+          Federación <span aria-hidden="true">⌄</span>
+        </summary>
+        <div class="absolute left-0 top-full mt-3 min-w-52 bg-ink border border-white/15 rounded-sm p-2 shadow-xl">
+          <a href="/federacion" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Quiénes somos</a>
+          <a href="/escuelas" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Escuelas afiliadas</a>
+          <a href="/federacion/documentos" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Documentos oficiales</a>
+        </div>
+      </details>
+
+      <a
+        href="/eventos"
+        data-astro-prefetch="hover"
+        class="font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150"
+        class:list={esActivo("/eventos") ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red"}
+      >
+        Eventos
+      </a>
+      <a
+        href="/blog"
+        data-astro-prefetch="hover"
+        class="font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150"
+        class:list={esActivo("/blog") ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red"}
+      >
+        Blog
+      </a>
+      <details class="relative group">
+        <summary
+          class:list={[
+            "list-none cursor-pointer font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150 flex items-center gap-2",
+            formacionActiva ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red",
+          ]}
+        >
+          Formación <span aria-hidden="true">⌄</span>
+        </summary>
+        <div class="absolute right-0 top-full mt-3 min-w-52 bg-ink border border-white/15 rounded-sm p-2 shadow-xl">
+          <a href="/estudio" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Material de estudio</a>
+          <a href="/examen" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Programa de examen</a>
+        </div>
+      </details>
+
     </nav>
 
     <!-- Botón burger (mobile) -->
@@ -48,6 +88,7 @@ const esActivo = (href) =>
       type="button"
       data-burger
       aria-expanded="false"
+      aria-controls="menu-movil"
       aria-label="Abrir menú"
     >
       ☰
@@ -56,26 +97,54 @@ const esActivo = (href) =>
 
   <!-- Menú mobile (overlay) -->
   <nav
+    id="menu-movil"
     class="mobile-nav fixed inset-0 top-16 bg-ink flex flex-col px-5 py-8 gap-6 translate-x-full transition-transform duration-300 lg:hidden z-50"
     aria-label="Navegación móvil"
   >
-    {
-      links.map((link) => (
-        <a
-          href={link.href}
-          class:list={[
-            'font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4',
-            esActivo(link.href)
-              ? 'text-white border-red'
-              : 'text-light-soft hover:text-white border-transparent',
-          ]}
-        >
-          {link.label}
-        </a>
-      ))
-    }
-    <a href="/dojangs" class="inline-flex items-center justify-center gap-2 bg-red text-white font-mono text-sm tracking-widest uppercase py-3 px-6 rounded-sm transition-all duration-150 hover:bg-red-dark mt-4">
-      Encuentra tu dojang
+    <a
+      href="/"
+      data-astro-prefetch="hover"
+      class:list={[
+        "font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4",
+        esActivo("/") ? "text-white border-red" : "text-light-soft hover:text-white border-transparent",
+      ]}
+    >
+      Inicio
     </a>
+    <details class="border-l-2 pl-4" class:list={federacionActiva ? "border-red" : "border-transparent"}>
+      <summary class="list-none cursor-pointer font-mono text-sm tracking-widest uppercase py-2 text-light-soft">Federación <span aria-hidden="true">⌄</span></summary>
+      <div class="flex flex-col gap-3 pl-4 pb-2">
+        <a href="/federacion" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Quiénes somos</a>
+        <a href="/escuelas" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Escuelas afiliadas</a>
+        <a href="/federacion/documentos" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Documentos oficiales</a>
+      </div>
+    </details>
+    <a
+      href="/eventos"
+      data-astro-prefetch="hover"
+      class:list={[
+        "font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4",
+        esActivo("/eventos") ? "text-white border-red" : "text-light-soft hover:text-white border-transparent",
+      ]}
+    >
+      Eventos
+    </a>
+    <a
+      href="/blog"
+      data-astro-prefetch="hover"
+      class:list={[
+        "font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4",
+        esActivo("/blog") ? "text-white border-red" : "text-light-soft hover:text-white border-transparent",
+      ]}
+    >
+      Blog
+    </a>
+    <details class="border-l-2 pl-4" class:list={formacionActiva ? "border-red" : "border-transparent"}>
+      <summary class="list-none cursor-pointer font-mono text-sm tracking-widest uppercase py-2 text-light-soft">Formación <span aria-hidden="true">⌄</span></summary>
+      <div class="flex flex-col gap-3 pl-4 pb-2">
+        <a href="/estudio" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Material de estudio</a>
+        <a href="/examen" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Programa de examen</a>
+      </div>
+    </details>
   </nav>
 </header>

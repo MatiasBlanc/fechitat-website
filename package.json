@@ -12,11 +12,14 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "@astrojs/vercel": "^11.0.5",
     "@sanity/client": "^7.26.2",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.3.3",
+    "@vercel/og": "^1.0.1",
     "astro": "^7.2.0",
+    "leaflet": "^1.9.4",
     "tailwindcss": "^4.3.3"
   }
 }

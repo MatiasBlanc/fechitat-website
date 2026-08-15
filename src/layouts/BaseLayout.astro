@@ -1,19 +1,49 @@
 ---
-// Layout base: estructura HTML común a las 6 páginas (header, belt bar,
-// contenido, footer, fuentes y estilos globales).
+// Layout base: estructura HTML común (header, contenido, footer, fuentes y
+// estilos globales) con SEO, accesibilidad y PWA.
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
   title: string;
-  description?: string;
+  description: string;
+  /** Ruta absoluta de imagen para Open Graph. */
+  ogImage?: string;
+  /** Datos estructurados adicionales de la página. */
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+  /** Evita indexar páginas auxiliares como la paginación. */
+  noindex?: boolean;
 }
 
 const {
   title,
-  description = "Federación Chilena de Taekwon-Do Tradicional ITF. Dojangs afiliados, competidores nacionales y formación con disciplina, respeto y proyección internacional.",
+  description,
+  ogImage = "/images/social/fechitat-social.jpg",
+  structuredData,
+  noindex = false,
 } = Astro.props;
+
+const url = new URL(Astro.url.pathname, Astro.site ?? "https://fechitat.cl");
+
+const jsonLdOrganizacion = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SportsOrganization",
+  name: "FECHITAT",
+  alternateName: "Federación Chilena de Taekwon-Do Tradicional",
+  url: "https://fechitat.cl",
+  logo: "https://fechitat.cl/images/general/fechitat-logo.svg",
+  email: "contacto@fechitat.cl",
+  sport: "Taekwon-Do ITF",
+  areaServed: { "@type": "Country", name: "Chile" },
+  sameAs: [],
+});
+
+const jsonLdAdicional = structuredData
+  ? JSON.stringify(Array.isArray(structuredData) ? structuredData : [structuredData])
+  : null;
+const imagenSocial = new URL(ogImage, Astro.site ?? "https://fechitat.cl");
 ---
 
 <!doctype html>
@@ -23,23 +53,82 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <link rel="canonical" href={url} />
+    <meta name="theme-color" content="#0b1220" />
+    {import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION} />
+    )}
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FECHITAT" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={imagenSocial} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`FECHITAT — ${title}`} />
+    <meta property="og:locale" content="es_CL" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imagenSocial} />
+    <meta name="twitter:image:alt" content={`FECHITAT — ${title}`} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Datos estructurados: organización (global) -->
+    <script type="application/ld+json" set:html={jsonLdOrganizacion}></script>
+    {jsonLdAdicional && <script type="application/ld+json" set:html={jsonLdAdicional}></script>}
+
+    {import.meta.env.PUBLIC_GA_ID && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA_ID}`}></script>
+        <script is:inline define:vars={{ measurementId: import.meta.env.PUBLIC_GA_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(...args) { window.dataLayer.push(args); }
+          gtag('js', new Date());
+          gtag('config', measurementId, { anonymize_ip: true });
+        </script>
+      </>
+    )}
+
+    <ClientRouter />
   </head>
   <body>
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-ink focus:text-white focus:px-4 focus:py-2 focus:rounded-sm focus:text-sm"
+    >
+      Saltar al contenido
+    </a>
     <Header />
-    <main>
+    <main id="contenido" transition:animate="fade">
       <slot />
     </main>
     <Footer />
     <script>
       import "../scripts/main.js";
+    </script>
+    <script is:inline>
+      // Registro del service worker (PWA / offline)
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {
+            /* Sin registro si el entorno no lo permite (dev) */
+          });
+        });
+      }
     </script>
   </body>
 </html>

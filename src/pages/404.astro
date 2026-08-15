@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+
+const titulo = 'Página no encontrada — FECHITAT';
+const descripcion = 'La página que buscas no existe o ya no está disponible.';
+
+const enlaces = [
+  { href: '/escuelas', titulo: 'Escuelas afiliadas', descripcion: 'Encuentra un dojang cercano.' },
+  { href: '/eventos', titulo: 'Próximos eventos', descripcion: 'Revisa el calendario de FECHITAT.' },
+  { href: '/estudio', titulo: 'Material de estudio', descripcion: 'Continúa tu camino de formación.' },
+];
+---
+
+<BaseLayout title={titulo} description={descripcion} noindex>
+  <section class="relative overflow-hidden bg-ink text-white">
+    <div class="absolute inset-y-0 right-[-1rem] md:right-12 flex items-center" aria-hidden="true">
+      <span class="font-heading font-extrabold text-[clamp(10rem,35vw,28rem)] leading-none text-white/[0.04] select-none">
+        404
+      </span>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-5 md:px-7 py-20 md:py-28">
+      <div class="max-w-2xl">
+        <span class="font-mono text-xs tracking-[0.18em] uppercase text-red">Camino no encontrado</span>
+        <p class="font-heading font-extrabold text-7xl md:text-9xl leading-none text-white mt-4 mb-5">404</p>
+        <h1 class="text-white text-3xl md:text-5xl max-w-[18ch] text-balance">
+          Este camino no lleva a ningún dojang.
+        </h1>
+        <p class="text-light-soft max-w-[52ch] mt-4">
+          La página que buscas no existe, cambió de dirección o ya no está disponible.
+          Puedes volver al inicio o continuar explorando FECHITAT.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 mt-8">
+          <Button href="/" variant="primary">Volver al inicio</Button>
+          <Button href="/escuelas" variant="ghost">Buscar una escuela</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="py-12 md:py-16">
+    <div class="max-w-6xl mx-auto px-5 md:px-7">
+      <h2 class="text-2xl md:text-3xl text-balance">Quizás buscabas esto</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        {enlaces.map((enlace) => (
+          <a
+            href={enlace.href}
+            class="group bg-white border border-line rounded-sm p-5 transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-red"
+          >
+            <h3 class="text-base md:text-lg group-hover:text-red transition-colors duration-150">{enlace.titulo}</h3>
+            <p class="text-text-soft text-sm mt-2">{enlace.descripcion}</p>
+            <span class="inline-block text-red font-mono text-xs tracking-wider uppercase mt-5">Explorar →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

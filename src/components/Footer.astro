@@ -1,49 +1,107 @@
 ---
-import UIcon from './icons/UIcon.astro';
-import SocialLinks from './SocialLinks.astro';
+import UIcon from "./icons/UIcon.astro";
+import SocialLinks from "./SocialLinks.astro";
 ---
 
-<footer class="bg-ink text-light-soft py-12 md:py-[3.2em] pb-8 md:pb-[1.6em]">
-  <div class="max-w-[1180px] mx-auto px-5 md:px-7">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-8 md:pb-[2.6em] border-b border-white/10">
+<footer class="bg-ink text-light-soft py-12 md:py-13 pb-8 md:pb-6">
+  <div class="max-w-6xl mx-auto px-5 md:px-7">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-8 md:pb-10 border-b border-white/10"
+    >
       <div>
-        <div class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg mb-4">
-          <img src="/images/general/fechitat-logo.svg" alt="Logo FECHITAT" class="w-9 h-9 object-contain" />
+        <div
+          class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg mb-4"
+        >
+          <img
+            src="/images/general/fechitat-logo.svg"
+            alt="Logo FECHITAT"
+            class="w-9 h-9 object-contain"
+          />
           FECHITAT
         </div>
         <p class="max-w-[32ch] text-light-muted text-sm md:text-base mb-5">
-          Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF.
-          Formando artistas marciales desde los dojangs de todo Chile.
+          Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF. Formando
+          artistas marciales desde los dojangs de todo Chile.
         </p>
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
-            <img src="/images/general/itf-logo.png" alt="International Taekwon-Do Federation" class="max-w-full max-h-full object-contain opacity-70" />
+          <div
+            class="w-12 h-12 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="/images/general/itf-logo.png"
+              alt="International Taekwon-Do Federation"
+              class="w-full object-contain"
+            />
           </div>
-          <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
-            <img src="/images/general/logo_panam.webp" alt="Panamerican Taekwon-Do Federation" class="max-w-full max-h-full object-contain opacity-70" />
+          <div
+            class="w-12 h-12 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="/images/general/logo_panam.webp"
+              alt="Panamerican Taekwon-Do Federation"
+              class="w-full object-contain"
+            />
           </div>
         </div>
       </div>
       <div>
-        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Legales</h4>
+        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
+          Legales
+        </h2>
         <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Documentos</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Transparencia</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Estatutos</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Afiliación a la federación</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Listado de escuelas</a></li>
+          <li>
+            <a href="/federacion/documentos" class="hover:text-white transition-colors duration-150"
+              >Documentos oficiales</a
+            >
+          </li>
+          <li>
+            <a href="mailto:contacto@fechitat.cl?subject=Consulta%20de%20transparencia" class="hover:text-white transition-colors duration-150"
+              >Transparencia</a
+            >
+          </li>
+          <li>
+            <a href="mailto:contacto@fechitat.cl?subject=Solicitud%20de%20estatutos" class="hover:text-white transition-colors duration-150"
+              >Estatutos</a
+            >
+          </li>
+          <li>
+            <a href="/federacion#afiliacion" class="hover:text-white transition-colors duration-150"
+              >Afiliación a la federación</a
+            >
+          </li>
+          <li>
+            <a href="/escuelas" class="hover:text-white transition-colors duration-150"
+              >Listado de escuelas</a
+            >
+          </li>
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Recursos</h4>
+        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
+          Recursos
+        </h2>
         <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Manual de exámenes</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Reglamento de torneos</a></li>
-          <li><a href="#" class="hover:text-white transition-colors duration-150">Enciclopedia técnica</a></li>
+          <li>
+            <a href="/examen" class="hover:text-white transition-colors duration-150"
+              >Manual de exámenes</a
+            >
+          </li>
+          <li>
+            <a href="/eventos" class="hover:text-white transition-colors duration-150"
+              >Reglamento de torneos</a
+            >
+          </li>
+          <li>
+            <a href="/estudio" class="hover:text-white transition-colors duration-150"
+              >Enciclopedia técnica</a
+            >
+          </li>
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-mono text-xs tracking-widest uppercase mb-4">Contacto</h4>
+        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
+          Contacto
+        </h2>
         <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
           <li class="flex items-center gap-2">
             <UIcon name="mail" size={16} />
@@ -56,7 +114,9 @@ import SocialLinks from './SocialLinks.astro';
         </ul>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-[1.6em] text-sm gap-4">
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-[1.6em] text-sm gap-4"
+    >
       <div>Hecho en ★ con espíritu indómito.</div>
       <SocialLinks />
     </div>

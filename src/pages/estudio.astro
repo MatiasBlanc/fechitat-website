@@ -1,0 +1,221 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import BeltBar from '../components/BeltBar.astro';
+import { getMaterialEstudio } from '../lib/sanityQueries';
+import { renderPortableText } from '../lib/portableText';
+
+export const prerender = true;
+export const revalidate = 3600;
+
+const titulo = 'Material de estudio — FECHITAT';
+const descripcion =
+  'Estudia Taekwon-Do ITF con guías de principios, terminología, Tuls y preparación para exámenes de grado.';
+
+const recursos = [
+  {
+    titulo: 'Principios del Taekwon-Do',
+    descripcion:
+      'Los cinco pilares que guían cada aspecto del entrenamiento: cortesía, integridad, perseverancia, autocontrol y espíritu indomable.',
+    tipo: 'Fundamentos',
+    grado: 'general',
+    color: 'bg-red',
+    items: ['Significado de cada principio', 'Aplicación en el dojang', 'Reflexiones del General Choi'],
+  },
+  {
+    titulo: 'Terminología coreana',
+    descripcion:
+      'Vocabulario esencial para comunicarte en clase y entender las instrucciones del instructor.',
+    tipo: 'Vocabulario',
+    grado: 'general',
+    color: 'bg-blue',
+    items: ['Posiciones (sogui)', 'Defensas (makki)', 'Ataques (jireugi)', 'Patadas (chagi)'],
+  },
+  {
+    titulo: 'Tuls y movimientos fundamentales',
+    descripcion:
+      'Secuencias de formas que cada practicante debe dominar para avanzar de grado.',
+    tipo: 'Técnica',
+    grado: 'general',
+    color: 'bg-gold',
+    items: ['Chon-Ji a Choong-Moo', 'Diagramas y direcciones', 'Puntos de atención por tul'],
+  },
+  {
+    titulo: 'Preparación para el examen',
+    descripcion:
+      'Lista de repaso completa para llegar preparado y con confianza a tu próximo examen de grado.',
+    tipo: 'Grados',
+    grado: 'general',
+    color: 'bg-ink',
+    items: ['Requisitos por grado (gup)', 'Teoría y significados', 'Formato del examen'],
+  },
+];
+
+const materiales = await getMaterialEstudio();
+const coloresPorTipo: Record<string, string> = {
+  fundamentos: 'bg-red',
+  vocabulario: 'bg-blue',
+  tecnica: 'bg-gold',
+  grados: 'bg-ink',
+};
+const nombresPorTipo: Record<string, string> = {
+  fundamentos: 'Fundamentos',
+  vocabulario: 'Vocabulario',
+  tecnica: 'Técnica',
+  grados: 'Grados',
+};
+const nombresPorGrado: Record<string, string> = {
+  general: 'Todos los grados',
+  blanco: 'Blanco',
+  amarillo: 'Amarillo',
+  verde: 'Verde',
+  azul: 'Azul',
+  rojo: 'Rojo',
+  negro: 'Negro',
+};
+const filtrosGrado = [
+  { valor: 'todos', etiqueta: 'Todos' },
+  { valor: 'blanco', etiqueta: 'Blanco' },
+  { valor: 'amarillo', etiqueta: 'Amarillo' },
+  { valor: 'verde', etiqueta: 'Verde' },
+  { valor: 'azul', etiqueta: 'Azul' },
+  { valor: 'rojo', etiqueta: 'Rojo' },
+  { valor: 'negro', etiqueta: 'Negro' },
+];
+
+const recursosEditables = materiales.map((material) => ({
+  titulo: material.titulo,
+  descripcion: material.descripcion ?? '',
+  tipo: nombresPorTipo[material.tipo] ?? material.tipo,
+  grado: material.grado ?? 'general',
+  color: coloresPorTipo[material.tipo] ?? 'bg-ink',
+  items: material.recursos?.flatMap((recurso) => recurso.items ?? []) ?? [],
+  archivoUrl: material.archivoUrl,
+  archivoNombre: material.archivoNombre,
+  contenidoHtml: renderPortableText(material.contenido),
+}));
+const recursosVisibles = recursosEditables.length > 0
+  ? recursosEditables
+  : recursos.map((recurso) => ({
+      ...recurso,
+      grado: recurso.grado ?? 'general',
+      archivoUrl: undefined,
+      archivoNombre: undefined,
+      contenidoHtml: '',
+    }));
+---
+
+<BaseLayout title={titulo} description={descripcion}>
+  <PageHero
+    title="Material de estudio"
+    description="Guías y recursos para estudiar en casa y complementar el trabajo de tu dojang."
+  />
+
+  <section class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-5 md:px-7">
+      <div class="mb-10">
+        <h2>Aprende para tu próximo grado</h2>
+        <p class="text-text-soft text-sm md:text-base max-w-[60ch] mt-2">
+          Todo lo que necesitas para preparar tu examen de grado, organizado por
+          temática. Estudia en casa y complementa lo que aprendes en el dojang.
+        </p>
+      </div>
+
+      <div class="mb-8" aria-labelledby="filtro-grado-titulo">
+        <h3 id="filtro-grado-titulo" class="text-sm font-mono uppercase tracking-wider text-text-soft mb-3">Filtrar por grado</h3>
+        <BeltBar />
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mt-3" role="group" aria-label="Filtrar materiales por grado">
+          {filtrosGrado.map((filtro, indice) => (
+            <button
+              type="button"
+              data-filtro-grado={filtro.valor}
+              class:list={[
+                'px-3 py-2 border border-line rounded-sm text-xs font-mono uppercase tracking-wider transition-colors',
+                indice === 0 ? 'bg-ink text-white border-ink' : 'bg-white text-ink',
+              ]}
+            >
+              {filtro.etiqueta}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="materiales-grid">
+        {recursosVisibles.map((recurso) => (
+          <article class="bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" data-material-card data-grado={recurso.grado}>
+            {/* Barra de acento superior */}
+            <div class={`h-1.5 ${recurso.color}`} />
+
+            <div class="p-5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-xs tracking-widest uppercase text-text-soft">
+                  {recurso.tipo}
+                </span>
+                <span class="font-mono text-[0.65rem] tracking-wider uppercase text-red">
+                  {nombresPorGrado[recurso.grado] ?? 'Todos los grados'}
+                </span>
+              </div>
+              <h3 class="text-ink text-base md:text-lg mt-2 mb-2">
+                {recurso.titulo}
+              </h3>
+              <p class="text-text-soft text-sm leading-relaxed mb-4">
+                {recurso.descripcion}
+              </p>
+
+              {/* Lista de contenido */}
+              {recurso.items.length > 0 && (
+                <ul class="space-y-1.5">
+                  {recurso.items.map((item) => (
+                    <li class="text-sm text-text-soft flex items-start gap-2">
+                      <span class="text-red mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {recurso.contenidoHtml && (
+                <details class="mt-4 border-t border-line pt-3">
+                  <summary class="cursor-pointer font-mono text-xs uppercase tracking-wider text-red">Leer contenido</summary>
+                  <div class="contenido-articulo mt-3 text-sm" set:html={recurso.contenidoHtml} />
+                </details>
+              )}
+              {recurso.archivoUrl && (
+                <a
+                  href={recurso.archivoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex mt-4 border border-ink px-3 py-2 text-xs font-mono uppercase tracking-wider text-ink"
+                >
+                  Descargar {recurso.archivoNombre ?? 'PDF'}
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const filtros = document.querySelectorAll<HTMLButtonElement>('[data-filtro-grado]');
+    const tarjetas = document.querySelectorAll<HTMLElement>('[data-material-card]');
+
+    filtros.forEach((filtro) => {
+      filtro.addEventListener('click', () => {
+        const grado = filtro.dataset.filtroGrado ?? 'todos';
+        filtros.forEach((boton) => {
+          const activo = boton === filtro;
+          boton.classList.toggle('bg-ink', activo);
+          boton.classList.toggle('text-white', activo);
+          boton.classList.toggle('border-ink', activo);
+          boton.classList.toggle('bg-white', !activo);
+          boton.classList.toggle('text-ink', !activo);
+        });
+        tarjetas.forEach((tarjeta) => {
+          const esGeneral = tarjeta.dataset.grado === 'general';
+          tarjeta.hidden = grado !== 'todos' && !esGeneral && tarjeta.dataset.grado !== grado;
+        });
+      });
+    });
+  </script>
+</BaseLayout>

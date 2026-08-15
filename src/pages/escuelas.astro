@@ -6,7 +6,12 @@ import UIcon from '../components/icons/UIcon.astro';
 import { getEscuelas } from '../lib/sanityQueries';
 import { urlFor } from '../lib/sanity';
 
+export const prerender = true;
+export const revalidate = 3600;
+
 const titulo = 'Escuelas Afiliadas — FECHITAT';
+const descripcion =
+  'Busca escuelas y dojangs afiliados a FECHITAT por ciudad o región y encuentra dónde entrenar Taekwon-Do ITF en Chile.';
 
 // Datos de Sanity
 const escuelas = await getEscuelas();
@@ -20,9 +25,28 @@ const escuelasPorRegion = escuelas.reduce((acc: any, escuela: any) => {
 }, {});
 
 const regiones = Object.keys(escuelasPorRegion).sort();
+const jsonLdEscuelas = {
+  "@context": "https://schema.org",
+  "@graph": escuelas
+    .filter((escuela: any) => escuela.ciudad || escuela.direccion)
+    .map((escuela: any) => ({
+      "@type": "SportsActivityLocation",
+      name: escuela.nombre,
+      url: "https://fechitat.cl/escuelas",
+      ...(escuela.email ? { email: escuela.email } : {}),
+      ...(escuela.whatsapp ? { telephone: escuela.whatsapp } : {}),
+      address: {
+        "@type": "PostalAddress",
+        ...(escuela.direccion ? { streetAddress: escuela.direccion } : {}),
+        ...(escuela.ciudad ? { addressLocality: escuela.ciudad } : {}),
+        ...(escuela.region ? { addressRegion: escuela.region } : {}),
+        addressCountry: "CL",
+      },
+    })),
+};
 ---
 
-<BaseLayout title={titulo}>
+<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEscuelas}>
   <PageHero
     title="Escuelas afiliadas"
     crumb="Escuelas"
@@ -34,6 +58,7 @@ const regiones = Object.keys(escuelasPorRegion).sort();
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
+          <label for="buscar-escuela" class="sr-only">Buscar escuela por nombre, ciudad o región</label>
           <input
             id="buscar-escuela"
             type="text"
@@ -43,14 +68,14 @@ const regiones = Object.keys(escuelasPorRegion).sort();
         </div>
         <div class="flex gap-2 flex-wrap">
           <button
-            class="filtro-region px-4 py-2 font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-ink text-white transition-colors duration-150"
+            class="filtro-region px-4 py-2 font-medium font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-ink text-white transition-colors duration-150"
             data-region="todas"
           >
             Todas
           </button>
           {regiones.map((region) => (
             <button
-              class="filtro-region px-4 py-2 font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-white hover:bg-ink hover:text-white hover:border-ink transition-colors duration-150"
+              class="filtro-region px-4 py-2 font-medium font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-white hover:bg-ink hover:text-white hover:border-ink transition-colors duration-150"
               data-region={region}
             >
               {region}
@@ -82,11 +107,14 @@ const regiones = Object.keys(escuelasPorRegion).sort();
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {escuelasPorRegion[region].map((escuela: any) => (
                 <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
-                  {/* Foto del dojo como cover */}
+                  {/* Foto del Dojang como cover */}
                   {escuela.foto && (
-                    <div
-                      class="aspect-[16/9] bg-cover bg-center"
-                      style={`background-image:url('${urlFor(escuela.foto).width(500).url()}');`}
+                    <img
+                      src={urlFor(escuela.foto).width(800).auto('format').url()}
+                      alt={`Dojang ${escuela.nombre}`}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full aspect-[16/9] object-cover"
                     />
                   )}
 
@@ -101,7 +129,7 @@ const regiones = Object.keys(escuelasPorRegion).sort();
                         />
                       )}
                       <div>
-                        <h4 class="text-base md:text-lg m-0">{escuela.nombre}</h4>
+                        <h3 class="text-base md:text-lg m-0">{escuela.nombre}</h3>
                         {escuela.instructor && (
                           <p class="text-text-soft text-xs flex items-center gap-1">
                             <UIcon name="user" size={12} />
@@ -120,13 +148,13 @@ const regiones = Object.keys(escuelasPorRegion).sort();
 
                     <div class="flex flex-wrap gap-2 border-t border-line pt-4">
                       {escuela.email && (
-                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
                           <UIcon name="mail" size={12} />
                           Email
                         </a>
                       )}
                       {escuela.whatsapp && (
-                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
                           <UIcon name="whatsapp" size={12} />
                           WhatsApp
                         </a>
@@ -155,7 +183,7 @@ const regiones = Object.keys(escuelasPorRegion).sort();
       <p class="text-text-soft max-w-[50ch] mx-auto mb-6">
         Si tienes una escuela de Taekwon-Do ITF y quieres ser parte de la federación, contáctanos para conocer los requisitos de afiliación.
       </p>
-      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
+      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-medium font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
         Contactar directiva
       </a>
     </div>

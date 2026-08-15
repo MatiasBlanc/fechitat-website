@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getDocumentosOficiales } from '../../lib/sanityQueries';
+
+export const prerender = true;
+export const revalidate = 3600;
+
+const titulo = 'Documentos oficiales — FECHITAT';
+const descripcion =
+  'Consulta los protocolos, reglamentos, estatutos y demás documentos oficiales de FECHITAT.';
+
+const documentos = await getDocumentosOficiales();
+const formateadorFecha = new Intl.DateTimeFormat('es-CL', {dateStyle: 'long'});
+const etiquetasPorTipo: Record<string, string> = {
+  protocolo: 'Protocolo',
+  reglamento: 'Reglamento',
+  estatuto: 'Estatuto',
+  politica: 'Política',
+  formulario: 'Formulario',
+  comunicado: 'Comunicado',
+  otro: 'Documento',
+};
+---
+
+<BaseLayout title={titulo} description={descripcion}>
+  <PageHero
+    title="Documentos oficiales"
+    crumb="Federación"
+    description="Protocolos, reglamentos y documentos que establecen el funcionamiento oficial de FECHITAT."
+  />
+
+
+  <section class="py-10 md:py-16">
+    <div class="max-w-6xl mx-auto px-5 md:px-7">
+      <div class="mb-8 max-w-[65ch]">
+        <h2>Documentos publicados</h2>
+        <p class="text-text-soft mt-2">
+          Revisa la versión vigente de cada documento antes de descargarlo. Los documentos archivados se mantienen como referencia histórica.
+        </p>
+      </div>
+
+      {documentos.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {documentos.map((documento) => (
+            <article
+              class:list={[
+                'bg-white border border-line rounded-sm overflow-hidden flex flex-col',
+                documento.estado === 'archivado' ? 'opacity-80' : '',
+              ]}
+            >
+              <div class:list={['h-1.5', documento.estado === 'archivado' ? 'bg-text-soft' : 'bg-red']} />
+              <div class="p-5 md:p-6 flex flex-col h-full">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="font-mono text-xs tracking-widest uppercase text-red">
+                    {etiquetasPorTipo[documento.tipo] ?? 'Documento'}
+                  </span>
+                  <span class="font-mono text-[0.65rem] tracking-wider uppercase text-text-soft border border-line px-2 py-1 rounded-sm">
+                    {documento.estado === 'archivado' ? 'Archivado' : 'Vigente'}
+                  </span>
+                </div>
+
+                <h3 class="text-xl text-ink text-balance">{documento.titulo}</h3>
+                {documento.descripcion && (
+                  <p class="text-text-soft text-sm leading-relaxed mt-2">{documento.descripcion}</p>
+                )}
+
+                <dl class="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line mt-5 pt-4 text-xs">
+                  {documento.version && (
+                    <div>
+                      <dt class="font-mono uppercase tracking-wider text-text-soft">Versión</dt>
+                      <dd class="mt-1 text-ink">{documento.version}</dd>
+                    </div>
+                  )}
+                  {documento.fechaPublicacion && (
+                    <div>
+                      <dt class="font-mono uppercase tracking-wider text-text-soft">Publicado</dt>
+                      <dd class="mt-1 text-ink">
+                        {formateadorFecha.format(new Date(documento.fechaPublicacion))}
+                      </dd>
+                    </div>
+                  )}
+                  {documento.fechaVigencia && (
+                    <div>
+                      <dt class="font-mono uppercase tracking-wider text-text-soft">Vigente desde</dt>
+                      <dd class="mt-1 text-ink">
+                        {formateadorFecha.format(new Date(documento.fechaVigencia))}
+                      </dd>
+                    </div>
+                  )}
+                  {documento.comisionNombre && (
+                    <div>
+                      <dt class="font-mono uppercase tracking-wider text-text-soft">Responsable</dt>
+                      <dd class="mt-1 text-ink">{documento.comisionNombre}</dd>
+                    </div>
+                  )}
+                </dl>
+
+                {documento.archivoUrl && (
+                  <Button
+                    href={documento.archivoUrl}
+                    variant="dark-ghost"
+                    size="sm"
+                    class="self-start mt-6"
+                  >
+                    Descargar PDF
+                  </Button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-white border border-line rounded-sm p-6 md:p-8 text-center">
+          <h3 class="text-xl">Todavía no hay documentos publicados</h3>
+          <p class="text-text-soft text-sm max-w-[52ch] mx-auto mt-2">
+            Los documentos oficiales aparecerán aquí cuando sean publicados desde el panel de administración.
+          </p>
+          <Button href="/federacion" variant="secondary" size="sm" class="mt-5">
+            Volver a Federación
+          </Button>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
