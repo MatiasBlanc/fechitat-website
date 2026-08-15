@@ -144,7 +144,7 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
               {comision.descripcion && <p class="text-text-soft text-sm mb-5">{comision.descripcion}</p>}
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {comision.miembros?.map((miembro) => (
-                  <div class="border-t-2 border-red pt-3">
+                  <div class="pt-4">
                     <div class="flex items-center gap-3">
                       {miembro.foto ? (
                         <img
@@ -159,11 +159,10 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
                       )}
                       <div>
                         <h4 class="text-base m-0">{miembro.nombre}</h4>
-                        {miembro.grado && <p class="text-red font-mono text-xs tracking-wider uppercase mt-1">{miembro.grado}</p>}
                       </div>
                     </div>
                     {miembro.email && (
-                      <Button href={`mailto:${miembro.email}`} variant="dark-ghost" size="sm" class="mt-3">
+                      <Button href={`mailto:${miembro.email}`} variant="dark-ghost" size="sm" class="mt-5">
                         Contactar
                       </Button>
                     )}
