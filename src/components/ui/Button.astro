@@ -1,12 +1,16 @@
 ---
-// Componente Button reutilizable con variantes.
+// Componente Button institucional FECHITAT
+// Variantes: primary (rojo sólido), secondary (borde sutil), tertiary (texto + icono), blue (azul institucional), ghost (blanco traslúcido)
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'dark' | 'dark-ghost';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'blue' | 'ghost' | 'dark' | 'dark-ghost';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   class?: string;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
+  target?: string;
+  rel?: string;
+  'aria-label'?: string;
 }
 
 const {
@@ -16,33 +20,45 @@ const {
   class: clase = '',
   type = 'button',
   disabled = false,
+  target,
+  rel,
+  'aria-label': ariaLabel,
 } = Astro.props;
 
-const baseClasses = 'inline-flex items-center gap-[0.5em] font-medium font-mono tracking-[0.08em] uppercase rounded-[var(--radius-sm)] cursor-pointer transition-all duration-150 ease-[ease] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+const baseClasses = 'inline-flex items-center justify-center gap-2 font-kumbh font-semibold text-center rounded-lg cursor-pointer transition-all duration-150 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2';
 
 const sizeClasses = {
-  sm: 'text-[0.7rem] py-[0.6em] px-[1em]',
-  md: 'text-[0.78rem] py-[0.9em] px-[1.5em]',
-  lg: 'text-[0.85rem] py-[1em] px-[2em]',
+  sm: 'text-xs py-2 px-3.5',
+  md: 'text-sm py-2.5 px-5',
+  lg: 'text-base py-3.5 px-7',
 };
 
 const variantClasses = {
-  primary: 'bg-red text-white hover:bg-red-dark hover:-translate-y-[1px]',
-  secondary: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
-  ghost: 'bg-transparent border border-white/50 text-white',
-  dark: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
-  'dark-ghost': 'bg-transparent border border-ink text-ink',
+  // Primario: Rojo ITF sólido, texto blanco
+  primary: 'bg-itf-red hover:bg-itf-red-dark text-white shadow-xs focus-visible:outline-itf-red',
+  // Secundario: Borde sutil, fondo blanco/transparente
+  secondary: 'border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 focus-visible:outline-slate-800',
+  // Terciario: Texto + icono, sin borde
+  tertiary: 'text-slate-700 hover:text-itf-red bg-transparent p-0 underline-offset-4 hover:underline focus-visible:outline-itf-red',
+  // Azul institucional
+  blue: 'bg-itf-blue hover:bg-itf-blue-dark text-white shadow-xs focus-visible:outline-itf-blue',
+  // Ghost para hero sobre fondo oscuro
+  ghost: 'bg-transparent border border-white/40 hover:border-white hover:bg-white/10 text-white focus-visible:outline-white',
+  // Alias de compatibilidad
+  dark: 'bg-fechitat-dark hover:bg-black text-white focus-visible:outline-fechitat-dark',
+  'dark-ghost': 'bg-transparent border border-slate-300 hover:border-slate-800 text-slate-800 focus-visible:outline-slate-800',
 };
 
-const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${clase}`;
+const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant] ?? variantClasses.primary} ${clase}`;
 ---
 
 {href ? (
-  <a href={href} class={allClasses}>
+  <a href={href} class={allClasses} target={target} rel={rel} aria-label={ariaLabel}>
     <slot />
   </a>
 ) : (
-  <button type={type} class={allClasses} disabled={disabled}>
+  <button type={type} class={allClasses} disabled={disabled} aria-label={ariaLabel}>
     <slot />
   </button>
 )}
+

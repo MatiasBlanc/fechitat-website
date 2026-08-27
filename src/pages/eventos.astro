@@ -1,343 +1,390 @@
 ---
-import EventBadge from "../components/EventBadge.astro";
-import PageHero from "../components/PageHero.astro";
-import Tag from "../components/Tag.astro";
-import UIcon from "../components/icons/UIcon.astro";
-import Button from "../components/ui/Button.astro";
-import BotonCalendario from "../components/ui/BotonCalendario.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/ui/Breadcrumbs.astro";
+import Badge from "../components/ui/Badge.astro";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import UIcon from "../components/icons/UIcon.astro";
+import EventBadge from "../components/EventBadge.astro";
+import { getEventos } from "../lib/sanityQueries";
 import { urlFor } from "../lib/sanity";
-import {
-  getEventosPasados,
-  getProximoEventoDestacado,
-  getProximosEventos,
-} from "../lib/sanityQueries";
 
 export const prerender = true;
-export const revalidate = 3600; // ISR: los eventos se refrescan como máximo 1×/hora
+export const revalidate = 3600;
 
-const titulo = "Eventos — FECHITAT";
+const titulo = "Campeonatos y Eventos de Taekwon-Do ITF | FECHITAT";
 const descripcion =
-  "Consulta el calendario de campeonatos, seminarios y exámenes de Taekwon-Do ITF organizados por FECHITAT en Chile.";
+  "Calendario oficial de campeonatos nacionales, torneos internacionales, seminarios técnicos y mesas de examen de grado de la Federación Chilena de Taekwon-Do Tradicional.";
 
-// Datos de Sanity
-const [eventoPrincipal, proximosRaw, pasados] = await Promise.all([
-  getProximoEventoDestacado(),
-  getProximosEventos(),
-  getEventosPasados(12),
-]);
-// Excluir el evento destacado de la lista de próximos
-const proximos = eventoPrincipal
-  ? proximosRaw.filter((e) => e._id !== eventoPrincipal._id)
-  : proximosRaw;
-// Los eventos pasados restantes se cargan bajo demanda desde el endpoint.
+const eventos = await getEventos();
 
-const labelTipo = (tipo: string) => {
-  if (tipo === "competencia") return "Competencia";
-  if (tipo === "examen") return "Examen";
-  if (tipo === "seminario") return "Seminario";
-  if (tipo === "exhibicion") return "Exhibición";
-  return "Otro";
+// Clasificar eventos por estado
+const ahora = new Date();
+const eventosConEstado = eventos.map((e: any) => {
+  const fechaEvento = new Date(e.fecha);
+  let estadoCalculado = e.estado || "proximo";
+  if (e.estado === "en_curso") {
+    estadoCalculado = "en_curso";
+  } else if (fechaEvento < ahora && estadoCalculado !== "en_curso") {
+    estadoCalculado = "finalizado";
+  }
+  return {
+    ...e,
+    estadoFinal: estadoCalculado,
+  };
+});
+
+const proximosCount = eventosConEstado.filter((e: any) => e.estadoFinal === "proximo").length;
+const enCursoCount = eventosConEstado.filter((e: any) => e.estadoFinal === "en_curso").length;
+const finalizadosCount = eventosConEstado.filter((e: any) => e.estadoFinal === "finalizado").length;
+
+const breadcrumbItems = [
+  { name: "Competición y Eventos", href: "/eventos" },
+];
+
+const jsonLdEventos = {
+  "@context": "https://schema.org",
+  "@graph": eventosConEstado.map((evento: any) => ({
+    "@type": "SportsEvent",
+    name: evento.titulo,
+    startDate: evento.fecha,
+    ...(evento.fechaFin ? { endDate: evento.fechaFin } : {}),
+    ...(evento.flyer ? { image: urlFor(evento.flyer).width(1200).url() } : {}),
+    description: evento.descripcion ?? `Evento oficial ${evento.titulo} de FECHITAT`,
+    eventStatus: evento.estadoFinal === "finalizado"
+      ? "https://schema.org/EventMovedOnline"
+      : "https://schema.org/EventScheduled",
+    location: {
+      "@type": "Place",
+      name: evento.lugar ?? evento.ciudad ?? "Chile",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: evento.ciudad ?? "Chile",
+        addressCountry: "CL",
+      },
+    },
+    organizer: {
+      "@type": "SportsOrganization",
+      name: "FECHITAT",
+      url: "https://fechitat.cl",
+    },
+  })),
 };
 
-/**
- * Determina si un evento tiene contenido suficiente para abrir su detalle.
- *
- * @param evento - Evento recibido desde Sanity.
- * @returns true cuando tiene descripción o una galería con fotos.
- */
-const puedeAbrirEvento = (evento) => Boolean(evento.slug?.current);
-
-const fechaLarga = (fecha: string) =>
-  new Date(fecha).toLocaleDateString("es-CL", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-const jsonLdEventoPrincipal = eventoPrincipal
-  ? JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Event",
-      name: eventoPrincipal.titulo,
-      startDate: eventoPrincipal.fecha,
-      endDate: eventoPrincipal.fechaFin ?? undefined,
-      ...(eventoPrincipal.direccion || eventoPrincipal.ciudad
-        ? {
-            location: {
-              "@type": "Place",
-              name: eventoPrincipal.direccion ?? eventoPrincipal.ciudad,
-              address: {
-                "@type": "PostalAddress",
-                addressLocality: eventoPrincipal.ciudad ?? "",
-                addressCountry: "CL",
-              },
-            },
-          }
-        : {}),
-      description: eventoPrincipal.descripcion ?? eventoPrincipal.titulo,
-      eventStatus: "https://schema.org/EventScheduled",
-      organizer: {
-        "@type": "SportsOrganization",
-        name: "FECHITAT",
-        url: "https://fechitat.cl",
-      },
-    })
-  : null;
+const labelTipo = (tipo: string) => {
+  if (tipo === "competencia") return "Campeonato";
+  if (tipo === "examen") return "Examen de Grado";
+  if (tipo === "seminario") return "Seminario Técnico";
+  if (tipo === "exhibicion") return "Exhibición";
+  return "Actividad Oficial";
+};
 ---
 
-<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEventoPrincipal ? JSON.parse(jsonLdEventoPrincipal) : undefined}>
-  <PageHero
-    title="Eventos y competencias"
-    description="Campeonatos, seminarios técnicos y exámenes de grado de FECHITAT."
-  />
+<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEventos} breadcrumbs={breadcrumbItems}>
+  <!-- Hero Section Eventos -->
+  <section class="bg-slate-900 text-white py-12 md:py-16 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
 
-  <!-- Calendario: próximo evento destacado + próximos eventos -->
-  <section class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      {
-        eventoPrincipal && (
-          <article class="bg-white border border-line rounded-sm overflow-hidden text-ink">
-            <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
-              {eventoPrincipal.flyer && (
-                <img
-                  src={urlFor(eventoPrincipal.flyer).width(1000).auto('format').url()}
-                  alt={`Afiche de ${eventoPrincipal.titulo}`}
-                  class="w-full h-full min-h-64 object-cover"
-                />
-              )}
-              <div class="p-6 md:p-10 flex flex-col">
-                <span class="font-mono text-xs tracking-wider uppercase text-red">
-                  Próximo evento
-                </span>
-                <h2 class="text-ink text-[clamp(1.5rem,4vw,2.8rem)] mb-4 m-0">
-                  {eventoPrincipal.titulo}
-                </h2>
-                <div class="flex flex-wrap gap-4 font-mono text-xs tracking-wider text-text-soft mb-6">
-                  {eventoPrincipal.lugar && (
-                    <span class="flex items-center gap-1">
-                      <UIcon name="map-pin" size={14} /> {eventoPrincipal.lugar}
-                    </span>
-                  )}
-                  <time datetime={eventoPrincipal.fecha}>
-                    {fechaLarga(eventoPrincipal.fecha)}
-                  </time>
-                </div>
-                {eventoPrincipal.descripcion && (
-                  <p class="text-text-soft mt-4 mb-6 max-w-[48ch] text-sm md:text-base">
-                    {eventoPrincipal.descripcion}
-                  </p>
-                )}
-                <div class="mt-auto flex flex-wrap gap-3">
-                  <a
-                    href={
-                      puedeAbrirEvento(eventoPrincipal)
-                        ? `/eventos/${eventoPrincipal.slug.current}`
-                        : undefined
-                    }
-                    aria-disabled={
-                      !puedeAbrirEvento(eventoPrincipal) ? "true" : undefined
-                    }
-                    class:list={[
-                      "inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px",
-                      !puedeAbrirEvento(eventoPrincipal) && "pointer-events-none opacity-60",
-                    ]}
-                  >
-                    Ver detalle del evento
-                  </a>
-                  <BotonCalendario
-                    evento={eventoPrincipal}
-                    className="border border-ink text-ink"
-                  />
-                </div>
-              </div>
-            </div>
-          </article>
-        )
-      }
-
-      <div class="mt-10 mb-8">
-        <h2>Próximos eventos</h2>
+      <div class="max-w-3xl">
+        <Badge variant="campeonato" class="mb-3">Circuito Nacional e Internacional</Badge>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+          Campeonatos y Eventos de Taekwon-Do ITF
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">
+          Calendario competitivo de FECHITAT: torneos zonales, campeonatos nacionales, pesajes reglamentarios, cursos técnicos de jueces y el calendario de la Selección Chilena de Taekwon-Do ITF.
+        </p>
       </div>
-
-      {
-        proximos.length > 0 ? (
-          <ul class="flex flex-col mt-8 list-none p-0 m-0">
-            {proximos.map((evento) => (
-              <li>
-                <div class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line">
-                  <div class="flex-none relative z-[1]">
-                    <EventBadge
-                      mes={new Date(evento.fecha)
-                        .toLocaleDateString("es-CL", { month: "short" })
-                        .toUpperCase()}
-                      dia={new Date(evento.fecha).getDate().toString()}
-                      large
-                    />
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <span class="font-mono text-xs tracking-wider uppercase text-text-soft">
-                      {labelTipo(evento.tipo)}
-                    </span>
-                    {puedeAbrirEvento(evento) ? (
-                      <a
-                        href={`/eventos/${evento.slug.current}`}
-                        class="text-ink hover:text-red"
-                      >
-                        <h3 class="text-base md:text-lg mb-1 inline">{evento.titulo}</h3>
-                      </a>
-                    ) : (
-                      <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
-                    )}
-                    <div class="flex flex-wrap gap-3 font-mono text-xs tracking-wider text-text-soft">
-                      {evento.lugar && (
-                        <span class="flex items-center gap-1">
-                          <UIcon name="map-pin" size={12} /> {evento.lugar}
-                        </span>
-                      )}
-                      <time datetime={evento.fecha}>{fechaLarga(evento.fecha)}</time>
-                    </div>
-                    {evento.descripcion && (
-                      <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>
-                    )}
-                    <div class="mt-3">
-                      <BotonCalendario
-                        evento={evento}
-                        className="border border-line text-ink px-4 py-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="text-text-soft py-8">
-            No hay eventos próximos programados.
-          </p>
-        )
-      }
     </div>
   </section>
 
-  <!-- Eventos pasados (con "Ver más" client-side) -->
-  {
-    pasados.length > 0 && (
-      <section class="py-10 md:py-16">
-        <div class="max-w-7xl mx-auto px-5 md:px-7">
-          <div class="mb-8">
-            <h2>Eventos pasados</h2>
-          </div>
-          <div id="eventos-pasados" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pasados.map((evento) => (
-              <article class="bg-white border border-line rounded-sm overflow-hidden flex flex-col">
-                {evento.flyer && (
-                  <img
-                    src={urlFor(evento.flyer).width(600).auto('format').url()}
-                    alt={`Afiche de ${evento.titulo}`}
-                    loading="lazy"
-                    decoding="async"
-                    class="w-full aspect-[16/10] object-cover"
-                  />
-                )}
-                <div class="p-4 md:p-5 flex-1 flex flex-col">
-                  {puedeAbrirEvento(evento) ? (
-                    <a href={`/eventos/${evento.slug.current}`} class="text-ink hover:text-red">
-                      <h3 class="text-sm md:text-base mb-1">{evento.titulo}</h3>
-                    </a>
-                  ) : (
-                    <h3 class="text-sm md:text-base mb-1">{evento.titulo}</h3>
-                  )}
-                  <div class="flex items-center gap-2 text-text-soft text-sm mt-auto">
-                    <span>
-                      <time datetime={evento.fecha}>
-                        {new Date(evento.fecha).toLocaleDateString("es-CL", {
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </time>
-                    </span>
-                    {evento.lugar && (
-                      <>
-                        <span>·</span>
-                        <span class="flex items-center gap-1">
-                          <UIcon name="map-pin" size={12} />
-                          {evento.lugar}
-                        </span>
-                      </>
+  <!-- Pestañas de Estado & Filtros de Tipo -->
+  <section class="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs" aria-label="Filtros de estado de campeonatos">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3">
+        <!-- Tabs de Estado (Todos, Próximos, En Curso, Finalizados) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto py-1" role="tablist" aria-label="Filtrar por estado del evento">
+          <button
+            type="button"
+            class="tab-estado px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-itf-blue text-white"
+            data-estado="todos"
+            role="tab"
+            aria-selected="true"
+          >
+            Todos ({eventosConEstado.length})
+          </button>
+          <button
+            type="button"
+            class="tab-estado px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-estado="proximo"
+            role="tab"
+            aria-selected="false"
+          >
+            Próximos ({proximosCount})
+          </button>
+          <button
+            type="button"
+            class="tab-estado px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-estado="en_curso"
+            role="tab"
+            aria-selected="false"
+          >
+            En Curso ({enCursoCount})
+          </button>
+          <button
+            type="button"
+            class="tab-estado px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-estado="finalizado"
+            role="tab"
+            aria-selected="false"
+          >
+            Finalizados ({finalizadosCount})
+          </button>
+        </div>
+
+        <!-- Filtro por tipo de evento -->
+        <div class="flex items-center gap-2">
+          <label for="select-tipo" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Tipo:</label>
+          <select
+            id="select-tipo"
+            class="border border-slate-300 bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 rounded-lg px-2.5 py-1.5 focus-visible:outline-2 focus-visible:outline-itf-blue cursor-pointer"
+          >
+            <option value="todos">Todos los tipos</option>
+            <option value="competencia">Campeonatos y Torneos</option>
+            <option value="seminario">Seminarios Técnicos</option>
+            <option value="examen">Exámenes de Grado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listado de Campeonatos y Eventos -->
+  <section class="py-12 md:py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div id="grid-eventos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {eventosConEstado.map((evento: any) => {
+          const fechaObj = new Date(evento.fecha);
+          const mes = fechaObj.toLocaleDateString("es-CL", { month: "short" }).toUpperCase();
+          const dia = fechaObj.getDate().toString();
+          const anio = fechaObj.getFullYear();
+          const slug = evento.slug?.current;
+          const hrefDetalle = slug ? `/eventos/${slug}` : null;
+          const flyerUrl = evento.flyer ? urlFor(evento.flyer).width(800).height(450).auto("format").url() : null;
+
+          return (
+            <Card
+              as="article"
+              hoverable
+              class="evento-card flex flex-col justify-between h-full group"
+              data-estado={evento.estadoFinal}
+              data-tipo={evento.tipo || "otro"}
+            >
+              <div>
+                <!-- Flyer / Cover -->
+                {flyerUrl ? (
+                  <div class="aspect-video overflow-hidden bg-slate-100 relative">
+                    <img
+                      src={flyerUrl}
+                      alt={`Afiche de ${evento.titulo}`}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div class="absolute top-3 right-3">
+                      {evento.estadoFinal === "proximo" && (
+                        <Badge variant="campeonato" class="shadow-xs">Próximo</Badge>
+                      )}
+                      {evento.estadoFinal === "en_curso" && (
+                        <Badge variant="noticia" class="shadow-xs animate-pulse">En Curso</Badge>
+                      )}
+                      {evento.estadoFinal === "finalizado" && (
+                        <Badge variant="evento" class="shadow-xs">Finalizado</Badge>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div class="h-24 bg-gradient-to-r from-itf-blue to-slate-900 p-4 flex items-center justify-between">
+                    <span class="text-white/80 font-bold text-xs tracking-wider uppercase">{labelTipo(evento.tipo)}</span>
+                    {evento.estadoFinal === "proximo" && (
+                      <Badge variant="campeonato" class="shadow-xs">Próximo</Badge>
+                    )}
+                    {evento.estadoFinal === "en_curso" && (
+                      <Badge variant="noticia" class="shadow-xs animate-pulse">En Curso</Badge>
+                    )}
+                    {evento.estadoFinal === "finalizado" && (
+                      <Badge variant="evento" class="shadow-xs">Finalizado</Badge>
                     )}
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                )}
 
-          <div class="text-center mt-8">
-            <button
-              id="ver-mas-eventos"
-              type="button"
-              class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px cursor-pointer"
-            >
-              Ver más eventos
-            </button>
-          </div>
-          <p id="estado-eventos" class="sr-only" role="status" aria-live="polite"></p>
-        </div>
-      </section>
-    )
-  }
+                <!-- Contenido del Evento -->
+                <div class="p-6">
+                  <div class="flex items-start gap-4 mb-4">
+                    <EventBadge mes={mes} dia={dia} large />
+                    <div class="min-w-0">
+                      <span class="text-xs font-bold text-itf-blue uppercase tracking-wider block mb-0.5">
+                        {labelTipo(evento.tipo)} · {anio}
+                      </span>
+                      <h2 class="text-lg font-bold text-slate-900 group-hover:text-itf-red transition-colors leading-snug m-0">
+                        {hrefDetalle ? (
+                          <a href={hrefDetalle}>{evento.titulo}</a>
+                        ) : (
+                          evento.titulo
+                        )}
+                      </h2>
+                    </div>
+                  </div>
 
-  <script>
-    // "Ver más" eventos pasados: carga el siguiente bloque desde el endpoint JSON
-    const boton = document.getElementById('ver-mas-eventos');
-    const contenedor = document.getElementById('eventos-pasados');
-    const estado = document.getElementById('estado-eventos');
+                  <div class="space-y-2 text-xs text-slate-600 mb-4">
+                    {evento.lugar && (
+                      <p class="flex items-center gap-2 font-medium">
+                        <span class="text-itf-red"><UIcon name="map-pin" size={14} /></span>
+                        <span>{evento.lugar}</span>
+                      </p>
+                    )}
+                    {evento.ciudad && !evento.lugar?.includes(evento.ciudad) && (
+                      <p class="text-slate-500 pl-5">
+                        {evento.ciudad}, Chile
+                      </p>
+                    )}
+                  </div>
 
-    if (boton && contenedor) {
-      let offset = 12;
-
-      boton.addEventListener('click', async () => {
-        boton.disabled = true;
-        boton.textContent = 'Cargando…';
-        try {
-          const respuesta = await fetch(`/api/eventos-pasados?offset=${offset}`);
-          if (!respuesta.ok) throw new Error('Error de red');
-          const datos = await respuesta.json();
-
-          const fragmento = document.createElement('div');
-          fragmento.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 col-span-full';
-          fragmento.innerHTML = datos.eventos.map((e: any) => {
-            const conDetalle = Boolean(e.descripcion || e.tieneGaleria);
-            const href = conDetalle && e.slug?.current ? `/eventos/${e.slug.current}` : null;
-            return `
-            <article class="bg-white border border-line rounded-sm overflow-hidden flex flex-col">
-              ${e.flyerUrl ? `<div class="aspect-[16/10] bg-cover" style="background-image:url('${e.flyerUrl}');"></div>` : ''}
-              <div class="p-4 md:p-5 flex-1 flex flex-col">
-                ${href ? `<a href="${href}" class="text-ink hover:text-red"><h3 class="text-sm md:text-base mb-1">${e.titulo}</h3></a>` : `<h3 class="text-sm md:text-base mb-1">${e.titulo}</h3>`}
-                <div class="flex items-center gap-2 text-text-soft text-sm mt-auto">
-                  <span>${new Date(e.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}</span>
+                  {evento.descripcion && (
+                    <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4">
+                      {evento.descripcion}
+                    </p>
+                  )}
                 </div>
               </div>
-            </article>
-          `;
-          }).join('');
 
-          contenedor.appendChild(fragmento);
-          offset += datos.eventos.length;
-          estado.textContent = `Se mostraron ${Math.min(offset, datos.total)} de ${datos.total} eventos.`;
+              <!-- Footer / CTA -->
+              <div class="p-6 pt-0 border-t border-slate-100 mt-auto flex items-center gap-2">
+                {hrefDetalle ? (
+                  <Button
+                    href={hrefDetalle}
+                    variant={evento.estadoFinal === "proximo" ? "primary" : "secondary"}
+                    size="sm"
+                    class="w-full justify-center"
+                  >
+                    {evento.estadoFinal === "finalizado" ? "Ver resultados y fotos" : "Ver bases e inscripción"}
+                  </Button>
+                ) : (
+                  <span class="text-xs text-slate-400 font-medium py-1.5">Información próximamente</span>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
 
-          if (offset >= datos.total) {
-            boton.remove();
-          } else {
-            boton.disabled = false;
-            boton.textContent = 'Ver más eventos';
-          }
-        } catch {
-          estado.textContent = 'No se pudieron cargar más eventos.';
-          boton.disabled = false;
-          boton.textContent = 'Ver más eventos';
+      <!-- Sin resultados en filtro -->
+      <div id="sin-eventos" class="hidden py-16 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
+          🏆
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-2">No hay eventos en esta categoría</h2>
+        <p class="text-slate-600 text-sm mb-6">
+          No existen torneos o actividades que coincidan con la combinación de filtros seleccionada.
+        </p>
+        <button
+          id="btn-reset-eventos"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-itf-blue text-white text-sm font-semibold rounded-lg hover:bg-slate-900 transition-colors cursor-pointer"
+        >
+          Ver todos los eventos
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA para anfitriones de torneos -->
+  <section class="py-12 md:py-16 bg-white border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Badge variant="campeonato" class="mb-3">Reglamentación y Arbitraje</Badge>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+        Reglamentos Oficiales de Competición ITF
+      </h2>
+      <p class="text-slate-600 text-sm sm:text-base mb-6 max-w-2xl mx-auto leading-relaxed">
+        Todos los campeonatos organizados y patrocinados por FECHITAT se rigen bajo el reglamento oficial de combate y formas de la International Taekwon-Do Federation.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href="/formacion#competicion" variant="primary" size="md">
+          Consultar reglamento oficial ITF
+        </Button>
+        <Button href="/documentos" variant="secondary" size="md">
+          Ver circulares de competición
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-estado');
+    const selectTipo = document.getElementById('select-tipo') as HTMLSelectElement;
+    const cards = document.querySelectorAll<HTMLElement>('.evento-card');
+    const sinEventos = document.getElementById('sin-eventos');
+    const grid = document.getElementById('grid-eventos');
+    const btnReset = document.getElementById('btn-reset-eventos');
+
+    let estadoActivo = 'todos';
+
+    function filtrarEventos() {
+      const tipoActivo = selectTipo?.value || 'todos';
+      let visibles = 0;
+
+      cards.forEach((card) => {
+        const estadoCard = card.dataset.estado || '';
+        const tipoCard = card.dataset.tipo || '';
+
+        const coincideEstado = estadoActivo === 'todos' || estadoCard === estadoActivo;
+        const coincideTipo = tipoActivo === 'todos' || tipoCard === tipoActivo;
+
+        if (coincideEstado && coincideTipo) {
+          card.style.display = '';
+          visibles++;
+        } else {
+          card.style.display = 'none';
         }
       });
+
+      if (sinEventos && grid) {
+        if (visibles === 0) {
+          sinEventos.classList.remove('hidden');
+          grid.classList.add('hidden');
+        } else {
+          sinEventos.classList.add('hidden');
+          grid.classList.remove('hidden');
+        }
+      }
     }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        estadoActivo = tab.dataset.estado || 'todos';
+
+        tabs.forEach((t) => {
+          const esActivo = t === tab;
+          t.setAttribute('aria-selected', esActivo ? 'true' : 'false');
+          if (esActivo) {
+            t.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+            t.classList.add('bg-itf-blue', 'text-white');
+          } else {
+            t.classList.remove('bg-itf-blue', 'text-white');
+            t.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+          }
+        });
+
+        filtrarEventos();
+      });
+    });
+
+    selectTipo?.addEventListener('change', filtrarEventos);
+
+    btnReset?.addEventListener('click', () => {
+      estadoActivo = 'todos';
+      if (selectTipo) selectTipo.value = 'todos';
+      tabs[0]?.click();
+    });
   </script>
 </BaseLayout>

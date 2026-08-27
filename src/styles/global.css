@@ -1,60 +1,76 @@
 @import "tailwindcss";
 
-/* ---------- Tema personalizado ---------- */
+/* ---------- Sistema de Diseño y Tokens FECHITAT (Tailwind CSS v4) ---------- */
 @theme {
-  /* Colores */
-  --color-ink: #0b1220;
-  --color-ink-soft: #101a2c;
-  --color-paper: #f1f4f6;
-  --color-white: #ffffff;
-  --color-red: #c4161c;
-  --color-red-dark: #961015;
-  --color-blue: #1b3a6b;
-  --color-blue-soft: #274b85;
-  --color-gold: #b08d57;
-  --color-text: #181410;
-  --color-text-soft: #5b5648;
-  --color-line: #d8d0ba;
-
-  /* Colores para texto sobre fondos oscuros */
-  --color-light: #e6e8ee;
-  --color-light-soft: #c9cdd6;
-  --color-light-muted: #8b93a4;
-
-  /* Fondos oscuros */
-  --color-dark: #0a0f1a;
-  --color-dark-soft: #26365a;
-
-  /* Fuentes */
+  /* Tipografía institucional exclusiva: Kumbh Sans */
+  --font-sans: "Kumbh Sans", sans-serif;
+  --font-kumbh: "Kumbh Sans", sans-serif;
   --font-heading: "Kumbh Sans", sans-serif;
-  --font-body: "Montserrat", sans-serif;
-  --font-mono: "Montserrat", sans-serif;
+  --font-body: "Kumbh Sans", sans-serif;
+  --font-mono: "Kumbh Sans", monospace;
 
-  /* Radios */
-  --radius-sm: 2px;
+  /* Colores institucionales oficiales y semánticos */
+  --color-itf-red: #D21034;
+  --color-itf-red-dark: #A60C28;
+  --color-itf-red-light: #FEE2E2;
+  --color-itf-red-border: #FECACA;
 
-  /* Breakpoints explícitos */
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
+  --color-itf-blue: #0033A0;
+  --color-itf-blue-dark: #00226B;
+  --color-itf-blue-soft: #16325C;
+  --color-itf-blue-light: #EFF6FF;
+  --color-itf-blue-border: #BFDBFE;
+
+  --color-fechitat-dark: #0F172A;
+  --color-fechitat-light: #F8FAFC;
+
+  /* Tokens de compatibilidad semántica */
+  --color-primary: #D21034;
+  --color-primary-dark: #A60C28;
+  --color-secondary: #0033A0;
+  --color-secondary-dark: #00226B;
+
+  --color-red: #D21034;
+  --color-red-dark: #A60C28;
+  --color-blue: #0033A0;
+  --color-blue-soft: #16325C;
+
+  /* Neutrales de alto contraste (WCAG AA) */
+  --color-ink: #0F172A;       /* slate-900 */
+  --color-ink-soft: #1E293B;  /* slate-800 */
+  --color-text: #1E293B;      /* slate-800 */
+  --color-text-soft: #475569; /* slate-600 */
+  --color-text-muted: #64748B;/* slate-500 */
+  --color-paper: #F8FAFC;     /* slate-50 alternancia limpia */
+  --color-white: #FFFFFF;
+  --color-line: #E2E8F0;      /* slate-200 bordes tenues */
+  --color-line-dark: #CBD5E1; /* slate-300 */
+
+  /* Colores para contraste sobre fondos oscuros institucionales */
+  --color-light: #F1F5F9;
+  --color-light-soft: #CBD5E1;
+  --color-light-muted: #94A3B8;
+  --color-dark: #0F172A;
+  --color-dark-soft: #1E293B;
 }
 
-/* ---------- Estilos base ---------- */
+/* ---------- Estilos Base & WCAG AA ---------- */
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-family: var(--font-sans);
   }
 
   body {
     margin: 0;
-    /* Fondo de página: paper. Las secciones blancas destacan sobre él. */
-    background: var(--color-paper);
+    background: #ffffff;
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.55;
+    font-weight: 500; /* Medium para cuerpo de texto */
+    font-size: 1rem;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   img {
@@ -67,93 +83,96 @@
     text-decoration: none;
   }
 
-  h1,
+  /* Jerarquía tipográfica estricta con Kumbh Sans */
+  h1 {
+    font-family: var(--font-heading);
+    font-weight: 700; /* Bold para H1/títulos */
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+  }
+
   h2,
   h3,
   h4 {
     font-family: var(--font-heading);
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    margin: 0 0 0.4em;
-    line-height: 1.02;
+    font-weight: 600; /* Semibold para subtítulos y secciones */
     color: var(--color-ink);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
   }
 
-  /* Tamaño base de títulos de sección (h2) más grande y responsivo */
   h2 {
-    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
   }
 
+  h3 {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+  }
+
+  /* Selección de texto sobria */
   ::selection {
-    background: var(--color-red);
-    color: #fff;
+    background: var(--color-itf-red);
+    color: #ffffff;
   }
 
+  /* Estados :focus-visible nítidos y accesibles (WCAG AA) */
   :focus-visible {
-    outline: 2px solid var(--color-red);
+    outline: 2px solid var(--color-itf-red);
     outline-offset: 2px;
+    border-radius: 4px;
   }
 
+  /* Soporte obligatorio prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none !important;
-      transition: none !important;
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 }
 
-/* ---------- Utilidades personalizadas ---------- */
-@layer utilities {
-  .writing-mode-vertical {
-    writing-mode: vertical-rl;
-  }
-}
-
-/* ---------- Componentes reutilizables ---------- */
+/* ---------- Utilidades y componentes del Sistema ---------- */
 @layer components {
+  /* Belt Bar institucional */
   .belt-bar {
-    height: 6px;
+    height: 4px;
     width: 100%;
     background: linear-gradient(
       90deg,
-      #fff 0 16.6%,
-      #e8c34a 16.6% 33.2%,
-      #3f8f4f 33.2% 49.8%,
-      #2358a8 49.8% 66.4%,
-      var(--color-red) 66.4% 83%,
+      #ffffff 0 16.6%,
+      #facc15 16.6% 33.2%,
+      #16a34a 33.2% 49.8%,
+      #2563eb 49.8% 66.4%,
+      var(--color-itf-red) 66.4% 83%,
       var(--color-ink) 83% 100%
     );
   }
 
-  /* Variables de color para el riel — modo claro (default) */
-  .hangul-rail {
-    --rail-color: var(--color-text-soft);
-    --rail-color-active: var(--color-red);
-    --rail-color-hover: var(--color-red);
-    --rail-opacity: 0.55;
-    --rail-opacity-active: 1;
+  /* Skip link accesible */
+  .skip-to-content {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    background: var(--color-itf-red);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    transform: translateY(-200%);
+    transition: transform 0.15s ease-in-out;
   }
 
-  /* Variables de color para el riel — modo oscuro (sobre hero) */
-  .hangul-rail--dark {
-    --rail-color: rgba(255, 255, 255, 0.5);
-    --rail-color-active: #fff;
-    --rail-color-hover: #fff;
-  }
-
-  .hangul-rail a {
-    color: var(--rail-color) !important;
-    opacity: var(--rail-opacity);
-  }
-
-  .hangul-rail a.active {
-    color: var(--rail-color-active) !important;
-    opacity: var(--rail-opacity-active);
-  }
-
-  .hangul-rail a:hover {
-    color: var(--rail-color-hover) !important;
-    opacity: var(--rail-opacity-active);
+  .skip-to-content:focus {
+    transform: translateY(0);
+    outline: 2px solid #ffffff;
   }
 }
+

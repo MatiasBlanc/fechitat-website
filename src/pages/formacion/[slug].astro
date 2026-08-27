@@ -1,0 +1,244 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/ui/Breadcrumbs.astro";
+import Badge from "../../components/ui/Badge.astro";
+import Button from "../../components/ui/Button.astro";
+import Card from "../../components/ui/Card.astro";
+import UIcon from "../../components/icons/UIcon.astro";
+import { pilaresFormacion } from "../../data/formacionData";
+
+export const prerender = true;
+export const revalidate = 3600;
+
+export async function getStaticPaths() {
+  return pilaresFormacion.map((pilar) => ({
+    params: { slug: pilar.slug },
+    props: { pilar },
+  }));
+}
+
+const { slug } = Astro.params;
+const { pilar: pilarPre } = Astro.props;
+const pilar = pilarPre ?? pilaresFormacion.find((p) => p.slug === slug);
+
+if (!pilar) {
+  return Astro.redirect("/formacion");
+}
+
+const titulo = `${pilar.titulo} | Formación FECHITAT`;
+const descripcion = pilar.extracto;
+
+const breadcrumbItems = [
+  { name: "Centro de Formación", href: "/formacion" },
+  { name: pilar.titulo },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: pilar.titulo,
+  description: pilar.extracto,
+  url: `https://fechitat.cl/formacion/${pilar.slug}`,
+  inLanguage: "es-CL",
+  publisher: {
+    "@type": "SportsOrganization",
+    name: "FECHITAT",
+    url: "https://fechitat.cl",
+    logo: "https://fechitat.cl/images/general/fechitat-logo.svg",
+  },
+  author: {
+    "@type": "SportsOrganization",
+    name: "Comisión Técnica FECHITAT",
+  },
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": `https://fechitat.cl/formacion/${pilar.slug}`,
+  },
+};
+---
+
+<BaseLayout
+  title={titulo}
+  description={descripcion}
+  structuredData={structuredData}
+  breadcrumbs={breadcrumbItems}
+>
+  <!-- Encabezado de la Guía de Formación -->
+  <section class="bg-slate-900 text-white py-12 md:py-16 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
+
+      <div class="max-w-3xl">
+        <div class="flex items-center gap-3 mb-4">
+          <Badge variant={pilar.badge}>Pilar de Formación ITF</Badge>
+          <span class="text-xs text-slate-400 font-medium">{pilar.tiempoLectura}</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+          {pilar.titulo}
+        </h1>
+
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">
+          {pilar.subtitulo}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Layout de Lectura: Tabla de Contenidos + Contenido Principal -->
+  <section class="py-12 md:py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <!-- Barra Lateral: Tabla de Contenidos Accesible (Sticky) -->
+        <aside class="lg:col-span-4 lg:sticky lg:top-24 order-2 lg:order-1 space-y-6">
+          <Card class="p-6 border-slate-200 shadow-xs">
+            <nav aria-label="Tabla de contenidos de la guía" class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 m-0">
+                  En este documento
+                </h2>
+                <span class="text-xs text-slate-400 font-mono">
+                  {pilar.secciones.length} secciones
+                </span>
+              </div>
+
+              <ul class="space-y-2 text-sm">
+                {pilar.secciones.map((sec) => (
+                  <li>
+                    <a
+                      href={`#${sec.id}`}
+                      class="flex items-center justify-between gap-2 text-slate-600 hover:text-itf-red transition-colors py-1 font-medium group"
+                    >
+                      <span class="line-clamp-1">{sec.titulo}</span>
+                      {sec.hangul && (
+                        <span class="text-xs text-slate-400 group-hover:text-itf-red font-medium flex-none">
+                          {sec.hangul}
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <!-- Botón de descarga de material de estudio -->
+            <div id="descargas" class="mt-6 pt-5 border-t border-slate-100">
+              <Button href="/documentos" variant="secondary" size="sm" class="w-full justify-center">
+                <UIcon name="download" size={16} />
+                <span>Descargar en PDF</span>
+              </Button>
+            </div>
+          </Card>
+
+          <!-- Navegación entre los otros pilares -->
+          <Card class="p-5 bg-slate-50 border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+              Otros pilares formativos
+            </h3>
+            <ul class="space-y-2 text-xs font-medium">
+              {pilaresFormacion
+                .filter((p) => p.slug !== pilar.slug)
+                .map((otro) => (
+                  <li>
+                    <a
+                      href={`/formacion/${otro.slug}`}
+                      class="flex items-center gap-2 text-itf-blue hover:text-itf-red hover:underline"
+                    >
+                      <span>{otro.icono}</span>
+                      <span class="line-clamp-1">{otro.titulo}</span>
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </Card>
+        </aside>
+
+        <!-- Contenido Educativo Profundo -->
+        <div class="lg:col-span-8 order-1 lg:order-2 space-y-12">
+          {pilar.secciones.map((sec) => (
+            <article id={sec.id} class="scroll-mt-28">
+              <div class="border-b border-slate-200 pb-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 m-0">
+                    {sec.titulo}
+                  </h2>
+                  {sec.hangul && (
+                    <span class="text-base sm:text-lg font-semibold text-itf-blue bg-itf-blue-light px-2.5 py-0.5 rounded-md">
+                      {sec.hangul}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <!-- Texto Explicativo -->
+              <div class="prose prose-slate max-w-none text-slate-700 text-base leading-relaxed whitespace-pre-line mb-6">
+                {sec.contenido}
+              </div>
+
+              <!-- Diagrama Biomecánico si existe -->
+              {sec.diagrama && (
+                <div class="my-6 p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs">
+                  <div class="flex items-center gap-2 text-itf-blue font-bold text-base mb-2">
+                    <span>📐</span>
+                    <h3>{sec.diagrama.titulo}</h3>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-600 mb-4">
+                    {sec.diagrama.descripcion}
+                  </p>
+                  <div class="space-y-2">
+                    {sec.diagrama.pasos.map((paso, idx) => (
+                      <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200">
+                        <span class="w-6 h-6 rounded-full bg-itf-blue text-white flex items-center justify-center text-xs font-bold flex-none">
+                          {idx + 1}
+                        </span>
+                        <p class="text-xs text-slate-700 m-0 leading-relaxed font-medium">
+                          {paso}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <!-- Terminología Coreana Detallada si existe -->
+              {sec.items && sec.items.length > 0 && (
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                  {sec.items.map((item) => (
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors">
+                      <div class="flex items-baseline justify-between gap-2 mb-1">
+                        <strong class="text-slate-900 font-bold text-sm">
+                          {item.termino}
+                        </strong>
+                        <span class="text-xs font-semibold text-itf-blue bg-white px-2 py-0.5 rounded border border-slate-200">
+                          {item.hangul}
+                        </span>
+                      </div>
+                      <p class="text-xs font-semibold text-itf-red mb-1.5">
+                        {item.significado}
+                      </p>
+                      <p class="text-xs text-slate-600 leading-relaxed m-0">
+                        {item.detalle}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+
+          <!-- Botón de retorno al hub y descarga -->
+          <div class="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <Button href="/formacion" variant="secondary" size="md">
+              <UIcon name="arrow-left" size={16} />
+              <span>Volver a Centro de Formación</span>
+            </Button>
+            <Button href="/documentos" variant="primary" size="md">
+              <UIcon name="download" size={16} />
+              <span>Descargar Guía Oficial (PDF)</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

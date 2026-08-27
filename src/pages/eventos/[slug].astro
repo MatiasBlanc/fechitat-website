@@ -1,159 +1,461 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHero from '../../components/PageHero.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import Card from '../../components/ui/Card.astro';
 import UIcon from '../../components/icons/UIcon.astro';
-import { getEventoBySlug } from '../../lib/sanityQueries';
+import { getEventos, getEventoBySlug } from '../../lib/sanityQueries';
 import { urlFor } from '../../lib/sanity';
 
+export const prerender = true;
+export const revalidate = 3600;
+
+export async function getStaticPaths() {
+  const eventos = await getEventos();
+  return eventos
+    .filter((e: any) => e.slug?.current)
+    .map((e: any) => ({
+      params: { slug: e.slug.current },
+      props: { eventoPre: e },
+    }));
+}
+
 const slug = Astro.params.slug;
-const evento = slug ? await getEventoBySlug(slug) : null;
+const { eventoPre } = Astro.props;
+const evento = eventoPre ?? (slug ? await getEventoBySlug(slug) : null);
 
 if (!evento) {
   return Astro.redirect('/eventos');
 }
 
 const fotos = evento.galeria ?? [];
-const fotosConUrl = fotos.map((foto, indice) => ({
-  alt: foto.alt || `${evento.titulo} — foto ${indice + 1}`,
-  miniatura: urlFor(foto).width(900).height(650).fit('crop').url(),
+const fotosConUrl = fotos.map((foto: any, indice: number) => ({
+  alt: foto.alt || `${evento.titulo} — fotografía ${indice + 1}`,
+  miniatura: urlFor(foto).width(800).height(600).fit('crop').url(),
   original: urlFor(foto).width(1800).url(),
 }));
 
-const labelTipo = (tipo: string) => {
-  if (tipo === 'competencia') return 'Competencia';
-  if (tipo === 'examen') return 'Examen';
-  if (tipo === 'seminario') return 'Seminario';
-  if (tipo === 'exhibicion') return 'Exhibición';
-  return 'Otro';
-};
+const fechaObj = new Date(evento.fecha);
+const ahora = new Date();
+let estadoCalculado = evento.estado || "proximo";
+if (evento.estado === "en_curso") {
+  estadoCalculado = "en_curso";
+} else if (fechaObj < ahora && estadoCalculado !== "en_curso") {
+  estadoCalculado = "finalizado";
+}
 
-const fecha = new Date(evento.fecha).toLocaleDateString('es-CL', {
+const fechaFormateada = fechaObj.toLocaleDateString('es-CL', {
+  weekday: 'long',
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 });
+
+const horaFormateada = fechaObj.toLocaleTimeString('es-CL', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 const imagenUrl = evento.flyer ? urlFor(evento.flyer).width(1200).url() : undefined;
-const jsonLdEvento = {
+const sede = evento.lugar || evento.ciudad || 'Sede oficial por confirmar';
+const ciudad = evento.ciudad || 'Chile';
+
+const breadcrumbItems = [
+  { name: 'Eventos', href: '/eventos' },
+  { name: evento.titulo },
+];
+
+const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'Event',
+  '@type': 'SportsEvent',
   name: evento.titulo,
   startDate: evento.fecha,
   ...(evento.fechaFin ? { endDate: evento.fechaFin } : {}),
   ...(imagenUrl ? { image: imagenUrl } : {}),
-  ...(evento.descripcion ? { description: evento.descripcion } : {}),
-  ...(evento.lugar || evento.ciudad
-    ? {
-        location: {
-          '@type': 'Place',
-          name: evento.lugar ?? evento.ciudad,
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: evento.ciudad ?? '',
-            addressCountry: 'CL',
-          },
-        },
-      }
-    : {}),
-  organizer: { '@type': 'SportsOrganization', name: 'FECHITAT', url: 'https://fechitat.cl' },
+  description: evento.descripcion ?? `${evento.titulo} organizado por la Federación Chilena de Taekwon-Do Tradicional.`,
+  eventStatus: estadoCalculado === 'finalizado'
+    ? 'https://schema.org/EventMovedOnline'
+    : 'https://schema.org/EventScheduled',
+  location: {
+    '@type': 'Place',
+    name: sede,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: ciudad,
+      ...(evento.direccion ? { streetAddress: evento.direccion } : {}),
+      addressCountry: 'CL',
+    },
+  },
+  organizer: {
+    '@type': 'SportsOrganization',
+    name: 'FECHITAT',
+    url: 'https://fechitat.cl',
+  },
 };
+
+const categoriasOficiales = [
+  { nombre: "Formas (Tul)", desc: "Competencia individual y por equipos de acuerdo a graduación (Cinturones de color y Dan)." },
+  { nombre: "Combate Tradicional (Matsogi)", desc: "Semicontacto con protecciones homologadas ITF, clasificado por categorías de peso y edad." },
+  { nombre: "Rotura de Potencia (Kyokpa)", desc: "Técnicas de puño y patada evaluadas con tablas de impacto reglamentarias." },
+  { nombre: "Rotura de Habilidad Especial", desc: "Patadas en salto de alta dificultad y altura reglamentaria." },
+  { nombre: "Defensa Personal (Hosin Sul)", desc: "Rutinas coreografiadas contra uno o más adversarios con y sin armas simuladas." },
+];
 ---
 
 <BaseLayout
-  title={`${evento.titulo} — Eventos`}
-  description={evento.descripcion ?? `${evento.titulo}: fecha, lugar y detalles del evento de FECHITAT.`}
+  title={`${evento.titulo} | FECHITAT`}
+  description={evento.descripcion ?? `${evento.titulo}: bases, categorías, pesajes y resultados oficiales de FECHITAT.`}
   ogImage={imagenUrl}
-  structuredData={jsonLdEvento}
+  structuredData={structuredData}
+  breadcrumbs={breadcrumbItems}
 >
-  <PageHero
-    title={evento.titulo}
-    crumb="Eventos"
-    image={evento.flyer ? urlFor(evento.flyer).width(900).url() : undefined}
-    imageAlt={`Flyer de ${evento.titulo}`}
-  />
+  <!-- Encabezado del Evento -->
+  <section class="bg-slate-900 text-white py-12 md:py-16 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
 
-  <article class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <a href="/eventos" class="inline-flex items-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm mb-8 transition-all duration-150 hover:bg-black hover:-translate-y-px">
-        <UIcon name="arrow-left" size={16} />
-        Volver a eventos
-      </a>
-
-      <div class="flex flex-wrap items-center gap-3 mb-8">
-        <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{labelTipo(evento.tipo)}</span>
-        <span class="font-mono text-xs tracking-wider text-text-soft">{fecha}</span>
-        {evento.lugar && <span class="font-mono text-xs tracking-wider text-text-soft">{evento.lugar}</span>}
-      </div>
-
-      {evento.descripcion && <p class="text-text-soft mb-10">{evento.descripcion}</p>}
-
-      {fotosConUrl.length > 0 && (
-        <section aria-labelledby="galeria-titulo">
-          <div class="flex items-end justify-between gap-4 mb-5">
-            <h2 id="galeria-titulo">Galería de fotos</h2>
-            <span class="font-mono text-xs text-text-soft">{fotosConUrl.length} fotos</span>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {fotosConUrl.map((foto, indice) => (
-              <button
-                type="button"
-                class="block w-full bg-white border border-line rounded-sm overflow-hidden cursor-zoom-in p-0 border-none"
-                data-galeria-boton={indice}
-                aria-label={`Ver foto en tamaño completo`}
-              >
-                <img
-                  src={foto.miniatura}
-                  alt={foto.alt}
-                  loading="lazy"
-                  class="w-full aspect-[4/3] object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <dialog id="galeria-dialogo" class="m-auto bg-ink p-2 rounded-sm border-none max-w-[92vw] max-h-[90vh]">
-        <div class="relative">
-          <button
-            type="button"
-            id="galeria-cerrar"
-            class="absolute -top-3 -right-3 w-9 h-9 bg-red text-white rounded-full flex items-center justify-center cursor-pointer border-none text-base"
-            aria-label="Cerrar foto"
-          >
-            ✕
-          </button>
-          <img id="galeria-imagen" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-sm" />
+      <div class="max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          {estadoCalculado === 'proximo' && <Badge variant="campeonato">Inscripciones Abiertas</Badge>}
+          {estadoCalculado === 'en_curso' && <Badge variant="noticia" class="animate-pulse">En Curso</Badge>}
+          {estadoCalculado === 'finalizado' && <Badge variant="evento">Evento Finalizado</Badge>}
+          <Badge variant="oficial">ITF Oficial</Badge>
         </div>
-      </dialog>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+          {evento.titulo}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-4 text-sm text-slate-300 font-medium">
+          <span class="flex items-center gap-1.5">
+            <span class="text-itf-red">📅</span>
+            <span class="capitalize">{fechaFormateada}</span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="text-itf-blue">⏰</span>
+            <span>{horaFormateada} hrs</span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <UIcon name="map-pin" size={16} />
+            <span>{sede}{evento.ciudad && !sede.includes(evento.ciudad) ? `, ${evento.ciudad}` : ''}</span>
+          </span>
+        </div>
+      </div>
     </div>
-  </article>
-  <script define:vars={{ fotos: fotosConUrl }}>
-    const dialogo = document.getElementById('galeria-dialogo');
-    const imagen = document.getElementById('galeria-imagen');
-    const botones = document.querySelectorAll('[data-galeria-boton]');
-    const cerrar = document.getElementById('galeria-cerrar');
+  </section>
 
-    if (dialogo && imagen && botones.length && cerrar) {
-      botones.forEach((boton) => {
-        boton.addEventListener('click', () => {
-          const indice = Number((boton as HTMLElement).dataset.galeriaBoton);
-          const foto = fotos[indice];
-          if (!foto) return;
-          imagen.src = foto.original;
-          imagen.alt = foto.alt;
-          (dialogo as HTMLDialogElement).showModal();
-        });
-      });
+  <!-- Contenido Principal -->
+  <section class="py-12 md:py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Columna Izquierda: Información técnica, bases, categorías, pesaje y llaves -->
+        <div class="lg:col-span-8 space-y-8">
+          <!-- Flyer / Afiche Oficial -->
+          {imagenUrl && (
+            <div class="aspect-video rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white">
+              <img
+                src={imagenUrl}
+                alt={`Afiche oficial de ${evento.titulo}`}
+                class="w-full h-full object-cover"
+                loading="eager"
+              />
+            </div>
+          )}
 
-      cerrar.addEventListener('click', () => (dialogo as HTMLDialogElement).close());
+          <!-- Descripción del Evento -->
+          <Card class="p-6 md:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
+              Acerca del campeonato
+            </h2>
+            {evento.descripcion ? (
+              <p class="text-slate-700 text-base leading-relaxed whitespace-pre-line">
+                {evento.descripcion}
+              </p>
+            ) : (
+              <p class="text-slate-700 text-base leading-relaxed">
+                {evento.titulo} reúne a doyangs y competidores de Taekwon-Do ITF de todo el país en una jornada competitiva de alto nivel técnico. La competencia se rige estrictamente por la normativa internacional de la ITF bajo la dirección del cuerpo arbitral de FECHITAT.
+              </p>
+            )}
+          </Card>
 
-      dialogo.addEventListener('click', (eventoClick) => {
-        if (eventoClick.target === dialogo) (dialogo as HTMLDialogElement).close();
-      });
+          <!-- Categorías Oficiales en Competencia -->
+          <Card class="p-6 md:p-8">
+            <div class="flex items-center gap-2 mb-6">
+              <Badge variant="campeonato">Modalidades Oficiales</Badge>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 m-0">
+                Categorías en disputa
+              </h2>
+            </div>
 
-      document.addEventListener('keydown', (eventoTeclado) => {
-        if (eventoTeclado.key === 'Escape' && (dialogo as HTMLDialogElement).open) (dialogo as HTMLDialogElement).close();
-      });
-    }
-  </script>
+            <div class="space-y-4">
+              {categoriasOficiales.map((cat) => (
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <h3 class="text-base font-bold text-slate-900 mb-1">
+                    {cat.nombre}
+                  </h3>
+                  <p class="text-xs text-slate-600 leading-relaxed">
+                    {cat.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-slate-200 text-xs text-slate-600 space-y-1">
+              <p class="font-semibold text-slate-900">Divisiones de Edad reglamentarias:</p>
+              <p>Pre-Infantiles (hasta 7 años) · Infantiles (8 a 11 años) · Cadetes (12 a 14 años) · Juveniles (15 a 17 años) · Adultos (18 a 35 años) · Seniors (+36 años).</p>
+            </div>
+          </Card>
+
+          <!-- Horarios de Pesaje, Acreditación y Llaves de Combate -->
+          <Card class="p-6 md:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
+              Cronograma de pesaje y llaves
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-xs font-semibold uppercase text-slate-500 bg-slate-50">
+                    <th class="p-3">Horario</th>
+                    <th class="p-3">Actividad</th>
+                    <th class="p-3">Lugar / Sector</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">08:00 – 09:30 hrs</td>
+                    <td class="p-3">Acreditación de delegaciones y Pesaje oficial (todas las categorías)</td>
+                    <td class="p-3">Balanza oficial / Sala técnica</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">09:30 – 10:00 hrs</td>
+                    <td class="p-3">Reunión de jueces, árbitros y publicación de llaves (brackets)</td>
+                    <td class="p-3">Mesa central de control</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">10:15 hrs</td>
+                    <td class="p-3">Ceremonia inaugural y saludo protocolar de banderas</td>
+                    <td class="p-3">Tatami principal</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">10:30 – 14:00 hrs</td>
+                    <td class="p-3">Competencias de Formas (Tul) infantiles, juveniles y adultos</td>
+                    <td class="p-3">Tatamis 1, 2 y 3</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">14:30 – 18:30 hrs</td>
+                    <td class="p-3">Competencias de Combate (Matsogi), Rotura y Premiación final</td>
+                    <td class="p-3">Tatamis simultáneos</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <!-- Resultados y Medallero (si finalizado) -->
+          {estadoCalculado === 'finalizado' && (
+            <Card class="p-6 md:p-8 border-slate-300">
+              <div class="flex items-center gap-2 mb-4">
+                <Badge variant="campeonato">Resultados Oficiales</Badge>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 m-0">
+                  Medallero y Podios
+                </h2>
+              </div>
+              <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                Felicitamos a todos los competidores, entrenadores y jueces que dieron vida a esta edición del torneo.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                  <span class="text-2xl">🥇</span>
+                  <p class="font-bold text-slate-900 text-sm mt-1">1er Lugar</p>
+                  <p class="text-xs text-slate-600">Medalla de Oro</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-100 border border-slate-300">
+                  <span class="text-2xl">🥈</span>
+                  <p class="font-bold text-slate-900 text-sm mt-1">2do Lugar</p>
+                  <p class="text-xs text-slate-600">Medalla de Plata</p>
+                </div>
+                <div class="p-4 rounded-xl bg-amber-100/50 border border-amber-300">
+                  <span class="text-2xl">🥉</span>
+                  <p class="font-bold text-slate-900 text-sm mt-1">3er Lugar</p>
+                  <p class="text-xs text-slate-600">Medalla de Bronce</p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <!-- Galería de Fotos Oficial -->
+          {fotosConUrl.length > 0 && (
+            <section aria-labelledby="galeria-titulo" class="pt-4">
+              <div class="flex items-end justify-between gap-4 mb-5">
+                <div>
+                  <h2 id="galeria-titulo" class="text-xl sm:text-2xl font-bold text-slate-900 m-0">
+                    Galería de fotos
+                  </h2>
+                  <p class="text-xs text-slate-500 mt-1">Momentos destacados capturados durante la jornada.</p>
+                </div>
+                <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                  {fotosConUrl.length} imágenes
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {fotosConUrl.map((foto: any, indice: number) => (
+                  <button
+                    type="button"
+                    class="block w-full bg-white border border-slate-200 rounded-xl overflow-hidden cursor-zoom-in p-0 shadow-2xs hover:shadow-md transition-all group"
+                    data-galeria-boton={indice}
+                    aria-label="Ver fotografía en tamaño completo"
+                  >
+                    <img
+                      src={foto.miniatura}
+                      alt={foto.alt}
+                      loading="lazy"
+                      class="w-full aspect-4/3 object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <!-- Columna Derecha: Tarjeta fija con Bases, Inscripción, Sede y Contacto -->
+        <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+          <Card class="p-6 md:p-7 border-slate-300 shadow-md">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">
+              Ficha del campeonato
+            </h2>
+
+            <div class="space-y-4 text-sm">
+              <div class="flex items-start gap-3">
+                <span class="text-itf-red mt-0.5">📅</span>
+                <div>
+                  <strong class="block text-slate-900">Fecha y Hora</strong>
+                  <span class="text-slate-600 capitalize">{fechaFormateada}</span>
+                  <span class="block text-xs text-slate-500">{horaFormateada} hrs</span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <span class="text-itf-blue mt-0.5"><UIcon name="map-pin" size={18} /></span>
+                <div>
+                  <strong class="block text-slate-900">Sede oficial</strong>
+                  <span class="text-slate-600">{sede}</span>
+                  {evento.direccion && <span class="block text-xs text-slate-500">{evento.direccion}</span>}
+                  <span class="block text-xs text-slate-500 font-semibold">{ciudad}, Chile</span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <span class="text-emerald-700 mt-0.5">⚖️</span>
+                <div>
+                  <strong class="block text-slate-900">Reglamento</strong>
+                  <span class="text-slate-600">Normativa Oficial ITF</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de Acción: Bases, Inscripción y Reglamento -->
+            <div class="mt-6 pt-5 border-t border-slate-200 space-y-3">
+              {estadoCalculado === 'proximo' && (
+                <Button
+                  href="mailto:contacto@fechitat.cl?subject=Inscripcion%20Torneo"
+                  variant="primary"
+                  size="md"
+                  class="w-full justify-center shadow-xs"
+                >
+                  Inscripción oficial
+                </Button>
+              )}
+
+              <Button
+                href="/documentos"
+                variant="secondary"
+                size="md"
+                class="w-full justify-center"
+              >
+                <UIcon name="download" size={16} />
+                <span>Descargar bases del torneo (PDF)</span>
+              </Button>
+
+              <Button
+                href="/formacion#competicion"
+                variant="ghost"
+                size="sm"
+                class="w-full justify-center text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+              >
+                Ver reglamento de competición ITF
+              </Button>
+            </div>
+          </Card>
+
+          <!-- Tarjeta de Asistencia y Consultas -->
+          <Card class="p-5 bg-slate-50">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Mesa de control y consultas
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              Para consultas sobre inscripciones, delegaciones regionales o arbitraje, comunícate con la Comisión de Competencias de FECHITAT.
+            </p>
+            <a
+              href="mailto:contacto@fechitat.cl"
+              class="text-xs font-semibold text-itf-blue hover:underline"
+            >
+              contacto@fechitat.cl
+            </a>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diálogo modal accesible para galería -->
+  <dialog id="galeria-dialogo" class="m-auto bg-slate-950/95 p-3 rounded-2xl border-none max-w-4xl max-h-full backdrop:bg-slate-950/80">
+    <div class="relative flex flex-col items-center">
+      <button
+        type="button"
+        id="galeria-cerrar"
+        class="absolute -top-3 -right-3 w-10 h-10 bg-itf-red text-white rounded-full flex items-center justify-center cursor-pointer border-2 border-white shadow-lg text-lg hover:bg-itf-red-dark focus-visible:outline-white"
+        aria-label="Cerrar fotografía"
+      >
+        ✕
+      </button>
+      <img id="galeria-imagen" src="" alt="" class="max-w-full max-h-128 object-contain rounded-lg shadow-2xl" />
+      <p id="galeria-caption" class="text-xs text-slate-300 mt-2 font-medium"></p>
+    </div>
+  </dialog>
 </BaseLayout>
+
+<script define:vars={{ fotos: fotosConUrl }}>
+  const dialogo = document.getElementById('galeria-dialogo');
+  const imagen = document.getElementById('galeria-imagen');
+  const caption = document.getElementById('galeria-caption');
+  const botones = document.querySelectorAll('[data-galeria-boton]');
+  const cerrar = document.getElementById('galeria-cerrar');
+
+  if (dialogo && imagen && botones.length && cerrar) {
+    botones.forEach((boton) => {
+      boton.addEventListener('click', () => {
+        const indice = Number(boton.dataset.galeriaBoton);
+        const foto = fotos[indice];
+        if (!foto) return;
+        imagen.src = foto.original;
+        imagen.alt = foto.alt;
+        if (caption) caption.textContent = foto.alt;
+        dialogo.showModal();
+      });
+    });
+
+    cerrar.addEventListener('click', () => dialogo.close());
+
+    dialogo.addEventListener('click', (eventoClick) => {
+      if (eventoClick.target === dialogo) dialogo.close();
+    });
+
+    document.addEventListener('keydown', (eventoTeclado) => {
+      if (eventoTeclado.key === 'Escape' && dialogo.open) dialogo.close();
+    });
+  }
+</script>
+

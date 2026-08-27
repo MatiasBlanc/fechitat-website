@@ -1,25 +1,27 @@
 ---
-// Etiqueta de color sólido dentro de cards.
-// Variantes: default (ink), red, blue, gold.
+// Etiqueta semántica sutil
 interface Props {
   variant?: 'default' | 'red' | 'blue' | 'gold';
   style?: string;
+  class?: string;
 }
 
-const { variant = 'default', style } = Astro.props;
+const { variant = 'default', style, class: className = '' } = Astro.props;
 
 const variantClasses = {
-  default: 'bg-ink text-white',
-  red: 'bg-red text-white',
-  blue: 'bg-blue text-white',
-  gold: 'bg-gold text-white',
+  default: 'bg-slate-100 text-slate-700 border border-slate-200',
+  red: 'bg-itf-red-light text-itf-red border border-itf-red-border font-semibold',
+  blue: 'bg-itf-blue-light text-itf-blue border border-itf-blue-border',
+  gold: 'bg-amber-50 text-amber-900 border border-amber-200',
 };
 ---
 
 <span
   class:list={[
-    'inline-block font-mono text-[0.65rem] tracking-[0.08em] uppercase px-[0.6em] py-[0.3em] rounded-sm',
+    'inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-md transition-colors',
     variantClasses[variant],
+    className,
   ]}
   style={style}
 ><slot /></span>
+

@@ -21,7 +21,7 @@ const enlacesPorDefecto: EnlaceSocial[] = [
   { href: '#', icono: 'facebook', etiqueta: 'Facebook' },
 ];
 
-const { class: clase = 'flex gap-[1em] items-center', enlaces = enlacesPorDefecto } = Astro.props;
+const { class: clase = 'flex gap-4 items-center', enlaces = enlacesPorDefecto } = Astro.props;
 ---
 
 <div class={clase}>
@@ -30,7 +30,7 @@ const { class: clase = 'flex gap-[1em] items-center', enlaces = enlacesPorDefect
       <a
         href={enlace.href}
         aria-label={enlace.etiqueta}
-        class="w-[30px] h-[30px] border border-white/18 rounded-full flex items-center justify-center text-light-soft text-[0.72rem] hover:border-red hover:text-white transition-colors duration-150"
+        class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center text-light-soft text-xs hover:border-itf-red hover:text-white transition-colors duration-150"
       >
         <SocialIcon name={enlace.icono} size={15} />
       </a>

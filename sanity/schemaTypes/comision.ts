@@ -28,6 +28,12 @@ export default defineType({
       validation: (Rule) => Rule.max(500),
     }),
     defineField({
+      name: 'emailContacto',
+      title: 'Email de contacto',
+      type: 'string',
+      validation: (Rule) => Rule.email(),
+    }),
+    defineField({
       name: 'miembros',
       title: 'Integrantes',
       type: 'array',

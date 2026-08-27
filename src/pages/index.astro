@@ -1,355 +1,519 @@
 ---
 import EventBadge from "../components/EventBadge.astro";
-import HangulRail from "../components/HangulRail.astro";
 import Stat from "../components/Stat.astro";
-import Tag from "../components/Tag.astro";
-import UIcon from "../components/icons/UIcon.astro";
+import Badge from "../components/ui/Badge.astro";
 import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import UIcon from "../components/icons/UIcon.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import heroImg from "../assets/hero/hero.webp";
 import { img } from "../lib/imagenes";
-import { getMetricas, getProximoEventoDestacado, getBlogPostsDestacados, getEscuelasPorRegion } from "../lib/sanityQueries";
+import {
+  getMetricas,
+  getProximoEventoDestacado,
+  getProximosEventos,
+  getBlogPostsDestacados,
+  getEscuelasPorRegion,
+} from "../lib/sanityQueries";
 import { urlFor } from "../lib/sanity";
 import "leaflet/dist/leaflet.css";
 
 export const prerender = true;
 export const revalidate = 3600;
 
-const titulo = "FECHITAT — Federación Chilena de Taekwon-Do Tradicional";
+const titulo = "FECHITAT | Federación Chilena de Taekwon-Do Tradicional";
 const descripcion =
-  "Encuentra dojangs afiliados, eventos y formación de Taekwon-Do ITF en Chile. Entrena con FECHITAT desde tu ciudad.";
+  "Órgano oficial rector del Taekwon-Do ITF en Chile. Regulación marcial, formación técnica, escuelas certificadas y campeonatos de Arica a Punta Arenas.";
 
 // Datos de Sanity
-const [metricas, proximoEvento, noticias, escuelas] = await Promise.all([
+const [metricas, proximoEvento, proximosEventos, noticias, escuelas] = await Promise.all([
   getMetricas(),
   getProximoEventoDestacado(),
+  getProximosEventos(),
   getBlogPostsDestacados(),
   getEscuelasPorRegion(),
 ]);
-const escuelasMapa = escuelas.map((escuela) => ({
+
+const escuelasMapa = escuelas.map((escuela: any) => ({
   _id: escuela._id,
   nombre: escuela.nombre,
+  slug: escuela.slug?.current ?? '',
   ciudad: escuela.ciudad ?? '',
   region: escuela.region ?? '',
   lat: escuela.ubicacion?.lat ?? null,
   lng: escuela.ubicacion?.lng ?? null,
+  logo: escuela.logo ? urlFor(escuela.logo).width(64).height(64).fit('crop').url() : null,
 }));
 
-const riel = [
-  ...(proximoEvento ? [{ href: '#eventos', kr: '대회', label: 'Eventos' }] : []),
-  { href: '#camino', kr: '길', label: 'Tu camino' },
-  { href: '#dojangs', kr: '도장', label: 'Dojangs' },
-  { href: '#noticias', kr: '소식', label: 'Noticias' },
-];
+// Regiones únicas para el selector rápido
+const regionesDisponibles = [...new Set(escuelas.map((e: any) => e.region).filter(Boolean))].sort();
+
+const fechaFormateada = (fecha: string) =>
+  new Date(fecha).toLocaleDateString("es-CL", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 ---
 
 <BaseLayout title={titulo} description={descripcion}>
-  <HangulRail links={riel} />
-
-  <!-- Hero -->
-  <section
-    class="hero relative min-h-[60vh] md:min-h-[78vh] flex items-end text-white overflow-hidden bg-dark"
-  >
+  <!-- Hero Section Institucional -->
+  <section class="relative min-h-screen flex items-center text-white overflow-hidden bg-slate-950">
     <Image
       src={heroImg}
-      alt=""
+      alt="Practicantes de Taekwon-Do ITF en Chile"
       fill
       sizes="100vw"
       fetchpriority="high"
-      class="absolute inset-0 object-cover object-[center_30%] opacity-55"
+      class="absolute inset-0 object-cover object-center opacity-45"
     />
-    <div
-      class="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,0.35)_0%,rgba(11,18,32,0.55)_45%,rgba(11,18,32,0.97)_100%)]"
-    >
-    </div>
-    <div
-      class="relative z-[2] py-12 md:py-20 pb-8 md:pb-12 w-full max-w-7xl mx-auto px-5 md:px-7"
-    >
-      <h1 class="text-white text-4xl md:text-7xl max-w-[14ch]">
-        Encuentra tu camino<br />en el Taekwon-Do
-      </h1>
-      <p
-        class="text-base md:text-base text-light max-w-[46ch] mb-6 font-normal"
-      >
-        Dojangs de Arica a Punta Arenas, instructores certificados por ITF y una
-        comunidad que entrena con disciplina, respeto y proyección
-        internacional.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <Button href="#dojangs" variant="primary" size="md">
-          Encuentra tu dojang
-        </Button>
-        <Button href="/federacion" variant="ghost" size="md">
-          Conoce la federación
-        </Button>
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/40"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-semibold uppercase tracking-wider text-white mb-6">
+          <span class="w-2 h-2 rounded-full bg-itf-red"></span>
+          Representación Oficial ITF en Chile
+        </div>
+
+        <h1 class="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
+          Taekwon-Do ITF en Chile
+        </h1>
+
+        <p class="text-slate-200 text-base sm:text-lg md:text-xl font-medium leading-relaxed mb-8 max-w-2xl">
+          Federación Chilena de Taekwon-Do Tradicional. Regulamos la práctica marcial auténtica, formamos instructores certificados, respaldamos la homologación de grados y representamos a Chile en el escenario internacional con disciplina, respeto y honor.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <Button href="/escuelas" variant="primary" size="lg">
+            Encuentra tu escuela
+          </Button>
+          <Button href="/eventos" variant="ghost" size="lg">
+            Ver próximos eventos
+          </Button>
+        </div>
       </div>
     </div>
   </section>
 
-  {/* Próximo evento */}
+  <!-- Segmentación por Intención (4 Columnas / Cards accesibles) -->
+  <section class="py-12 md:py-16 bg-slate-50 border-b border-slate-200" aria-labelledby="segmentacion-titulo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 id="segmentacion-titulo" class="text-2xl sm:text-3xl font-bold text-slate-900">
+          ¿Cómo deseas participar en FECHITAT?
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base mt-2">
+          Selecciona tu perfil de interés para acceder directamente a la información y recursos correspondientes.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1: Soy nuevo -->
+        <Card hoverable class="p-6 flex flex-col justify-between h-full group">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-itf-red-light text-itf-red flex items-center justify-center mb-4 transition-colors group-hover:bg-itf-red group-hover:text-white">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <Badge variant="campeonato">Iniciación</Badge>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-itf-red transition-colors">
+              Soy nuevo
+            </h3>
+            <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+              Inicia tu camino en el Taekwon-Do ITF. Conoce los fundamentos, qué esperar en tu primera clase y localiza doyangs cercanos con clases de prueba.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <a href="/escuelas" class="inline-flex items-center gap-1.5 text-sm font-semibold text-itf-red group-hover:underline">
+              <span>Buscar doyangs cercanos</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </Card>
+
+        <!-- Card 2: Soy practicante -->
+        <Card hoverable class="p-6 flex flex-col justify-between h-full group">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-itf-blue-light text-itf-blue flex items-center justify-center mb-4 transition-colors group-hover:bg-itf-blue group-hover:text-white">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <Badge variant="formacion">Grados & Tuls</Badge>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-itf-blue transition-colors">
+              Soy practicante
+            </h3>
+            <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+              Consulta el programa oficial de grados Gup y Dan, la enciclopedia de Tuls, terminología en coreano y requisitos para tu próximo examen.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <a href="/formacion" class="inline-flex items-center gap-1.5 text-sm font-semibold text-itf-blue group-hover:underline">
+              <span>Ver centro de formación</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </Card>
+
+        <!-- Card 3: Soy competidor -->
+        <Card hoverable class="p-6 flex flex-col justify-between h-full group">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-itf-red-light text-itf-red flex items-center justify-center mb-4 transition-colors group-hover:bg-itf-red group-hover:text-white">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.003 0H9.497m5.003 0a3 3 0 0 0 3-3V7.5a2.25 2.25 0 0 0-2.25-2.25h-6A2.25 2.25 0 0 0 7 7.5v4.875a3 3 0 0 0 3 3Z" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <Badge variant="campeonato">Competición</Badge>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-itf-red transition-colors">
+              Soy competidor
+            </h3>
+            <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+              Explora el calendario de torneos nacionales, reglamentos de pesaje y llaves, bases de inscripción y el proceso de la Selección Nacional ITF.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <a href="/eventos" class="inline-flex items-center gap-1.5 text-sm font-semibold text-itf-red group-hover:underline">
+              <span>Calendario de torneos</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </Card>
+
+        <!-- Card 4: Soy instructor -->
+        <Card hoverable class="p-6 flex flex-col justify-between h-full group">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-4 transition-colors group-hover:bg-amber-800 group-hover:text-white">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <Badge variant="oficial">Institucional</Badge>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-amber-800 transition-colors">
+              Soy instructor
+            </h3>
+            <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+              Descarga los estatutos oficiales de FECHITAT, circulares federativas, protocolos de disciplina y requisitos de afiliación para tu escuela.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <a href="/documentos" class="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-800 group-hover:underline">
+              <span>Documentos oficiales</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </Card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Próximos Campeonatos y Eventos Oficiales -->
   {proximoEvento && (
-    <section class="py-6 md:py-10 bg-white" id="eventos">
-      <div class="max-w-7xl mx-auto px-5 md:px-7">
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 justify-between">
-          <div class="flex items-center gap-4">
-            <EventBadge
-              mes={new Date(proximoEvento.fecha).toLocaleDateString('es-CL', {month: 'short'}).toUpperCase()}
-              dia={new Date(proximoEvento.fecha).getDate().toString()}
-            />
-            <div>
-              <span class="font-mono text-xs tracking-wider uppercase text-red">
-                Próximo evento
-              </span>
-              <div class="font-heading font-bold text-base md:text-lg uppercase">
-                {proximoEvento.titulo}
+    <section class="py-12 md:py-16 bg-white border-b border-slate-200" id="campeonatos">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <Badge variant="campeonato">Competición Destacada</Badge>
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Temporada Oficial</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">
+              Próximo Campeonato Nacional
+            </h2>
+          </div>
+          <a href="/eventos" class="inline-flex items-center gap-1 text-sm font-semibold text-itf-red hover:underline">
+            <span>Ver calendario completo de eventos</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <Card class="p-6 md:p-8 border-slate-200 bg-slate-50">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-6 justify-between">
+            <div class="flex items-start sm:items-center gap-5">
+              <EventBadge
+                mes={new Date(proximoEvento.fecha).toLocaleDateString('es-CL', { month: 'short' }).toUpperCase()}
+                dia={new Date(proximoEvento.fecha).getDate().toString()}
+                large
+              />
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge variant="evento">Enlace Oficial</Badge>
+                  <span class="text-xs text-slate-500 font-medium">
+                    {fechaFormateada(proximoEvento.fecha)}
+                  </span>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900">
+                  {proximoEvento.titulo}
+                </h3>
+                {proximoEvento.lugar && (
+                  <p class="text-sm text-slate-600 flex items-center gap-1.5 mt-1">
+                    <UIcon name="map-pin" size={14} />
+                    <span>{proximoEvento.lugar}</span>
+                  </p>
+                )}
               </div>
             </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+              <Button href={`/eventos/${proximoEvento.slug?.current || ''}`} variant="primary" size="md">
+                Ver bases e inscripción
+              </Button>
+              <Button href="/eventos" variant="secondary" size="md">
+                Ver todos los torneos
+              </Button>
+            </div>
           </div>
-          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-ink text-white font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
-              Ver evento
-            </a>
-            <a href="/eventos" class="inline-flex items-center justify-center gap-2 bg-transparent border border-ink text-ink font-mono text-xs tracking-widest uppercase py-2.5 px-5 rounded-sm">
-              Ver calendario completo
-            </a>
-          </div>
-        </div>
+        </Card>
       </div>
     </section>
   )}
 
-  <!-- Camino -->
-  <section id="camino" class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="mb-8">
-        <h2>¿Qué estás buscando?</h2>
+  <!-- Buscador rápido de escuelas + Mapa de Dojangs -->
+  <section class="py-12 md:py-20 bg-slate-50 border-b border-slate-200" id="escuelas">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <Badge variant="noticia" class="mb-2">Red Nacional de Dojangs</Badge>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">
+            Encuentra una escuela certificada
+          </h2>
+          <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-2xl">
+            Todas las escuelas y doyangs registrados en FECHITAT cuentan con instructores federados y graduación oficial homologada por la International Taekwon-Do Federation (ITF).
+          </p>
+        </div>
+        <Button href="/escuelas" variant="secondary" size="sm" class="self-start md:self-auto">
+          Ver directorio completo ({escuelas.length} escuelas)
+        </Button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <a
-          class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
-          href="/padres"
-        >
-          <div class="aspect-[16/10] overflow-hidden">
-            <img
-              src={img.ninosClase}
-              alt="Niños entrenando Taekwon-Do en clase"
-              width="900"
-              height="563"
-              loading="lazy"
-              decoding="async"
-              class="w-full h-full object-cover"
-            />
-          </div>
-          <div class="p-5">
-            <Tag variant="red" style="padding: 0.5em 0.9em;">Familias</Tag>
-            <h3 class="text-xl md:text-3xl mt-2">
-              Busco una actividad para mi hijo/a
-            </h3>
-            <p class="text-text-soft text-sm md:text-base">
-              Beneficios, seguridad, FAQ, testimonios y cómo reservar una clase
-              de prueba gratuita.
-            </p>
-            <span
-              class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block"
-            >
-              Conocer el programa para familias →
-            </span>
-          </div>
-        </a>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Panel de Búsqueda y Resultados -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+            <div>
+              <label for="buscar-escuela" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Buscar por nombre o ciudad
+              </label>
+              <div class="relative">
+                <input
+                  id="buscar-escuela"
+                  type="search"
+                  class="w-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue"
+                  placeholder="Ej: La Serena, Santiago, Sipjin..."
+                  autocomplete="off"
+                />
+              </div>
+            </div>
 
-        <a
-          class="group bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
-          href="/jovenes"
-        >
-          <div class="aspect-[16/10] overflow-hidden">
-            <img
-              src={img.jovenCompetidor}
-              alt="Competidor joven de Taekwon-Do ITF en competencia"
-              width="900"
-              height="563"
-              loading="lazy"
-              decoding="async"
-              class="w-full h-full object-cover"
-            />
+            {regionesDisponibles.length > 0 && (
+              <div>
+                <label for="filtro-region-home" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Filtrar por región
+                </label>
+                <select
+                  id="filtro-region-home"
+                  class="w-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue"
+                >
+                  <option value="">Todas las regiones</option>
+                  {regionesDisponibles.map((region) => (
+                    <option value={region}>{region}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
-          <div class="p-5">
-            <Tag variant="blue" style="padding: 0.5em 0.9em;">Competidores</Tag>
-            <h3 class="text-xl md:text-3xl mt-2">
-              Quiero avanzar y competir
-            </h3>
-            <p class="text-text-soft text-sm md:text-base">
-              Camino de grados, requisitos de selección nacional y una semana
-              tipo de entrenamiento.
-            </p>
-            <span
-              class="text-red font-mono text-xs tracking-wider uppercase mt-3 inline-block"
+
+          <!-- Lista interactiva de resultados -->
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+            <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-600">
+              <span>Dojangs certificados</span>
+              <span id="contador-escuelas-home">{escuelas.length} disponibles</span>
+            </div>
+            <ul
+              id="lista-escuelas"
+              class="list-none p-0 m-0 max-h-96 overflow-y-auto divide-y divide-slate-100"
+              aria-label="Resultados de búsqueda de escuelas"
+              aria-live="polite"
             >
-              Conocer el camino competitivo →
-            </span>
+            </ul>
+            <p id="estado-escuelas" class="sr-only" role="status" aria-live="polite"></p>
           </div>
-        </a>
+        </div>
+
+        <!-- Mapa interactivo -->
+        <div class="lg:col-span-7">
+          <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs">
+            <div
+              id="mapa-dojangs"
+              class="relative h-96 lg:h-120 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 z-0"
+              aria-label="Mapa interactivo de dojangs oficiales en Chile"
+              data-escuelas={JSON.stringify(escuelasMapa)}
+              role="region"
+            >
+              <button
+                id="activar-mapa"
+                type="button"
+                aria-label="Activar navegación táctil en el mapa"
+                class="absolute inset-0 z-50 flex touch-none items-center justify-center bg-slate-900/60 text-center overscroll-none lg:hidden"
+              >
+                <span class="text-xs font-semibold uppercase tracking-wider text-white bg-itf-red px-4 py-2 rounded-lg shadow-md">
+                  Toca para explorar el mapa
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Quiénes somos -->
-  <section class="py-10 md:py-16">
-    <div
-      class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
-    >
+  <!-- Métricas & Misión Institucional -->
+  <section class="py-12 md:py-20 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
       <div>
-        <h2 class="text-[clamp(1.6rem,5vw,3.2rem)]">
-          Formamos artistas marciales,<br />no solo competidores
+        <Badge variant="oficial" class="mb-3">Valores & Trayectoria</Badge>
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+          Formamos artistas marciales con disciplina y valores
         </h2>
-        <p class="text-text-soft max-w-[52ch]">
-          Trabajamos junto a instituciones deportivas que apoyan el desarrollo
-          del Taekwon-Do ITF en Chile. Cada medalla representa el trabajo
-          constante de nuestros dojangs y el orgullo de vestir la bandera
-          chilena.
+        <p class="text-slate-600 text-base mt-4 leading-relaxed">
+          En FECHITAT preservamos la enseñanza pura y tradicional del Taekwon-Do desarrollado por el General Choi Hong Hi. Cada doyang afiliado trabaja bajo rigurosos estándares técnicos, éticos y pedagógicos, garantizando una formación integral para niños, jóvenes y adultos.
         </p>
-        <div class="h-px bg-line my-6"></div>
-        <div class="grid grid-cols-2 gap-4 md:gap-6">
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-200">
           {metricas.length > 0 ? (
             metricas.map((m) => (
               <Stat count={m.valor} suffix={m.sufijo} label={m.titulo} />
             ))
           ) : (
             <>
+              <Stat count={14} suffix="" label="Dojangs afiliados" />
               <Stat count={50} suffix="+" label="Cinturones negros" />
               <Stat count={150} suffix="+" label="Competidores activos" />
             </>
           )}
         </div>
-      </div>
-      <div>
-        <img
-          src={img.competidora}
-          alt="Competidora de Taekwon-Do ITF con el uniforme nacional"
-          width="1000"
-          height="667"
-          loading="lazy"
-          decoding="async"
-          class="rounded-sm w-full h-auto"
-        />
-      </div>
-    </div>
-  </section>
 
-  <!-- Red de dojangs: búsqueda + mapa interactivo -->
-  <section class="py-10 md:py-16" id="dojangs">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
-        <div>
-          <h2>Encuentra tu escuela más cercana</h2>
-          <p class="text-text-soft text-sm md:text-base mt-2">
-            Escribe una ciudad o nombre y localiza el dojang en el mapa.
-          </p>
+        <div class="mt-8 flex gap-4">
+          <Button href="/federacion" variant="blue" size="md">
+            Conoce nuestra Federación
+          </Button>
+          <Button href="/documentos" variant="secondary" size="md">
+            Estatutos y Circulares
+          </Button>
         </div>
-        <a href="/federacion#escuelas" class="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-red">
-          Ver todas las escuelas
-          <span>→</span>
-        </a>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <div class="relative">
-            <label for="buscar-escuela" class="sr-only">Buscar escuela por ciudad o nombre</label>
-            <input
-              id="buscar-escuela"
-              type="search"
-              class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
-              placeholder="Buscar por ciudad o nombre…"
-              autocomplete="off"
-            />
-          </div>
-          <ul
-            id="lista-escuelas"
-            class="mt-3 list-none p-0 m-0 max-h-[420px] overflow-y-auto divide-y divide-line border border-line rounded-sm bg-white"
-            aria-label="Resultados de escuelas"
-            aria-live="polite"
-          >
-          </ul>
-          <p id="estado-escuelas" class="sr-only" role="status" aria-live="polite"></p>
+      <div class="relative">
+        <div class="aspect-4/3 rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+          <img
+            src={img.competidora}
+            alt="Competidora de Taekwon-Do ITF vistiendo el uniforme oficial de la selección chilena"
+            width="1000"
+            height="750"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
         </div>
-
-        <div
-          id="mapa-dojangs"
-          class="h-[420px] lg:h-full min-h-[380px] rounded-sm border border-line bg-paper z-0"
-          aria-label="Mapa de dojangs afiliados"
-          data-escuelas={JSON.stringify(escuelasMapa)}
-          role="region"
-        >
+        <div class="absolute -bottom-4 -right-4 bg-itf-blue text-white p-4 rounded-xl shadow-md hidden sm:block max-w-xs">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-300">Certificación ITF</p>
+          <p class="text-sm font-bold mt-1">Homologación internacional de grados y títulos oficiales.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Últimas noticias -->
-  <section class="py-10 md:py-16" id="noticias">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+  <!-- Últimas Circulares y Noticias Oficiales -->
+  <section class="py-12 md:py-20 bg-slate-50" id="actualidad">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h2>Últimas noticias</h2>
+          <Badge variant="noticia" class="mb-2">Información Oficial</Badge>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">
+            Últimas Circulares y Noticias
+          </h2>
         </div>
-        <a
-          href="/blog"
-          class="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-red"
-        >
-          Ver todo el blog
-          <span>→</span>
+        <a href="/blog" class="inline-flex items-center gap-1.5 text-sm font-semibold text-itf-red hover:underline">
+          <span>Ver todas las publicaciones</span>
+          <span aria-hidden="true">→</span>
         </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {noticias.length > 0 ? (
-          noticias.map((post) => (
-            <a
-              class="bg-white border border-line rounded-sm overflow-hidden"
-              href={`/blog/${post.slug?.current || '#'}`}
-            >
+          noticias.slice(0, 3).map((post: any) => (
+            <Card hoverable class="flex flex-col h-full group" as="article">
               {post.imagen && (
-                <div class="aspect-[16/10] overflow-hidden">
+                <div class="aspect-video overflow-hidden bg-slate-100">
                   <img
-                    src={urlFor(post.imagen).width(600).auto('format').url()}
+                    src={urlFor(post.imagen).width(700).height(400).fit('crop').auto('format').url()}
                     alt={`Imagen de ${post.titulo}`}
                     loading="lazy"
                     decoding="async"
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
               )}
-              <div class="p-5">
-                <div class="flex items-center gap-3 mb-2">
-                  {post.categorias?.[0] && <Tag>{post.categorias[0]}</Tag>}
-                  {post.fecha && (
-                    <time class="font-mono text-xs text-text-soft" datetime={post.fecha}>
-                      {new Date(post.fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </time>
+              <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <Badge variant="noticia">
+                      {post.categorias?.[0] || 'Actualidad'}
+                    </Badge>
+                    {post.fecha && (
+                      <time class="text-xs text-slate-500 font-medium" datetime={post.fecha}>
+                        {fechaFormateada(post.fecha)}
+                      </time>
+                    )}
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-900 group-hover:text-itf-red transition-colors leading-snug">
+                    <a href={`/blog/${post.slug?.current || ''}`}>
+                      {post.titulo}
+                    </a>
+                  </h3>
+                  {post.extracto && (
+                    <p class="text-slate-600 text-sm mt-2 line-clamp-2">
+                      {post.extracto}
+                    </p>
                   )}
                 </div>
-                <h3 class="text-base md:text-lg m-0">{post.titulo}</h3>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <span class="text-xs font-semibold text-itf-red">Leer circular completa →</span>
+                </div>
               </div>
-            </a>
+            </Card>
           ))
         ) : (
           <>
-            <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
-              <div class="aspect-[16/10] bg-cover" role="img" aria-label="Practicante realizando una técnica de defensa personal" style={`background-image:url('${img.postDefensa}');`} />
-              <div class="p-5">
-                <Tag variant="red">Ensayos</Tag>
-                <h3 class="text-base md:text-lg mt-2">Principios de la defensa personal</h3>
-              </div>
-            </a>
-            <a class="bg-white border border-line rounded-sm overflow-hidden" href="/blog">
-              <div class="aspect-[16/10] bg-cover" role="img" aria-label="Competencia de Taekwon-Do ITF" style={`background-image:url('${img.postNacional}');`} />
-              <div class="p-5">
-                <Tag>Noticias</Tag>
-                <h3 class="text-base md:text-lg mt-2">Resultados del campeonato nacional</h3>
-              </div>
-            </a>
+            <Card hoverable class="p-6">
+              <Badge variant="campeonato" class="mb-3">Campeonato</Badge>
+              <h3 class="text-lg font-bold text-slate-900">Resultados del Campeonato Nacional</h3>
+              <p class="text-slate-600 text-sm mt-2">Revisa el cuadro de medallas y podios por categoría en el torneo federativo.</p>
+              <a href="/blog" class="inline-block mt-4 text-xs font-semibold text-itf-red">Leer más →</a>
+            </Card>
+            <Card hoverable class="p-6">
+              <Badge variant="oficial" class="mb-3">Circular</Badge>
+              <h3 class="text-lg font-bold text-slate-900">Protocolo de Exámenes de Grado 2026</h3>
+              <p class="text-slate-600 text-sm mt-2">Normativa oficial para mesas evaluadoras y homologación de cinturones Dan.</p>
+              <a href="/blog" class="inline-block mt-4 text-xs font-semibold text-itf-red">Leer más →</a>
+            </Card>
+            <Card hoverable class="p-6">
+              <Badge variant="formacion" class="mb-3">Formación</Badge>
+              <h3 class="text-lg font-bold text-slate-900">Seminario Técnico de Tuls y Arbitraje</h3>
+              <p class="text-slate-600 text-sm mt-2">Jornada de perfeccionamiento para instructores y jueces acreditados.</p>
+              <a href="/blog" class="inline-block mt-4 text-xs font-semibold text-itf-red">Leer más →</a>
+            </Card>
           </>
         )}
       </div>
@@ -364,6 +528,7 @@ const riel = [
   const lista = document.getElementById('lista-escuelas') as HTMLUListElement;
   const estado = document.getElementById('estado-escuelas') as HTMLParagraphElement;
   const contenedorMapa = document.getElementById('mapa-dojangs') as HTMLElement;
+  const botonActivarMapa = document.getElementById('activar-mapa') as HTMLButtonElement;
   const escuelas = JSON.parse(contenedorMapa?.dataset.escuelas || '[]');
 
   /** Cache de coordenadas geocodificadas (Nominatim) por ciudad, en localStorage. */
@@ -395,20 +560,58 @@ const riel = [
   }
 
   if (input && lista && contenedorMapa) {
-    // Mapa centrado en Chile
+    // El mapa permite zoom con la rueda, pero no bloquea el scroll vertical en móvil.
+    const esPantallaTactil =
+      window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches;
     const mapa = L.map(contenedorMapa, {
       center: [-35.6751, -71.5429],
       zoom: 5,
-      scrollWheelZoom: false,
+      scrollWheelZoom: true,
+      touchZoom: false,
+      dragging: !esPantallaTactil,
     });
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    if (esPantallaTactil) {
+      const bloquearScrollMapa = (event) => event.preventDefault();
+      mapa.getContainer().style.touchAction = 'none';
+      contenedorMapa.classList.add('mapa-tactil-inactivo');
+      contenedorMapa.addEventListener('touchmove', bloquearScrollMapa, { passive: false });
+      botonActivarMapa?.addEventListener('click', () => {
+        contenedorMapa.classList.remove('mapa-tactil-inactivo');
+        contenedorMapa.removeEventListener('touchmove', bloquearScrollMapa);
+        botonActivarMapa.remove();
+        mapa.getContainer().style.touchAction = 'none';
+        mapa.dragging.enable();
+        mapa.touchZoom.enable();
+        mapa.scrollWheelZoom.enable();
+      });
+    } else {
+      botonActivarMapa?.remove();
+    }
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
     }).addTo(mapa);
 
     const markers = new Map<string, { marker: L.Marker; coords: [number, number] }>();
     const tieneCoordenadas = (escuela) =>
       Number.isFinite(escuela.lat) && Number.isFinite(escuela.lng);
+    const iconosDojang = new Map<string, L.DivIcon>();
+    const obtenerIconoDojang = (logo: string | null) => {
+      const urlLogo = logo ?? '/images/general/fechitat-logo.svg';
+      const iconoExistente = iconosDojang.get(urlLogo);
+      if (iconoExistente) return iconoExistente;
+
+      const icono = L.divIcon({
+        className: 'marcador-dojang',
+        html: `<span class="marcador-dojang__pin"><img src="${urlLogo}" alt="" /></span>`,
+        iconSize: [48, 48],
+        iconAnchor: [24, 24],
+        popupAnchor: [0, -24],
+      });
+      iconosDojang.set(urlLogo, icono);
+      return icono;
+    };
 
     const agregarMarcador = (escuela, coords: [number, number]) => {
       if (markers.has(escuela._id)) return;
@@ -418,68 +621,147 @@ const riel = [
       const ciudadPopup = document.createElement('span');
       ciudadPopup.textContent = escuela.ciudad ?? '';
       popup.append(nombrePopup, document.createElement('br'), ciudadPopup);
-      const marker = L.marker(coords).addTo(mapa).bindPopup(popup);
+      const marker = L.marker(coords, { icon: obtenerIconoDojang(escuela.logo) }).addTo(mapa).bindPopup(popup);
       markers.set(escuela._id, { marker, coords });
     };
 
+    const enfocarEscuelas = (resultados) => {
+      const coordenadas = resultados
+        .map((escuela) => markers.get(escuela._id)?.coords)
+        .filter((coords): coords is [number, number] => Boolean(coords));
+      if (coordenadas.length === 1) {
+        mapa.setView(coordenadas[0], 13, { animate: false });
+      } else if (coordenadas.length > 1) {
+        mapa.fitBounds(coordenadas, { padding: [32, 32], maxZoom: 12, animate: false });
+      }
+    };
+
+    const selectorRegion = document.getElementById('filtro-region-home') as HTMLSelectElement;
+    const contadorHome = document.getElementById('contador-escuelas-home');
+
     // Se construye la lista y cada resultado enfoca su marcador.
-    const pintarLista = (filtro: string) => {
-      const q = filtro.toLowerCase().trim();
+    const pintarLista = () => {
+      const q = (input?.value || '').toLowerCase().trim();
+      const regionFiltro = selectorRegion?.value || '';
       lista.innerHTML = '';
       let visibles = 0;
-      escuelas.forEach((e) => {
+      const resultados: any[] = [];
+
+      escuelas.forEach((e: any) => {
         const nombre = e.nombre ?? '';
         const ciudad = e.ciudad ?? '';
         const region = e.region ?? '';
-        if (q && !nombre.toLowerCase().includes(q) && !ciudad.toLowerCase().includes(q) && !region.toLowerCase().includes(q)) return;
+
+        const coincideTexto = !q || nombre.toLowerCase().includes(q) || ciudad.toLowerCase().includes(q) || region.toLowerCase().includes(q);
+        const coincideRegion = !regionFiltro || region === regionFiltro;
+
+        if (!coincideTexto || !coincideRegion) return;
+
+        resultados.push(e);
         visibles++;
         const li = document.createElement('li');
-        li.className = 'p-3 hover:bg-paper transition-colors';
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'w-full text-left cursor-pointer bg-transparent border-none p-0 font-body';
+        li.className = 'p-3 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3';
+
+        const infoBtn = document.createElement('button');
+        infoBtn.type = 'button';
+        infoBtn.className = 'w-full text-left cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none';
+
         const nombreElemento = document.createElement('span');
-        nombreElemento.className = 'block text-sm font-medium';
+        nombreElemento.className = 'block text-sm font-semibold text-slate-900 hover:text-itf-red transition-colors';
         nombreElemento.textContent = nombre;
+
         const ubicacionElemento = document.createElement('span');
-        ubicacionElemento.className = 'block text-xs text-text-soft';
+        ubicacionElemento.className = 'block text-xs text-slate-500 mt-0.5';
         ubicacionElemento.textContent = `${ciudad}${region ? ` · ${region}` : ''}`;
-        btn.append(nombreElemento, ubicacionElemento);
-        btn.addEventListener('click', () => {
+
+        infoBtn.append(nombreElemento, ubicacionElemento);
+        infoBtn.addEventListener('click', () => {
           const marcador = markers.get(e._id);
-          if (marcador) mapa.flyTo(marcador.coords, 13);
+          if (marcador) mapa.setView(marcador.coords, 13, { animate: false });
         });
-        li.appendChild(btn);
+
+        li.appendChild(infoBtn);
+
+        if (e.slug) {
+          const enlaceFicha = document.createElement('a');
+          enlaceFicha.href = `/escuelas/${e.slug}`;
+          enlaceFicha.className = 'flex-none text-xs font-semibold text-itf-blue hover:text-itf-red px-2 py-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors';
+          enlaceFicha.textContent = 'Ver ficha';
+          enlaceFicha.setAttribute('aria-label', `Ver ficha detallada de ${nombre}`);
+          li.appendChild(enlaceFicha);
+        }
+
         lista.appendChild(li);
       });
+
+      if (contadorHome) {
+        contadorHome.textContent = `${visibles} disponibles`;
+      }
       estado.textContent = visibles === 0 ? 'No se encontraron escuelas con ese criterio.' : `${visibles} escuelas encontradas.`;
+      if (q || regionFiltro) enfocarEscuelas(resultados);
     };
 
     // Las coordenadas exactas de Sanity se muestran inmediatamente.
-    escuelas.filter(tieneCoordenadas).forEach((escuela) => {
+    escuelas.filter(tieneCoordenadas).forEach((escuela: any) => {
       agregarMarcador(escuela, [escuela.lat, escuela.lng]);
     });
 
     // Geocodificar las escuelas restantes, respetando la tasa de Nominatim.
     const ciudades = [...new Set(
       escuelas
-        .filter((escuela) => !tieneCoordenadas(escuela))
-        .map((e) => `${e.ciudad ?? ''}|||${e.region ?? ''}`)
+        .filter((escuela: any) => !tieneCoordenadas(escuela))
+        .map((e: any) => `${e.ciudad ?? ''}|||${e.region ?? ''}`)
     )].filter((c) => c !== '|||');
     (async () => {
       for (const clave of ciudades) {
-        const [ciudad, region] = clave.split('|||');
+        const [ciudad, region] = (clave as string).split('|||');
         const coord = await geocodificar(ciudad, region);
         if (coord) {
           escuelas
-            .filter((e) => !tieneCoordenadas(e) && (e.ciudad ?? '') === ciudad)
-            .forEach((e) => agregarMarcador(e, coord));
+            .filter((e: any) => !tieneCoordenadas(e) && (e.ciudad ?? '') === ciudad)
+            .forEach((e: any) => agregarMarcador(e, coord));
+          if (input?.value.trim() || selectorRegion?.value) pintarLista();
         }
         await new Promise((r) => setTimeout(r, 1100));
       }
     })();
 
-    input.addEventListener('input', () => pintarLista(input.value));
-    pintarLista('');
+    input?.addEventListener('input', pintarLista);
+    selectorRegion?.addEventListener('change', pintarLista);
+    pintarLista();
   }
 </script>
+
+<style is:global>
+  #mapa-dojangs.mapa-tactil-inactivo .leaflet-pane,
+  #mapa-dojangs.mapa-tactil-inactivo .leaflet-control-container {
+    pointer-events: none;
+  }
+
+  #mapa-dojangs .marcador-dojang {
+    background: transparent;
+    border: 0;
+  }
+
+  #mapa-dojangs .marcador-dojang__pin {
+    display: block;
+    width: 46px;
+    height: 46px;
+    overflow: hidden;
+    border-radius: 50%;
+    filter: drop-shadow(0 3px 5px rgb(11 18 32 / 35%));
+  }
+
+  #mapa-dojangs .marcador-dojang__pin img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @media (max-width: 767px) {
+    #mapa-dojangs .leaflet-container {
+      touch-action: pan-y;
+    }
+  }
+</style>

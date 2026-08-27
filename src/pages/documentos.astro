@@ -1,0 +1,447 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/ui/Breadcrumbs.astro";
+import Badge from "../components/ui/Badge.astro";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import UIcon from "../components/icons/UIcon.astro";
+import { getDocumentosOficiales } from "../lib/sanityQueries";
+
+export const prerender = true;
+export const revalidate = 3600;
+
+const titulo = "Documentos Oficiales | FECHITAT";
+const descripcion =
+  "Centro de documentación oficial de FECHITAT: estatutos institucionales, reglamentos de arbitraje, circulares técnicas, protocolos de seguridad y formularios de afiliación.";
+
+const documentosSanity = await getDocumentosOficiales();
+
+// Documentos institucionales estándar federativos
+const documentosOficialesBase = [
+  {
+    _id: "doc-estatutos-fechitat",
+    titulo: "Estatutos Oficiales de la Federación Chilena de Taekwon-Do Tradicional",
+    descripcion: "Marco legal orgánico, personería jurídica, derechos y obligaciones de los doyangs federados.",
+    tipo: "estatuto",
+    categoriaLabel: "Estatutos",
+    version: "v3.2",
+    fechaPublicacion: "2024-01-15",
+    fechaVigencia: "2024-2028",
+    comisionNombre: "Directorio Nacional FECHITAT",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Estatutos-FECHITAT-Oficial.pdf",
+  },
+  {
+    _id: "doc-reglamento-competicion",
+    titulo: "Reglamento Oficial de Competición y Arbitraje ITF",
+    descripcion: "Normativa técnica de formas (Tul), combate tradicional (Matsogi), roturas y pesaje en torneos oficiales.",
+    tipo: "reglamento",
+    categoriaLabel: "Reglamentos",
+    version: "v2026.1",
+    fechaPublicacion: "2026-01-10",
+    fechaVigencia: "Vigente 2026",
+    comisionNombre: "Comisión de Árbitros y Competencias",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Reglamento-Competicion-ITF-2026.pdf",
+  },
+  {
+    _id: "doc-circular-examenes",
+    titulo: "Circular Técnica: Requisitos de Pase de Grado y Mesas Evaluadoras",
+    descripcion: "Estándares para la examinación de grados Gup y homologación de cinturones negros Dan ante ITF.",
+    tipo: "circular",
+    categoriaLabel: "Circulares",
+    version: "v2.0",
+    fechaPublicacion: "2025-11-20",
+    fechaVigencia: "Vigente",
+    comisionNombre: "Comisión Técnica Nacional",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Circular-Examenes-Grados-2026.pdf",
+  },
+  {
+    _id: "doc-protocolo-menores",
+    titulo: "Protocolo de Seguridad, Prevención y Protección al Menor en Doyangs",
+    descripcion: "Normas de convivencia, protección de derechos de niños, niñas y adolescentes en el entrenamiento marcial.",
+    tipo: "protocolo",
+    categoriaLabel: "Protocolos",
+    version: "v1.4",
+    fechaPublicacion: "2025-08-14",
+    fechaVigencia: "Vigente",
+    comisionNombre: "Comisión de Ética y Disciplina",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Protocolo-Proteccion-Menor-FECHITAT.pdf",
+  },
+  {
+    _id: "doc-formacion-docente",
+    titulo: "Manual Pedagógico del Instructor de Taekwon-Do ITF",
+    descripcion: "Directrices didácticas para la enseñanza infantil, primeros auxilios deportivos y progresión técnica.",
+    tipo: "formacion",
+    categoriaLabel: "Formación",
+    version: "v2.5",
+    fechaPublicacion: "2025-05-18",
+    fechaVigencia: "Vigente",
+    comisionNombre: "Departamento de Docencia y Grados",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Manual-Pedagogico-Instructor.pdf",
+  },
+  {
+    _id: "doc-afiliacion-escuelas",
+    titulo: "Formulario Oficial y Bases de Afiliación de Dojangs",
+    descripcion: "Procedimiento administrativo para solicitar la incorporación y acreditación institucional a FECHITAT.",
+    tipo: "formulario",
+    categoriaLabel: "Formación",
+    version: "v1.2",
+    fechaPublicacion: "2026-01-05",
+    fechaVigencia: "Vigente 2026",
+    comisionNombre: "Secretaría General",
+    estado: "vigente",
+    archivoUrl: "/documentos",
+    archivoNombre: "Formulario-Afiliacion-Dojang.pdf",
+  },
+];
+
+// Combinar Sanity con los documentos oficiales base asegurando datos completos
+const todosDocumentos = [
+  ...documentosSanity.map((doc: any) => {
+    let tipoEstandar = doc.tipo || "circular";
+    let catLabel = "Circulares";
+    if (tipoEstandar === "reglamento") catLabel = "Reglamentos";
+    else if (tipoEstandar === "estatuto") catLabel = "Estatutos";
+    else if (tipoEstandar === "protocolo" || tipoEstandar === "politica") catLabel = "Protocolos";
+    else if (tipoEstandar === "formacion" || tipoEstandar === "formulario") catLabel = "Formación";
+
+    return {
+      _id: doc._id,
+      titulo: doc.titulo,
+      descripcion: doc.descripcion || "",
+      tipo: tipoEstandar,
+      categoriaLabel: catLabel,
+      version: doc.version || "v1.0",
+      fechaPublicacion: doc.fechaPublicacion || "2025-01-01",
+      fechaVigencia: doc.fechaVigencia || "Vigente",
+      comisionNombre: doc.comisionNombre || "Directorio FECHITAT",
+      estado: doc.estado || "vigente",
+      archivoUrl: doc.archivoUrl || "/documentos",
+      archivoNombre: doc.archivoNombre || `${doc.titulo}.pdf`,
+    };
+  }),
+  ...documentosOficialesBase.filter(
+    (base) => !documentosSanity.some((s: any) => s.titulo?.toLowerCase() === base.titulo.toLowerCase())
+  ),
+];
+
+const breadcrumbItems = [
+  { name: "Documentos Oficiales", href: "/documentos" },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Documentos Oficiales FECHITAT",
+  description: descripcion,
+  url: "https://fechitat.cl/documentos",
+  publisher: {
+    "@type": "SportsOrganization",
+    name: "FECHITAT",
+    url: "https://fechitat.cl",
+  },
+};
+---
+
+<BaseLayout title={titulo} description={descripcion} structuredData={jsonLd} breadcrumbs={breadcrumbItems}>
+  <!-- Hero Section Documentación -->
+  <section class="bg-slate-900 text-white py-12 md:py-16 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
+
+      <div class="max-w-3xl">
+        <Badge variant="oficial" class="mb-3">Transparencia Institucional</Badge>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+          Centro de Documentación Oficial
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">
+          Accede al compendio normativo, estatutos federativos, reglamentos de arbitraje, circulares técnicas y protocolos de seguridad emitidos por FECHITAT.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filtros Interactivos y Búsqueda -->
+  <section class="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs" aria-label="Filtros de documentos oficiales">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Input de búsqueda en tiempo real -->
+        <div class="w-full md:max-w-md relative">
+          <label for="buscar-doc" class="sr-only">Buscar documento por título o comisión</label>
+          <input
+            id="buscar-doc"
+            type="search"
+            class="w-full border border-slate-300 bg-slate-50 focus:bg-white px-4 py-2 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue transition-colors"
+            placeholder="Buscar por título, comisión o palabra clave..."
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Botones de categoría: Todos, Reglamentos, Estatutos, Circulares, Formación, Protocolos -->
+        <div class="flex items-center gap-1.5 overflow-x-auto py-1" role="tablist" aria-label="Filtrar por categoría documental">
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-itf-blue text-white"
+            data-cat="todos"
+            role="tab"
+            aria-selected="true"
+          >
+            Todos ({todosDocumentos.length})
+          </button>
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-cat="reglamentos"
+            role="tab"
+            aria-selected="false"
+          >
+            Reglamentos
+          </button>
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-cat="estatutos"
+            role="tab"
+            aria-selected="false"
+          >
+            Estatutos
+          </button>
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-cat="circulares"
+            role="tab"
+            aria-selected="false"
+          >
+            Circulares
+          </button>
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-cat="formacion"
+            role="tab"
+            aria-selected="false"
+          >
+            Formación
+          </button>
+          <button
+            type="button"
+            class="tab-doc px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+            data-cat="protocolos"
+            role="tab"
+            aria-selected="false"
+          >
+            Protocolos
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listado / Tabla de Documentos -->
+  <section class="py-12 md:py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Contador de resultados -->
+      <div class="flex items-center justify-between gap-4 mb-6">
+        <p class="text-slate-600 text-sm font-medium">
+          Mostrando <span id="contador-docs" class="font-bold text-slate-900">{todosDocumentos.length}</span> documentos oficiales
+        </p>
+        <span class="text-xs text-slate-500 font-medium hidden sm:inline">
+          Formato estándar: PDF descargable
+        </span>
+      </div>
+
+      <!-- Vista de Tarjetas / Tabla interactiva -->
+      <div id="contenedor-docs" class="space-y-4">
+        {todosDocumentos.map((doc: any) => {
+          let badgeVariant: "oficial" | "campeonato" | "formacion" | "noticia" = "oficial";
+          if (doc.tipo === "reglamento") badgeVariant = "campeonato";
+          else if (doc.tipo === "formacion" || doc.tipo === "formulario") badgeVariant = "formacion";
+          else if (doc.tipo === "circular") badgeVariant = "noticia";
+
+          let catClave = "circulares";
+          if (doc.tipo === "reglamento") catClave = "reglamentos";
+          else if (doc.tipo === "estatuto") catClave = "estatutos";
+          else if (doc.tipo === "protocolo" || doc.tipo === "politica") catClave = "protocolos";
+          else if (doc.tipo === "formacion" || doc.tipo === "formulario") catClave = "formacion";
+
+          return (
+            <Card
+              as="article"
+              hoverable
+              class="doc-item p-6 bg-white flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all"
+              data-cat={catClave}
+              data-titulo={doc.titulo.toLowerCase()}
+              data-comision={doc.comisionNombre.toLowerCase()}
+              data-desc={doc.descripcion.toLowerCase()}
+            >
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <Badge variant={badgeVariant}>{doc.categoriaLabel}</Badge>
+                  <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    {doc.version}
+                  </span>
+                  <span class="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    Vigente
+                  </span>
+                </div>
+
+                <h2 class="text-lg font-bold text-slate-900 leading-snug m-0">
+                  {doc.titulo}
+                </h2>
+
+                {doc.descripcion && (
+                  <p class="text-slate-600 text-sm mt-1.5 leading-relaxed line-clamp-2">
+                    {doc.descripcion}
+                  </p>
+                )}
+
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-slate-500 mt-3 font-medium">
+                  <span>Comisión: <strong class="text-slate-700">{doc.comisionNombre}</strong></span>
+                  <span>Vigencia: <strong class="text-slate-700">{doc.fechaVigencia}</strong></span>
+                </div>
+              </div>
+
+              <div class="flex-none flex items-center gap-3">
+                <a
+                  href={doc.archivoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 text-white hover:bg-itf-red text-xs font-semibold uppercase tracking-wider transition-colors shadow-xs"
+                  aria-label={`Descargar ${doc.titulo} en formato PDF`}
+                >
+                  <UIcon name="download" size={14} />
+                  <span>Descargar PDF</span>
+                </a>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <!-- Sin resultados -->
+      <div id="sin-docs" class="hidden py-16 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
+          📄
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-2">No se encontraron documentos</h2>
+        <p class="text-slate-600 text-sm mb-6">
+          No hay circulares, reglamentos o estatutos que coincidan con la búsqueda.
+        </p>
+        <button
+          id="btn-reset-docs"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-itf-blue text-white text-sm font-semibold rounded-lg hover:bg-slate-900 transition-colors cursor-pointer"
+        >
+          Mostrar todos los documentos
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Consultas Documentales -->
+  <section class="py-12 md:py-16 bg-white border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Badge variant="oficial" class="mb-3">Secretaría General</Badge>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+        ¿Necesitas solicitar una constancia o certificado oficial?
+      </h2>
+      <p class="text-slate-600 text-sm sm:text-base mb-6 max-w-2xl mx-auto leading-relaxed">
+        Para homologación de títulos extranjeros, emisión de certificados de afiliación escolar o consultas jurídicas estatutarias, contacta a la secretaría federativa.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href="mailto:contacto@fechitat.cl?subject=Solicitud%20Documental" variant="primary" size="md">
+          Solicitar certificado federativo
+        </Button>
+        <Button href="/federacion" variant="secondary" size="md">
+          Estructura de la directiva
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const input = document.getElementById('buscar-doc') as HTMLInputElement;
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-doc');
+    const docs = document.querySelectorAll<HTMLElement>('.doc-item');
+    const contador = document.getElementById('contador-docs');
+    const sinDocs = document.getElementById('sin-docs');
+    const contenedor = document.getElementById('contenedor-docs');
+    const btnReset = document.getElementById('btn-reset-docs');
+
+    let catActiva = 'todos';
+
+    function filtrarDocs() {
+      const q = (input?.value || '').toLowerCase().trim();
+      let visibles = 0;
+
+      docs.forEach((doc) => {
+        const cat = doc.dataset.cat || '';
+        const titulo = doc.dataset.titulo || '';
+        const comision = doc.dataset.comision || '';
+        const desc = doc.dataset.desc || '';
+
+        const coincideCat = catActiva === 'todos' || cat === catActiva;
+        const coincideTexto = !q || titulo.includes(q) || comision.includes(q) || desc.includes(q);
+
+        if (coincideCat && coincideTexto) {
+          doc.style.display = '';
+          visibles++;
+        } else {
+          doc.style.display = 'none';
+        }
+      });
+
+      if (contador) {
+        contador.textContent = visibles.toString();
+      }
+
+      if (sinDocs && contenedor) {
+        if (visibles === 0) {
+          sinDocs.classList.remove('hidden');
+          contenedor.classList.add('hidden');
+        } else {
+          sinDocs.classList.add('hidden');
+          contenedor.classList.remove('hidden');
+        }
+      }
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        catActiva = tab.dataset.cat || 'todos';
+
+        tabs.forEach((t) => {
+          const esActivo = t === tab;
+          t.setAttribute('aria-selected', esActivo ? 'true' : 'false');
+          if (esActivo) {
+            t.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+            t.classList.add('bg-itf-blue', 'text-white');
+          } else {
+            t.classList.remove('bg-itf-blue', 'text-white');
+            t.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+          }
+        });
+
+        filtrarDocs();
+      });
+    });
+
+    input?.addEventListener('input', filtrarDocs);
+
+    btnReset?.addEventListener('click', () => {
+      if (input) input.value = '';
+      catActiva = 'todos';
+      tabs[0]?.click();
+    });
+  </script>
+</BaseLayout>

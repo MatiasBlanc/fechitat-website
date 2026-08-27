@@ -1,0 +1,24 @@
+---
+// Card estándar con bordes tenues, esquinas redondeadas moderadas y sombras sobrias
+interface Props {
+  as?: 'div' | 'article' | 'section' | 'a';
+  href?: string;
+  class?: string;
+  hoverable?: boolean;
+}
+
+const { as: Component = 'div', href, class: className = '', hoverable = false } = Astro.props;
+const isLink = Boolean(href);
+const Element = isLink ? 'a' : Component;
+---
+
+<Element
+  href={href}
+  class:list={[
+    'block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs transition-all duration-200',
+    hoverable && 'hover:-translate-y-1 hover:shadow-md hover:border-slate-300',
+    className,
+  ]}
+>
+  <slot />
+</Element>

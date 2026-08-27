@@ -42,7 +42,7 @@ const NOMBRES_CATEGORIAS: Record<string, string> = {
               class="block bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg h-full"
             >
               {post.imagen && (
-                <div class="aspect-[16/10] overflow-hidden">
+                <div class="aspect-video overflow-hidden">
                   <img
                     src={urlFor(post.imagen).width(600).auto("format").url()}
                     alt={`Imagen de ${post.titulo}`}
@@ -55,7 +55,7 @@ const NOMBRES_CATEGORIAS: Record<string, string> = {
               <div class="p-5">
                 <div class="flex items-center gap-3 mb-2">
                   {categoria && (
-                    <span class="font-mono text-[0.65rem] tracking-[0.08em] uppercase text-red">
+                    <span class="font-mono text-xs tracking-wider uppercase text-itf-red">
                       {NOMBRES_CATEGORIAS[categoria] ?? categoria}
                     </span>
                   )}

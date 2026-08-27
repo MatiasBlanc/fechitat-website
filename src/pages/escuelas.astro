@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Tag from '../components/Tag.astro';
-import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import Badge from '../components/ui/Badge.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
 import UIcon from '../components/icons/UIcon.astro';
 import { getEscuelas } from '../lib/sanityQueries';
 import { urlFor } from '../lib/sanity';
@@ -9,266 +11,349 @@ import { urlFor } from '../lib/sanity';
 export const prerender = true;
 export const revalidate = 3600;
 
-const titulo = 'Escuelas Afiliadas — FECHITAT';
+const titulo = 'Escuelas de Taekwon-Do ITF en Chile | FECHITAT';
 const descripcion =
-  'Busca escuelas y dojangs afiliados a FECHITAT por ciudad o región y encuentra dónde entrenar Taekwon-Do ITF en Chile.';
+  'Directorio oficial de escuelas y doyangs de Taekwon-Do ITF en Chile. Filtra por región, ciudad o nombre y encuentra doyangs certificados con instructores federados.';
 
-// Datos de Sanity
 const escuelas = await getEscuelas();
 
-// Agrupar por región
-const escuelasPorRegion = escuelas.reduce((acc: any, escuela: any) => {
-  const region = escuela.region || 'Sin región';
-  if (!acc[region]) acc[region] = [];
-  acc[region].push(escuela);
-  return acc;
-}, {});
+// Agrupar y extraer regiones y ciudades únicas
+const regiones = [...new Set(escuelas.map((e: any) => e.region).filter(Boolean))].sort();
+const ciudades = [...new Set(escuelas.map((e: any) => e.ciudad).filter(Boolean))].sort();
 
-const regiones = Object.keys(escuelasPorRegion).sort();
+const breadcrumbItems = [
+  { name: 'Escuelas', href: '/escuelas' },
+];
+
 const jsonLdEscuelas = {
   "@context": "https://schema.org",
-  "@graph": escuelas
-    .filter((escuela: any) => escuela.ciudad || escuela.direccion)
-    .map((escuela: any) => ({
-      "@type": "SportsActivityLocation",
-      name: escuela.nombre,
-      url: "https://fechitat.cl/escuelas",
-      ...(escuela.email ? { email: escuela.email } : {}),
-      ...(escuela.whatsapp ? { telephone: escuela.whatsapp } : {}),
-      address: {
-        "@type": "PostalAddress",
-        ...(escuela.direccion ? { streetAddress: escuela.direccion } : {}),
-        ...(escuela.ciudad ? { addressLocality: escuela.ciudad } : {}),
-        ...(escuela.region ? { addressRegion: escuela.region } : {}),
-        addressCountry: "CL",
-      },
-    })),
+  "@graph": escuelas.map((escuela: any) => ({
+    "@type": "SportsActivityLocation",
+    name: escuela.nombre,
+    url: `https://fechitat.cl/escuelas/${escuela.slug?.current || ''}`,
+    ...(escuela.email ? { email: escuela.email } : {}),
+    ...(escuela.whatsapp ? { telephone: escuela.whatsapp } : {}),
+    address: {
+      "@type": "PostalAddress",
+      ...(escuela.direccion ? { streetAddress: escuela.direccion } : {}),
+      ...(escuela.ciudad ? { addressLocality: escuela.ciudad } : {}),
+      ...(escuela.region ? { addressRegion: escuela.region } : {}),
+      addressCountry: "CL",
+    },
+    parentOrganization: {
+      "@type": "SportsOrganization",
+      name: "FECHITAT",
+      url: "https://fechitat.cl",
+    },
+  })),
 };
 ---
 
-<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEscuelas}>
-  <PageHero
-    title="Escuelas afiliadas"
-    crumb="Escuelas"
-    description="Encuentra el dojang más cercano a tu ubicación. Todas las escuelas afiliadas a FECHITAT están certificadas por la ITF."
-  />
+<BaseLayout title={titulo} description={descripcion} structuredData={jsonLdEscuelas} breadcrumbs={breadcrumbItems}>
+  <!-- Hero Section Escuelas -->
+  <section class="bg-slate-900 text-white py-12 md:py-16 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
 
-  {/* Buscador */}
-  <section class="py-10 md:py-16 border-b border-line">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1">
-          <label for="buscar-escuela" class="sr-only">Buscar escuela por nombre, ciudad o región</label>
-          <input
-            id="buscar-escuela"
-            type="text"
-            class="w-full border border-line bg-white p-3 md:p-4 font-body text-base rounded-sm focus:outline-2 focus:outline-blue focus:outline-offset-1"
-            placeholder="Buscar por nombre, ciudad o región..."
-          />
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button
-            class="filtro-region px-4 py-2 font-medium font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-ink text-white transition-colors duration-150"
-            data-region="todas"
-          >
-            Todas
-          </button>
-          {regiones.map((region) => (
-            <button
-              class="filtro-region px-4 py-2 font-medium font-mono text-xs tracking-wider uppercase border border-line rounded-sm bg-white hover:bg-ink hover:text-white hover:border-ink transition-colors duration-150"
-              data-region={region}
-            >
-              {region}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* Listado de escuelas */}
-  <section class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      {/* Contador */}
-      <div class="mb-6">
-        <p class="text-text-soft text-sm">
-          Mostrando <span id="contador">{escuelas.length}</span> escuelas afiliadas
+      <div class="max-w-3xl">
+        <Badge variant="oficial" class="mb-3">Red Oficial de Dojangs</Badge>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+          Escuelas de Taekwon-Do ITF en Chile
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">
+          Encuentra el dojang más cercano a tu ubicación. Todos los centros federados a FECHITAT cuentan con instructores certificados, homologación de grados Dan y enseñanza técnica tradicional de la International Taekwon-Do Federation.
         </p>
       </div>
+    </div>
+  </section>
 
-      {/* Escuelas por región */}
-      <div id="lista-escuelas">
-        {regiones.map((region) => (
-          <div class="region-grupo mb-10" data-region={region}>
-            <div class="flex items-center gap-3 mb-4">
-              <span class="font-mono text-xs tracking-wider uppercase text-text-soft">{region}</span>
-              <span class="text-text-soft text-sm font-mono">({escuelasPorRegion[region].length})</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {escuelasPorRegion[region].map((escuela: any) => (
-                <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
-                  {/* Foto del Dojang como cover */}
-                  {escuela.foto && (
-                    <img
-                      src={urlFor(escuela.foto).width(800).auto('format').url()}
-                      alt={`Dojang ${escuela.nombre}`}
-                      loading="lazy"
-                      decoding="async"
-                      class="w-full aspect-[16/9] object-cover"
-                    />
-                  )}
+  <!-- Barra de Filtros Dinámicos (Región, Ciudad y Nombre) -->
+  <section class="py-6 bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs" aria-label="Filtros de búsqueda de escuelas">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <!-- Input de búsqueda por texto -->
+        <div class="sm:col-span-6 lg:col-span-5 relative">
+          <label for="buscar-escuela" class="sr-only">Buscar por nombre o palabra clave</label>
+          <input
+            id="buscar-escuela"
+            type="search"
+            class="w-full border border-slate-300 bg-slate-50 focus:bg-white px-4 py-2.5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue transition-colors"
+            placeholder="Buscar por nombre, instructor o dirección..."
+            autocomplete="off"
+          />
+        </div>
 
-                  {/* Contenido */}
-                  <div class="p-5">
-                    <div class="flex items-center gap-3 mb-3">
-                      {escuela.logo && (
-                        <img
-                          src={urlFor(escuela.logo).width(80).height(80).url()}
-                          alt={escuela.nombre}
-                          class="w-12 h-12 object-contain rounded-sm flex-none bg-paper"
-                        />
-                      )}
-                      <div>
-                        <h3 class="text-base md:text-lg m-0">{escuela.nombre}</h3>
-                        {escuela.instructor && (
-                          <p class="text-text-soft text-xs flex items-center gap-1">
-                            <UIcon name="user" size={12} />
-                            {escuela.instructor}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+        <!-- Selector de Región -->
+        <div class="sm:col-span-3 lg:col-span-4">
+          <label for="select-region" class="sr-only">Filtrar por Región</label>
+          <select
+            id="select-region"
+            class="w-full border border-slate-300 bg-slate-50 focus:bg-white px-3 py-2.5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue cursor-pointer"
+          >
+            <option value="">Todas las regiones</option>
+            {regiones.map((region) => (
+              <option value={region}>{region}</option>
+            ))}
+          </select>
+        </div>
 
-                    {escuela.ciudad && (
-                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-4">
-                        <UIcon name="map-pin" size={14} />
-                        {escuela.ciudad}
-                      </p>
-                    )}
-
-                    <div class="flex flex-wrap gap-2 border-t border-line pt-4">
-                      {escuela.email && (
-                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
-                          <UIcon name="mail" size={12} />
-                          Email
-                        </a>
-                      )}
-                      {escuela.whatsapp && (
-                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
-                          <UIcon name="whatsapp" size={12} />
-                          WhatsApp
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Sin resultados */}
-      <div id="sin-resultados" class="hidden text-center py-12">
-        <p class="text-text-soft text-lg mb-2">No se encontraron escuelas</p>
-        <p class="text-text-soft text-sm">Intenta con otro término de búsqueda</p>
+        <!-- Selector de Ciudad -->
+        <div class="sm:col-span-3 lg:col-span-3">
+          <label for="select-ciudad" class="sr-only">Filtrar por Ciudad</label>
+          <select
+            id="select-ciudad"
+            class="w-full border border-slate-300 bg-slate-50 focus:bg-white px-3 py-2.5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-itf-blue cursor-pointer"
+          >
+            <option value="">Todas las ciudades</option>
+            {ciudades.map((ciudad) => (
+              <option value={ciudad}>{ciudad}</option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   </section>
 
-  {/* CTA */}
-  <section class="py-10 md:py-16">
-    <div class="max-w-7xl mx-auto px-5 md:px-7 text-center">
-      <h2 class="max-w-[20ch] mx-auto mb-4">Afilia tu escuela a FECHITAT</h2>
-      <p class="text-text-soft max-w-[50ch] mx-auto mb-6">
-        Si tienes una escuela de Taekwon-Do ITF y quieres ser parte de la federación, contáctanos para conocer los requisitos de afiliación.
+  <!-- Listado de Escuelas -->
+  <section class="py-12 md:py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Contador y estado -->
+      <div class="flex items-center justify-between gap-4 mb-8">
+        <p class="text-slate-600 text-sm font-medium">
+          Mostrando <span id="contador" class="font-bold text-slate-900">{escuelas.length}</span> dojangs oficiales
+        </p>
+        <button
+          id="btn-limpiar-filtros"
+          type="button"
+          class="text-xs font-semibold text-itf-red hover:underline cursor-pointer hidden"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+
+      <!-- Grid de Escuelas -->
+      <div id="grid-escuelas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {escuelas.map((escuela: any) => {
+          const instructor = escuela.instructor || escuela.sensei || "Instructor Certificado";
+          const ciudad = escuela.ciudad || "Chile";
+          const region = escuela.region || "Chile";
+          const slug = escuela.slug?.current;
+          const hrefDetalle = slug ? `/escuelas/${slug}` : null;
+          const whatsappNum = (escuela.whatsapp || escuela.telefono || "").replace(/\D/g, "");
+
+          return (
+            <Card
+              as="article"
+              hoverable
+              class="escuela-card flex flex-col justify-between h-full group"
+              data-nombre={escuela.nombre?.toLowerCase()}
+              data-instructor={instructor.toLowerCase()}
+              data-ciudad={ciudad.toLowerCase()}
+              data-region={region.toLowerCase()}
+            >
+              <div>
+                <!-- Cover o Header Card -->
+                {escuela.foto ? (
+                  <div class="aspect-video overflow-hidden bg-slate-100 relative">
+                    <img
+                      src={urlFor(escuela.foto).width(800).height(450).auto('format').url()}
+                      alt={`Instalaciones de ${escuela.nombre}`}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div class="absolute top-3 right-3">
+                      <Badge variant="oficial" class="shadow-xs">Certificado ITF</Badge>
+                    </div>
+                  </div>
+                ) : (
+                  <div class="h-20 bg-gradient-to-r from-itf-blue to-slate-800 p-4 flex items-center justify-between">
+                    <span class="text-white/80 font-bold text-sm tracking-wider uppercase">FECHITAT</span>
+                    <Badge variant="oficial" class="shadow-xs">Certificado ITF</Badge>
+                  </div>
+                )}
+
+                <!-- Contenido de la Escuela -->
+                <div class="p-6">
+                  <div class="flex items-start gap-3.5 mb-4">
+                    {escuela.logo ? (
+                      <img
+                        src={urlFor(escuela.logo).width(96).height(96).fit('crop').url()}
+                        alt={`Logo de ${escuela.nombre}`}
+                        width="48"
+                        height="48"
+                        class="w-12 h-12 rounded-xl object-contain bg-white border border-slate-200 p-1 flex-none shadow-xs"
+                      />
+                    ) : (
+                      <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 flex items-center justify-center font-bold text-lg flex-none">
+                        🥋
+                      </div>
+                    )}
+                    <div>
+                      <h2 class="text-lg font-bold text-slate-900 group-hover:text-itf-red transition-colors leading-snug m-0">
+                        {hrefDetalle ? (
+                          <a href={hrefDetalle}>{escuela.nombre}</a>
+                        ) : (
+                          escuela.nombre
+                        )}
+                      </h2>
+                      <p class="text-xs font-semibold text-itf-blue mt-0.5 flex items-center gap-1">
+                        <UIcon name="user" size={12} />
+                        <span>{instructor}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2 text-xs text-slate-600 mb-6">
+                    <p class="flex items-center gap-2 font-medium">
+                      <span class="text-itf-red"><UIcon name="map-pin" size={14} /></span>
+                      <span>{ciudad}{region ? `, ${region}` : ""}</span>
+                    </p>
+                    {escuela.direccion && (
+                      <p class="text-slate-500 pl-5 leading-tight line-clamp-1">
+                        {escuela.direccion}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="p-6 pt-0 border-t border-slate-100 mt-auto flex items-center gap-2">
+                {hrefDetalle && (
+                  <Button href={hrefDetalle} variant="secondary" size="sm" class="flex-1 justify-center">
+                    Ver doyang
+                  </Button>
+                )}
+                {whatsappNum && (
+                  <Button
+                    href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent(`Hola, me comunico a través de FECHITAT para consultar por clases en ${escuela.nombre}.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="primary"
+                    size="sm"
+                    class="px-3"
+                    aria-label={`Contactar a ${escuela.nombre} por WhatsApp`}
+                  >
+                    <UIcon name="whatsapp" size={16} />
+                  </Button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <!-- Mensaje cuando no hay resultados -->
+      <div id="sin-resultados" class="hidden py-16 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
+          🔍
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-2">No se encontraron escuelas</h2>
+        <p class="text-slate-600 text-sm mb-6">
+          No hay doyangs registrados que coincidan con los criterios de búsqueda aplicados. Intenta restablecer los filtros.
+        </p>
+        <button
+          id="btn-reset-busqueda"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-itf-blue text-white text-sm font-semibold rounded-lg hover:bg-slate-900 transition-colors"
+        >
+          Ver todas las escuelas
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA para afiliar una escuela -->
+  <section class="py-12 md:py-16 bg-white border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Badge variant="oficial" class="mb-3">Afiliación Institucional</Badge>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+        ¿Diriges un dojang y deseas afiliarte a FECHITAT?
+      </h2>
+      <p class="text-slate-600 text-sm sm:text-base mb-6 max-w-2xl mx-auto leading-relaxed">
+        Incorpora tu escuela a la Federación Oficial de Taekwon-Do ITF en Chile. Obtén respaldo institucional, homologación internacional de cinturones, participación en torneos y capacitaciones continuas.
       </p>
-      <a href="/federacion#directivos" class="inline-flex items-center gap-2 bg-ink text-white font-medium font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-black hover:-translate-y-px">
-        Contactar directiva
-      </a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href="/documentos" variant="primary" size="md">
+          Ver requisitos y estatutos
+        </Button>
+        <Button href="/federacion" variant="secondary" size="md">
+          Conocer la directiva
+        </Button>
+      </div>
     </div>
   </section>
 
   <script>
-    // Buscador
     const input = document.getElementById('buscar-escuela') as HTMLInputElement;
+    const selectRegion = document.getElementById('select-region') as HTMLSelectElement;
+    const selectCiudad = document.getElementById('select-ciudad') as HTMLSelectElement;
     const contador = document.getElementById('contador');
+    const btnLimpiar = document.getElementById('btn-limpiar-filtros');
+    const btnReset = document.getElementById('btn-reset-busqueda');
     const sinResultados = document.getElementById('sin-resultados');
-    const listaEscuelas = document.getElementById('lista-escuelas');
-    const regionGrupos = document.querySelectorAll('.region-grupo');
-    const escuelaCards = document.querySelectorAll('.escuela-card');
-    const filtroBtns = document.querySelectorAll('.filtro-region');
-
-    let regionActiva = 'todas';
+    const grid = document.getElementById('grid-escuelas');
+    const cards = document.querySelectorAll('.escuela-card');
 
     function filtrar() {
-      const busqueda = input?.value.toLowerCase().trim() || '';
-      let total = 0;
+      const q = (input?.value || '').toLowerCase().trim();
+      const regionFiltro = (selectRegion?.value || '').toLowerCase().trim();
+      const ciudadFiltro = (selectCiudad?.value || '').toLowerCase().trim();
 
-      regionGrupos.forEach((grupo) => {
-        const region = (grupo as HTMLElement).dataset.region || '';
-        const cards = grupo.querySelectorAll('.escuela-card');
-        let visiblesEnRegion = 0;
+      let visibles = 0;
 
-        cards.forEach((card) => {
-          const el = card as HTMLElement;
-          const nombre = el.dataset.nombre || '';
-          const ciudad = el.dataset.ciudad || '';
-          const regionCard = el.dataset.region || '';
+      cards.forEach((card) => {
+        const el = card as HTMLElement;
+        const nombre = el.dataset.nombre || '';
+        const instructor = el.dataset.instructor || '';
+        const ciudad = el.dataset.ciudad || '';
+        const region = el.dataset.region || '';
 
-          const coincideRegion = regionActiva === 'todas' || regionCard === regionActiva;
-          const coincideBusqueda = !busqueda || nombre.includes(busqueda) || ciudad.includes(busqueda) || regionCard.includes(busqueda);
+        const coincideTexto = !q || nombre.includes(q) || instructor.includes(q) || ciudad.includes(q) || region.includes(q);
+        const coincideRegion = !regionFiltro || region === regionFiltro;
+        const coincideCiudad = !ciudadFiltro || ciudad === ciudadFiltro;
 
-          if (coincideRegion && coincideBusqueda) {
-            el.style.display = '';
-            visiblesEnRegion++;
-            total++;
-          } else {
-            el.style.display = 'none';
-          }
-        });
-
-        // Mostrar/ocultar grupo de región
-        (grupo as HTMLElement).style.display = visiblesEnRegion > 0 ? '' : 'none';
+        if (coincideTexto && coincideRegion && coincideCiudad) {
+          el.style.display = '';
+          visibles++;
+        } else {
+          el.style.display = 'none';
+        }
       });
 
-      // Actualizar contador
-      if (contador) contador.textContent = total.toString();
+      if (contador) {
+        contador.textContent = visibles.toString();
+      }
 
-      // Mostrar mensaje de sin resultados
-      if (sinResultados && listaEscuelas) {
-        if (total === 0) {
+      const hayFiltrosActivos = Boolean(q || regionFiltro || ciudadFiltro);
+      if (btnLimpiar) {
+        btnLimpiar.classList.toggle('hidden', !hayFiltrosActivos);
+      }
+
+      if (sinResultados && grid) {
+        if (visibles === 0) {
           sinResultados.classList.remove('hidden');
-          listaEscuelas.classList.add('hidden');
+          grid.classList.add('hidden');
         } else {
           sinResultados.classList.add('hidden');
-          listaEscuelas.classList.remove('hidden');
+          grid.classList.remove('hidden');
         }
       }
     }
 
-    // Event listeners
+    function resetFiltros() {
+      if (input) input.value = '';
+      if (selectRegion) selectRegion.value = '';
+      if (selectCiudad) selectCiudad.value = '';
+      filtrar();
+    }
+
     input?.addEventListener('input', filtrar);
-
-    filtroBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const region = (btn as HTMLElement).dataset.region || 'todas';
-        regionActiva = region;
-
-        // Actualizar estilos de botones
-        filtroBtns.forEach((b) => {
-          const el = b as HTMLElement;
-          if (el.dataset.region === region) {
-            el.classList.add('bg-ink', 'text-white');
-            el.classList.remove('bg-white');
-          } else {
-            el.classList.remove('bg-ink', 'text-white');
-            el.classList.add('bg-white');
-          }
-        });
-
-        filtrar();
-      });
-    });
+    selectRegion?.addEventListener('change', filtrar);
+    selectCiudad?.addEventListener('change', filtrar);
+    btnLimpiar?.addEventListener('click', resetFiltros);
+    btnReset?.addEventListener('click', resetFiltros);
   </script>
 </BaseLayout>
+

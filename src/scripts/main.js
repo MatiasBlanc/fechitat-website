@@ -1,9 +1,15 @@
 // Interacciones globales del sitio
 
 // Menú móvil del header (con foco atrapado y cierre con Escape)
-const burger = document.querySelector('[data-burger]');
-const mobileNav = document.querySelector('.mobile-nav');
-if (burger && mobileNav) {
+const inicializarMenuMovil = () => {
+  const burger = document.querySelector('[data-burger]');
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (!(burger instanceof HTMLElement) || !(mobileNav instanceof HTMLElement)) return;
+
+  /** Evita registrar dos veces los eventos si Astro conserva el DOM. */
+  if (burger.dataset.menuInicializado === 'true') return;
+  burger.dataset.menuInicializado = 'true';
+
   /** Elementos enfocables dentro del menú móvil. */
   const getEnfocables = () =>
     Array.from(
@@ -52,7 +58,10 @@ if (burger && mobileNav) {
       primero.focus();
     }
   });
-}
+};
+
+inicializarMenuMovil();
+document.addEventListener('astro:page-load', inicializarMenuMovil);
 
 // Scroll-spy del riel hangul
 const rail = document.querySelector('.hangul-rail');

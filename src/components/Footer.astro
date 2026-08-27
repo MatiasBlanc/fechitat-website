@@ -6,9 +6,9 @@ import SocialLinks from "./SocialLinks.astro";
 <footer class="bg-ink text-light-soft py-12 md:py-13 pb-8 md:pb-6">
   <div class="max-w-6xl mx-auto px-5 md:px-7">
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-8 md:pb-10 border-b border-white/10"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pb-8 md:pb-10 border-b border-white/10"
     >
-      <div>
+      <div class="lg:col-span-2">
         <div
           class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg mb-4"
         >
@@ -19,7 +19,7 @@ import SocialLinks from "./SocialLinks.astro";
           />
           FECHITAT
         </div>
-        <p class="max-w-[32ch] text-light-muted text-sm md:text-base mb-5">
+        <p class="max-w-xs text-light-muted text-sm md:text-base mb-5">
           Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF. Formando
           artistas marciales desde los dojangs de todo Chile.
         </p>
@@ -50,7 +50,7 @@ import SocialLinks from "./SocialLinks.astro";
         </h2>
         <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
           <li>
-            <a href="/federacion/documentos" class="hover:text-white transition-colors duration-150"
+            <a href="/documentos" class="hover:text-white transition-colors duration-150"
               >Documentos oficiales</a
             >
           </li>
@@ -60,7 +60,7 @@ import SocialLinks from "./SocialLinks.astro";
             >
           </li>
           <li>
-            <a href="mailto:contacto@fechitat.cl?subject=Solicitud%20de%20estatutos" class="hover:text-white transition-colors duration-150"
+            <a href="/documentos" class="hover:text-white transition-colors duration-150"
               >Estatutos</a
             >
           </li>
@@ -92,7 +92,7 @@ import SocialLinks from "./SocialLinks.astro";
             >
           </li>
           <li>
-            <a href="/estudio" class="hover:text-white transition-colors duration-150"
+            <a href="/formacion" class="hover:text-white transition-colors duration-150"
               >Enciclopedia técnica</a
             >
           </li>
@@ -115,7 +115,7 @@ import SocialLinks from "./SocialLinks.astro";
       </div>
     </div>
     <div
-      class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-[1.6em] text-sm gap-4"
+      class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-6 text-sm gap-4"
     >
       <div>Hecho en ★ con espíritu indómito.</div>
       <SocialLinks />

@@ -19,13 +19,13 @@ const { links } = Astro.props;
         href={enlace.href}
         data-side-nav-link
         class:list={[
-          'writing-mode-vertical font-mono text-[0.68rem] tracking-[0.08em] flex items-center gap-[0.6em] transition-all duration-200',
+          'writing-mode-vertical font-mono text-xs tracking-wider flex items-center gap-2 transition-all duration-200',
           index === 0
-            ? 'active opacity-100 text-red'
-            : 'opacity-55 text-text-soft hover:opacity-100 hover:text-red',
+            ? 'active opacity-100 text-itf-red'
+            : 'opacity-55 text-text-soft hover:opacity-100 hover:text-itf-red',
         ]}
       >
-        <span class="text-[0.85rem]">{enlace.kr}</span>
+        <span class="text-sm">{enlace.kr}</span>
         <span>{enlace.label}</span>
       </a>
     ))

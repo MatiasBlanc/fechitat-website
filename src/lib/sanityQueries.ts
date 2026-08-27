@@ -182,6 +182,7 @@ export async function getComisiones() {
       _id,
       nombre,
       descripcion,
+      emailContacto,
       miembros[]->{
         _id,
         nombre,

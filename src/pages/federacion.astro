@@ -16,16 +16,6 @@ const titulo = 'Sobre FECHITAT — Federación de Taekwon-Do ITF';
 const descripcion =
   'Conoce FECHITAT, la federación chilena de Taekwon-Do ITF: historia, directiva, campeones y escuelas afiliadas.';
 
-const riel = [
-  { href: '#quienes', kr: '소개', label: 'Quiénes somos' },
-  { href: '#historia', kr: '역사', label: 'Historia' },
-  { href: '#directivos', kr: '임원', label: 'Directivos' },
-  { href: '#comisiones', kr: '위원회', label: 'Comisiones' },
-  { href: '#documentos', kr: '문서', label: 'Documentos' },
-  { href: '#campeones', kr: '챔피언', label: 'Campeones' },
-  { href: '#afiliacion', kr: '가입', label: 'Afiliación' },
-];
-
 // Obtener datos de Sanity
 const [directivos, comisiones, campeones, hitos] = await Promise.all([
   getOrganigrama(),
@@ -33,6 +23,15 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
   getCampeones(),
   getHitoHistorico(),
 ]);
+
+const riel = [
+  { href: '#quienes', kr: '소개', label: 'Quiénes somos' },
+  ...(hitos.length > 0 ? [{ href: '#historia', kr: '역사', label: 'Historia' }] : []),
+  ...(directivos.length > 0 ? [{ href: '#directivos', kr: '임원', label: 'Directivos' }] : []),
+  ...(comisiones.length > 0 ? [{ href: '#comisiones', kr: '위원회', label: 'Comisiones' }] : []),
+  ...(campeones.length > 0 ? [{ href: '#campeones', kr: '챔피언', label: 'Campeones' }] : []),
+  { href: '#afiliacion', kr: '가입', label: 'Afiliación' },
+];
 ---
 
 <BaseLayout title={titulo} description={descripcion}>
@@ -96,10 +95,10 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
                     <img
                       src={urlFor(d.foto).width(240).height(300).url()}
                       alt={d.nombre}
-                      class="w-full aspect-[4/5] object-cover"
+                      class="w-full aspect-4/5 object-cover"
                     />
                   ) : (
-                    <div class="w-full aspect-[4/5] bg-ink text-white flex items-center justify-center font-heading font-extrabold text-3xl">
+                    <div class="w-full aspect-4/5 bg-ink text-white flex items-center justify-center font-heading font-extrabold text-3xl">
                       {d.nombre.split(' ').map((n: string) => n[0]).join('')}
                     </div>
                   )}
@@ -108,12 +107,12 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
                 {/* Info */}
                 <div class="px-4 pb-5 pt-3">
                   <h3 class="text-base md:text-lg mb-1">{d.nombre}</h3>
-                  <p class="text-red font-mono text-xs tracking-wider uppercase mb-1">{d.cargo}</p>
+                  <p class="text-itf-red font-mono text-xs tracking-wider uppercase mb-1">{d.cargo}</p>
                   {d.grado && <p class="text-text-soft text-xs mb-4">{d.grado}</p>}
 
                   {/* Botón de contacto */}
                   {d.email && (
-                    <Button href={`mailto:${d.email}`} variant="dark-ghost" size="sm">
+                    <Button href={`mailto:${d.email}`} variant="dark-ghost" size="sm" class="mt-5">
                       Contactar
                     </Button>
                   )}
@@ -132,67 +131,68 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
       <div class="max-w-7xl mx-auto px-5 md:px-7">
         <div class="mb-8">
           <h2>Comisiones</h2>
-          <p class="text-text-soft max-w-[65ch] mt-2">
+          <p class="text-text-soft max-w-2xl mt-2">
             Equipos de trabajo que apoyan la gestión y el funcionamiento de FECHITAT.
           </p>
         </div>
 
         <div class="space-y-6">
-          {comisiones.map((comision) => (
-            <article class="bg-white border border-line rounded-sm p-5 md:p-6">
-              <h3 class="text-xl mb-2">{comision.nombre}</h3>
-              {comision.descripcion && <p class="text-text-soft text-sm mb-5">{comision.descripcion}</p>}
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {comision.miembros?.map((miembro) => (
-                  <div class="pt-4">
-                    <div class="flex items-center gap-3">
-                      {miembro.foto ? (
-                        <img
-                          src={urlFor(miembro.foto).width(96).height(96).url()}
-                          alt={miembro.nombre}
-                          class="w-12 h-12 rounded-full object-cover flex-none"
-                        />
-                      ) : (
-                        <div class="w-12 h-12 rounded-full bg-ink text-white flex items-center justify-center font-heading font-extrabold text-sm flex-none">
-                          {miembro.nombre.split(' ').map((n: string) => n[0]).join('')}
+          {comisiones.map((comision) => {
+            const miembros = comision.miembros ?? [];
+            // Contacto provisional hasta que el buzón quede configurado en Sanity.
+            const emailContacto =
+              comision.emailContacto ??
+              (comision.nombre.toLowerCase().includes('disciplina') ? 'disciplina@fechitat.cl' : undefined);
+            const correos =
+              emailContacto ??
+              miembros
+                .map((miembro) => miembro.email)
+                .filter((email): email is string => Boolean(email))
+                .join(',');
+
+            return (
+              <article class="bg-white border border-line rounded-sm p-5 md:p-6">
+                <h3 class="text-xl mb-2">{comision.nombre}</h3>
+                {comision.descripcion && <p class="text-text-soft text-sm mb-5">{comision.descripcion}</p>}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {miembros.map((miembro) => (
+                    <div class="pt-4">
+                      <div class="flex items-center gap-3">
+                        {miembro.foto ? (
+                          <img
+                            src={urlFor(miembro.foto).width(96).height(96).url()}
+                            alt={miembro.nombre}
+                            class="w-12 h-12 rounded-full object-cover flex-none"
+                          />
+                        ) : (
+                          <div class="w-12 h-12 rounded-full bg-ink text-white flex items-center justify-center font-heading font-extrabold text-sm flex-none">
+                            {miembro.nombre.split(' ').map((n: string) => n[0]).join('')}
+                          </div>
+                        )}
+                        <div>
+                          <h4 class="text-base m-0">{miembro.nombre}</h4>
                         </div>
-                      )}
-                      <div>
-                        <h4 class="text-base m-0">{miembro.nombre}</h4>
                       </div>
+                      {miembros.length === 1 && correos && (
+                        <Button href={`mailto:${correos}`} variant="dark-ghost" size="sm" class="mt-5 normal-case tracking-normal break-all">
+                          {correos}
+                        </Button>
+                      )}
                     </div>
-                    {miembro.email && (
-                      <Button href={`mailto:${miembro.email}`} variant="dark-ghost" size="sm" class="mt-5">
-                        Contactar
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </article>
-          ))}
+                  ))}
+                </div>
+                {miembros.length > 1 && correos && (
+                  <Button href={`mailto:${correos}`} variant="dark-ghost" size="sm" class="mt-5 normal-case tracking-normal break-all">
+                    {correos}
+                  </Button>
+                )}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
   )}
-
-  <!-- Documentos oficiales -->
-  <section id="documentos" class="py-10 md:py-14">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="bg-ink text-white rounded-sm p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div>
-          <span class="font-mono text-xs tracking-widest uppercase text-red">Información institucional</span>
-          <h2 class="text-white text-2xl md:text-3xl mt-2">Documentos oficiales</h2>
-          <p class="text-light-soft text-sm max-w-[58ch] mt-2">
-            Consulta los protocolos, reglamentos, estatutos y comunicados publicados por FECHITAT.
-          </p>
-        </div>
-        <Button href="/federacion/documentos" variant="primary" size="md" class="self-start md:self-center">
-          Ver documentos
-        </Button>
-      </div>
-    </div>
-  </section>
 
   <!-- Salón de campeones -->
   {campeones.length > 0 && (
