@@ -106,55 +106,89 @@ const jsonLdEscuelas = {
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {escuelasPorRegion[region].map((escuela: any) => (
-                <div class="escuela-card bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
-                  {/* Foto del Dojang como cover */}
-                  {escuela.foto && (
-                    <img
-                      src={urlFor(escuela.foto).width(800).auto('format').url()}
-                      alt={`Dojang ${escuela.nombre}`}
-                      loading="lazy"
-                      decoding="async"
-                      class="w-full aspect-[16/9] object-cover"
-                    />
-                  )}
+                <div class="escuela-card bg-white border border-slate-200 rounded-lg overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
+                  <div>
+                    {/* Foto del Dojang como cover */}
+                    {escuela.foto ? (
+                      escuela.slug?.current ? (
+                        <a href={`/escuelas/${escuela.slug.current}`} class="block aspect-video overflow-hidden group">
+                          <img
+                            src={urlFor(escuela.foto).width(800).auto('format').url()}
+                            alt={`Dojang ${escuela.nombre}`}
+                            loading="lazy"
+                            decoding="async"
+                            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </a>
+                      ) : (
+                        <div class="aspect-video overflow-hidden">
+                          <img
+                            src={urlFor(escuela.foto).width(800).auto('format').url()}
+                            alt={`Dojang ${escuela.nombre}`}
+                            loading="lazy"
+                            decoding="async"
+                            class="w-full h-full object-cover"
+                          />
+                        </div>
+                      )
+                    ) : null}
 
-                  {/* Contenido */}
-                  <div class="p-5">
-                    <div class="flex items-center gap-3 mb-3">
-                      {escuela.logo && (
-                        <img
-                          src={urlFor(escuela.logo).width(80).height(80).url()}
-                          alt={escuela.nombre}
-                          class="w-12 h-12 object-contain rounded-sm flex-none bg-paper"
-                        />
-                      )}
-                      <div>
-                        <h3 class="text-base md:text-lg m-0">{escuela.nombre}</h3>
-                        {escuela.instructor && (
-                          <p class="text-text-soft text-xs flex items-center gap-1">
-                            <UIcon name="user" size={12} />
-                            {escuela.instructor}
-                          </p>
+                    {/* Contenido */}
+                    <div class="p-5">
+                      <div class="flex items-center gap-3 mb-3">
+                        {escuela.logo && (
+                          <img
+                            src={urlFor(escuela.logo).width(80).height(80).url()}
+                            alt={escuela.nombre}
+                            class="w-12 h-12 object-contain rounded-md flex-none bg-slate-50 border border-slate-100 p-1"
+                          />
                         )}
+                        <div>
+                          <h3 class="text-base md:text-lg font-bold text-slate-900 m-0">
+                            {escuela.slug?.current ? (
+                              <a href={`/escuelas/${escuela.slug.current}`} class="hover:text-itf-red transition-colors">
+                                {escuela.nombre}
+                              </a>
+                            ) : (
+                              escuela.nombre
+                            )}
+                          </h3>
+                          {escuela.instructor && (
+                            <p class="text-slate-500 text-xs flex items-center gap-1 mt-0.5">
+                              <UIcon name="user" size={12} />
+                              {escuela.instructor}
+                            </p>
+                          )}
+                        </div>
                       </div>
+
+                      {escuela.ciudad && (
+                        <p class="text-slate-600 text-sm flex items-center gap-1.5 mb-2">
+                          <UIcon name="map-pin" size={14} />
+                          {escuela.ciudad}
+                        </p>
+                      )}
                     </div>
+                  </div>
 
-                    {escuela.ciudad && (
-                      <p class="text-text-soft text-sm flex items-center gap-1.5 mb-4">
-                        <UIcon name="map-pin" size={14} />
-                        {escuela.ciudad}
-                      </p>
-                    )}
-
-                    <div class="flex flex-wrap gap-2 border-t border-line pt-4">
+                  <div class="px-5 pb-5 pt-0">
+                    <div class="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+                      {escuela.slug?.current && (
+                        <a
+                          href={`/escuelas/${escuela.slug.current}`}
+                          class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase bg-slate-900 text-white px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-itf-red"
+                        >
+                          Ver dojang
+                        </a>
+                      )}
                       {escuela.email && (
-                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`mailto:${escuela.email}`} class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-slate-200 text-slate-700 px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-slate-100">
                           <UIcon name="mail" size={12} />
                           Email
                         </a>
                       )}
                       {escuela.whatsapp && (
-                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-line px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-ink hover:text-white hover:border-ink">
+                        <a href={`https://wa.me/${escuela.whatsapp}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase border border-slate-200 text-slate-700 px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-slate-100">
                           <UIcon name="whatsapp" size={12} />
                           WhatsApp
                         </a>

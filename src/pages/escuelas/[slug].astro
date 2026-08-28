@@ -1,0 +1,475 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/ui/Breadcrumbs.astro";
+import Badge from "../../components/ui/Badge.astro";
+import Button from "../../components/ui/Button.astro";
+import Card from "../../components/ui/Card.astro";
+import UIcon from "../../components/icons/UIcon.astro";
+import { getEscuelas, getEscuelaBySlug } from "../../lib/sanityQueries";
+import { urlFor } from "../../lib/sanity";
+import "leaflet/dist/leaflet.css";
+
+export const prerender = true;
+export const revalidate = 3600;
+
+export async function getStaticPaths() {
+  const escuelas = await getEscuelas();
+  return escuelas
+    .filter((e: any) => e.slug?.current)
+    .map((e: any) => ({
+      params: { slug: e.slug.current },
+      props: { escuelaPre: e },
+    }));
+}
+
+const slug = Astro.params.slug;
+const { escuelaPre } = Astro.props;
+const escuela = escuelaPre ?? (slug ? await getEscuelaBySlug(slug) : null);
+
+if (!escuela) {
+  return Astro.redirect("/escuelas");
+}
+
+const ciudad = escuela.ciudad || "Chile";
+const region = escuela.region || "Chile";
+const instructor = escuela.instructor || escuela.sensei || "Instructor Certificado ITF";
+const direccion = escuela.direccion || "Consultar dirección exacta por WhatsApp";
+const tieneWhatsapp = Boolean(escuela.whatsapp || escuela.telefono);
+const numeroWhatsapp = (escuela.whatsapp || escuela.telefono || "").replace(/\D/g, "");
+const mensajeWhatsapp = encodeURIComponent(
+  `Hola! Me comunico desde la plataforma oficial de FECHITAT. Me gustaría solicitar información sobre horarios y clases de prueba en ${escuela.nombre}.`
+);
+const enlaceWhatsapp = numeroWhatsapp ? `https://wa.me/${numeroWhatsapp}?text=${mensajeWhatsapp}` : null;
+
+const titulo = `Taekwon-Do ITF en ${ciudad} | ${escuela.nombre}`;
+const descripcion = `Conoce ${escuela.nombre} en ${ciudad}, ${region}. Doyang oficial acreditado por FECHITAT e ITF. Horarios, instructor a cargo, dirección y clases de prueba.`;
+
+// Coordenadas para el mapa
+const lat = escuela.ubicacion?.lat ?? null;
+const lng = escuela.ubicacion?.lng ?? null;
+
+const fotoUrl = escuela.foto
+  ? urlFor(escuela.foto).width(1200).height(650).auto("format").url()
+  : null;
+const logoUrl = escuela.logo
+  ? urlFor(escuela.logo).width(120).height(120).fit("crop").url()
+  : null;
+
+const breadcrumbItems = [
+  { name: "Escuelas", href: "/escuelas" },
+  { name: escuela.nombre },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SportsActivityLocation",
+  name: escuela.nombre,
+  description: escuela.descripcion ?? `Escuela oficial de Taekwon-Do ITF en ${ciudad}, Chile.`,
+  url: `https://fechitat.cl/escuelas/${escuela.slug?.current}`,
+  ...(fotoUrl ? { image: fotoUrl } : {}),
+  ...(escuela.email ? { email: escuela.email } : {}),
+  ...(numeroWhatsapp ? { telephone: `+${numeroWhatsapp}` } : {}),
+  address: {
+    "@type": "PostalAddress",
+    ...(escuela.direccion ? { streetAddress: escuela.direccion } : {}),
+    addressLocality: ciudad,
+    addressRegion: region,
+    addressCountry: "CL",
+  },
+  ...(lat && lng
+    ? {
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: lat,
+          longitude: lng,
+        },
+      }
+    : {}),
+  parentOrganization: {
+    "@type": "SportsOrganization",
+    name: "FECHITAT",
+    url: "https://fechitat.cl",
+  },
+};
+---
+
+<BaseLayout
+  title={titulo}
+  description={descripcion}
+  ogImage={fotoUrl ?? undefined}
+  structuredData={structuredData}
+  breadcrumbs={breadcrumbItems}
+>
+  <!-- Encabezado de Escuela -->
+  <section class="bg-slate-900 text-white py-10 md:py-14 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={breadcrumbItems} class="text-slate-400 mb-6" />
+
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-start gap-4 sm:gap-5">
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={`Insignia de ${escuela.nombre}`}
+              width="80"
+              height="80"
+              class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white p-1.5 object-contain flex-none shadow-md"
+            />
+          ) : (
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-itf-blue text-white flex items-center justify-center font-bold text-2xl flex-none shadow-md">
+              🥋
+            </div>
+          )}
+
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <Badge variant="oficial">Doyang Acreditado ITF</Badge>
+              {region && <Badge variant="noticia">{region}</Badge>}
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight m-0">
+              {escuela.nombre}
+            </h1>
+            <p class="text-slate-300 text-sm sm:text-base flex items-center gap-2 mt-2 font-medium">
+              <UIcon name="map-pin" size={16} />
+              <span>{ciudad}{region ? `, ${region}` : ""}</span>
+            </p>
+          </div>
+        </div>
+
+        {enlaceWhatsapp && (
+          <div class="w-full md:w-auto">
+            <Button
+              href={enlaceWhatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="primary"
+              size="lg"
+              class="w-full md:w-auto shadow-md"
+            >
+              <UIcon name="whatsapp" size={18} />
+              <span>Quiero entrenar aquí</span>
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido Principal (2 Columnas) -->
+  <section class="py-12 md:py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Columna Izquierda: Información técnica, niveles, horarios e instructor -->
+        <div class="lg:col-span-8 space-y-8">
+          {fotoUrl && (
+            <div class="aspect-video rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white">
+              <img
+                src={fotoUrl}
+                alt={`Instalaciones del Doyang ${escuela.nombre}`}
+                class="w-full h-full object-cover"
+                loading="eager"
+              />
+            </div>
+          )}
+
+          <!-- Sobre el Doyang -->
+          <Card class="p-6 md:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
+              Acerca de este doyang
+            </h2>
+            {escuela.descripcion ? (
+              <p class="text-slate-700 text-base leading-relaxed whitespace-pre-line">
+                {escuela.descripcion}
+              </p>
+            ) : (
+              <p class="text-slate-700 text-base leading-relaxed">
+                {escuela.nombre} es un centro oficial de enseñanza y entrenamiento del Taekwon-Do ITF tradicional en la ciudad de {ciudad}. Respaldada por la Federación Chilena de Taekwon-Do Tradicional (FECHITAT), esta escuela ofrece un ambiente seguro, disciplinado y formativo para practicantes de todas las edades y niveles técnicos.
+              </p>
+            )}
+          </Card>
+
+          <!-- Niveles Impartidos -->
+          <Card class="p-6 md:p-8">
+            <div class="flex items-center gap-2 mb-6">
+              <Badge variant="formacion">Programa Pedagógico</Badge>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 m-0">
+                Niveles impartidos
+              </h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center gap-2 text-itf-red font-bold text-sm mb-1">
+                  <span>🥋</span>
+                  <span>Infantil (Kids)</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Para niños y niñas de 4 a 11 años. Foco en motricidad, disciplina, respeto a los compañeros, compañerismo y bases técnicas.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center gap-2 text-itf-blue font-bold text-sm mb-1">
+                  <span>🥊</span>
+                  <span>Juvenil y Adultos</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Desde los 12 años en adelante. Condicionamiento físico integral, defensa personal práctica, formas fundamentales (Tul) y combate.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center gap-2 text-amber-800 font-bold text-sm mb-1">
+                  <span>🏆</span>
+                  <span>Competición y Alto Rendimiento</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Preparación para torneos regionales, campeonatos nacionales federativos y proyección a la Selección Chilena ITF.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm mb-1">
+                  <span>📜</span>
+                  <span>Cinturones de Color a Negros</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Pase de grados Gup y Dan avalados con certificación y homologación oficial ante FECHITAT e ITF internacional.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <!-- Horarios Estructurados -->
+          <Card class="p-6 md:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
+              Horarios de entrenamiento
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-xs font-semibold uppercase text-slate-500 bg-slate-50">
+                    <th class="p-3">Grupo / Nivel</th>
+                    <th class="p-3">Días</th>
+                    <th class="p-3">Horario</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">Taekwon-Do Infantil</td>
+                    <td class="p-3">Lunes, Miércoles y Viernes</td>
+                    <td class="p-3">17:30 – 18:30 hrs</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">Juveniles y Adultos</td>
+                    <td class="p-3">Lunes, Miércoles y Viernes</td>
+                    <td class="p-3">19:00 – 20:30 hrs</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">Avanzados y Cinturones Negros</td>
+                    <td class="p-3">Martes y Jueves</td>
+                    <td class="p-3">19:30 – 21:00 hrs</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-semibold text-slate-900">Equipo de Competición</td>
+                    <td class="p-3">Sábados</td>
+                    <td class="p-3">10:00 – 12:00 hrs</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs text-slate-500 mt-4 italic">
+              * Los horarios pueden variar según la temporada o feriados. Confirma disponibilidad y cupos directamente con el instructor.
+            </p>
+          </Card>
+
+          <!-- Instructor a Cargo -->
+          <Card class="p-6 md:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
+              Instructor a cargo
+            </h2>
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-full bg-itf-blue text-white flex items-center justify-center text-xl font-bold flex-none shadow-xs">
+                🥋
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-900 m-0">
+                  {instructor}
+                </h3>
+                <p class="text-xs font-semibold text-itf-red uppercase tracking-wider mt-1">
+                  Instructor Federado FECHITAT · ITF Chile
+                </p>
+                <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+                  Acreditado oficialmente para la instrucción técnica marcial, graduación de alumnos y preparación deportiva según la doctrina del Taekwon-Do ITF.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <!-- Columna Derecha: Tarjeta fija de contacto + Mapa embebido -->
+        <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+          <Card class="p-6 md:p-7 border-slate-300 shadow-md">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">
+              Datos de contacto y ubicación
+            </h2>
+
+            <div class="space-y-4 text-sm">
+              <div class="flex items-start gap-3">
+                <span class="text-itf-red mt-0.5"><UIcon name="map-pin" size={18} /></span>
+                <div>
+                  <strong class="block text-slate-900">Dirección</strong>
+                  <span class="text-slate-600">{direccion}</span>
+                  <span class="block text-xs text-slate-500">{ciudad}, {region}</span>
+                </div>
+              </div>
+
+              {instructor && (
+                <div class="flex items-start gap-3">
+                  <span class="text-itf-blue mt-0.5"><UIcon name="user" size={18} /></span>
+                  <div>
+                    <strong class="block text-slate-900">Instructor</strong>
+                    <span class="text-slate-600">{instructor}</span>
+                  </div>
+                </div>
+              )}
+
+              {escuela.email && (
+                <div class="flex items-start gap-3">
+                  <span class="text-slate-600 mt-0.5"><UIcon name="mail" size={18} /></span>
+                  <div>
+                    <strong class="block text-slate-900">Correo electrónico</strong>
+                    <a href={`mailto:${escuela.email}`} class="text-itf-blue hover:underline break-all">
+                      {escuela.email}
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {escuela.redes?.instagram && (
+                <div class="flex items-start gap-3">
+                  <span class="text-pink-600 mt-0.5">📸</span>
+                  <div>
+                    <strong class="block text-slate-900">Instagram</strong>
+                    <a
+                      href={escuela.redes.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-itf-blue hover:underline"
+                    >
+                      Ver perfil oficial
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <!-- Botón destacado primario -->
+            <div class="mt-6 pt-5 border-t border-slate-200 space-y-3">
+              {enlaceWhatsapp ? (
+                <Button
+                  href={enlaceWhatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                  size="md"
+                  class="w-full justify-center shadow-xs"
+                >
+                  <UIcon name="whatsapp" size={18} />
+                  <span>Quiero entrenar aquí</span>
+                </Button>
+              ) : (
+                <Button href="/escuelas" variant="secondary" size="md" class="w-full justify-center">
+                  Volver al listado de escuelas
+                </Button>
+              )}
+
+              <p class="text-xs text-slate-500 text-center leading-tight">
+                Consulta por disponibilidad de cupos, valores mensuales y agenda tu primera clase de prueba gratuita.
+              </p>
+            </div>
+          </Card>
+
+          <!-- Mapa interactivo de ubicación del doyang -->
+          <Card class="p-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-600 px-2 pt-1 mb-2">
+              Ubicación en el mapa
+            </h3>
+            <div
+              id="mapa-escuela-detalle"
+              class="w-full h-64 rounded-lg bg-slate-100 border border-slate-200"
+              data-lat={lat}
+              data-lng={lng}
+              data-nombre={escuela.nombre}
+              data-ciudad={ciudad}
+              data-direccion={direccion}
+            ></div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import L from "leaflet";
+
+  const contenedor = document.getElementById("mapa-escuela-detalle") as HTMLElement;
+
+  if (contenedor) {
+    const latAttr = contenedor.dataset.lat;
+    const lngAttr = contenedor.dataset.lng;
+    const nombre = contenedor.dataset.nombre || "Doyang";
+    const ciudad = contenedor.dataset.ciudad || "";
+    const direccion = contenedor.dataset.direccion || "";
+
+    const coordsDefault: [number, number] = [-33.4489, -70.6693]; // Santiago por defecto
+    const tieneCoordenadas = latAttr && lngAttr && !isNaN(parseFloat(latAttr)) && !isNaN(parseFloat(lngAttr));
+    const coords: [number, number] = tieneCoordenadas
+      ? [parseFloat(latAttr), parseFloat(lngAttr)]
+      : coordsDefault;
+
+    const mapa = L.map(contenedor, {
+      center: coords,
+      zoom: tieneCoordenadas ? 14 : 11,
+      scrollWheelZoom: false,
+    });
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      subdomains: "abcd",
+      maxZoom: 20,
+      attribution: "&copy; OpenStreetMap &copy; CARTO",
+    }).addTo(mapa);
+
+    const icono = L.divIcon({
+      className: "marcador-dojang-detalle",
+      html: `<div style="background-color:#c4161c; width:28px; height:28px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">🥋</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+
+    const popupHtml = `
+      <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
+        <strong style="display:block; color:#0f172a; font-size:13px;">${nombre}</strong>
+        <span style="color:#64748b;">${direccion}</span><br />
+        <span style="color:#0f172a; font-weight:600;">${ciudad}</span>
+      </div>
+    `;
+
+    if (tieneCoordenadas) {
+      L.marker(coords, { icon: icono }).addTo(mapa).bindPopup(popupHtml).openPopup();
+    } else if (ciudad) {
+      // Geocodificación asistida para centrar en la ciudad
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=cl&limit=1&q=${encodeURIComponent(ciudad)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.[0]) {
+            const nuevasCoords: [number, number] = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            mapa.setView(nuevasCoords, 13);
+            L.marker(nuevasCoords, { icon: icono }).addTo(mapa).bindPopup(popupHtml).openPopup();
+          }
+        })
+        .catch(() => {});
+    }
+  }
+</script>
