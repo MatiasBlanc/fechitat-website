@@ -18,23 +18,24 @@ const {
   disabled = false,
 } = Astro.props;
 
-const baseClasses = 'inline-flex items-center gap-[0.5em] font-medium font-mono tracking-[0.08em] uppercase rounded-[var(--radius-sm)] cursor-pointer transition-all duration-150 ease-[ease] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+const baseClasses = 'inline-flex items-center gap-2 font-semibold font-kumbh tracking-wider uppercase rounded-sm cursor-pointer transition-all duration-150 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
 
 const sizeClasses = {
-  sm: 'text-[0.7rem] py-[0.6em] px-[1em]',
-  md: 'text-[0.78rem] py-[0.9em] px-[1.5em]',
-  lg: 'text-[0.85rem] py-[1em] px-[2em]',
+  sm: 'text-xs py-2 px-3.5',
+  md: 'text-xs py-2.5 px-5',
+  lg: 'text-sm py-3 px-6',
 };
 
 const variantClasses = {
-  primary: 'bg-red text-white hover:bg-red-dark hover:-translate-y-[1px]',
-  secondary: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
-  ghost: 'bg-transparent border border-white/50 text-white',
-  dark: 'bg-ink text-white hover:bg-black hover:-translate-y-[1px]',
-  'dark-ghost': 'bg-transparent border border-ink text-ink',
+  primary: 'bg-itf-red text-white hover:bg-itf-red-dark shadow-xs',
+  secondary: 'bg-slate-900 text-white hover:bg-slate-800 shadow-xs',
+  ghost: 'bg-transparent border border-white/60 text-white hover:bg-white/10',
+  dark: 'bg-slate-900 text-white hover:bg-slate-800 shadow-xs',
+  'dark-ghost': 'bg-transparent border border-slate-900 text-slate-900 hover:bg-slate-100',
+  blue: 'bg-itf-blue text-white hover:bg-itf-blue-dark shadow-xs',
 };
 
-const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${clase}`;
+const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant] ?? variantClasses.primary} ${clase}`;
 ---
 
 {href ? (

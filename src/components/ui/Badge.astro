@@ -1,0 +1,36 @@
+---
+// Badge semántico institucional FECHITAT
+// Variantes: campeonato (rojo), evento (neutral slate), noticia (azul), formacion (verde), oficial (ámbar)
+interface Props {
+  variant?: 'campeonato' | 'evento' | 'noticia' | 'formacion' | 'oficial' | 'default';
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { variant = 'default', size = 'sm', class: className = '' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'text-xs px-2.5 py-0.5',
+  md: 'text-sm px-3 py-1',
+};
+
+const variantClasses = {
+  campeonato: 'bg-itf-red-light text-itf-red border border-itf-red-border font-semibold',
+  evento: 'bg-slate-100 text-slate-700 border border-slate-200 font-medium',
+  noticia: 'bg-itf-blue-light text-itf-blue border border-itf-blue-border font-medium',
+  formacion: 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium',
+  oficial: 'bg-amber-50 text-amber-900 border border-amber-200 font-medium',
+  default: 'bg-slate-100 text-slate-700 border border-slate-200 font-medium',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1 rounded-md transition-colors',
+    sizeClasses[size],
+    variantClasses[variant] ?? variantClasses.default,
+    className,
+  ]}
+>
+  <slot />
+</span>
