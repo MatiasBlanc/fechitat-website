@@ -2,6 +2,13 @@
 
 Sitio institucional de la **Federación Chilena de Taekwon-Do Tradicional** (afiliada a ITF), construido con [Astro](https://astro.build).
 
+<details>
+  <summary>🇺🇸 <b>Click here to read in English / Read in English</b></summary>
+  <br/>
+
+  Official institutional website for the **Chilean Federation of Traditional Taekwon-Do (ITF)**, built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com). Features an interactive club map locator, organizational chart, official blog, and event portal.
+</details>
+
 Base portada de `fechitat-inspiration/` (prototipo HTML estático), que sigue siendo la fuente de verdad del diseño: sistema de tokens, tipografías, belt bar y riel de hangul.
 
 ## Estructura
