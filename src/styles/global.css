@@ -97,15 +97,21 @@
     font-family: var(--font-heading);
     font-weight: 800;
     letter-spacing: 0.01em;
-    text-transform: uppercase;
     margin: 0 0 0.4em;
-    line-height: 1.02;
+    line-height: 1.08;
     color: var(--color-ink);
   }
 
-  /* Tamaño base de títulos de sección (h2) más grande y responsivo */
+  h1 {
+    font-size: clamp(3rem, 5vw, 4.75rem);
+  }
+
   h2 {
-    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
   }
 
   ::selection {
@@ -135,6 +141,22 @@
 
 /* ---------- Componentes reutilizables ---------- */
 @layer components {
+  /* El mismo nav se adapta: no se renderizan dos listas de enlaces. */
+  .mobile-nav {
+    display: none;
+  }
+
+  .mobile-nav.open {
+    display: flex;
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-nav,
+    .mobile-nav.open {
+      display: flex;
+    }
+  }
+
   .belt-bar {
     height: 6px;
     width: 100%;

@@ -11,7 +11,7 @@ export const revalidate = 3600;
 
 const titulo = 'Escuelas Afiliadas — FECHITAT';
 const descripcion =
-  'Busca escuelas y dojangs afiliados a FECHITAT por ciudad o región y encuentra dónde entrenar Taekwon-Do ITF en Chile.';
+  'Busca escuelas afiliadas a FECHITAT por ciudad o región y encuentra dónde entrenar Taekwon-Do ITF en Chile.';
 
 // Datos de Sanity
 const escuelas = await getEscuelas();
@@ -50,7 +50,7 @@ const jsonLdEscuelas = {
   <PageHero
     title="Escuelas afiliadas"
     crumb="Escuelas"
-    description="Encuentra el dojang más cercano a tu ubicación. Todas las escuelas afiliadas a FECHITAT están certificadas por la ITF."
+    description="Encuentra la escuela más cercana a tu ubicación. Todas las escuelas afiliadas a FECHITAT están certificadas por la ITF."
   />
 
   {/* Buscador */}
@@ -108,13 +108,13 @@ const jsonLdEscuelas = {
               {escuelasPorRegion[region].map((escuela: any) => (
                 <div class="escuela-card bg-white border border-slate-200 rounded-lg overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between" data-nombre={escuela.nombre.toLowerCase()} data-ciudad={(escuela.ciudad || '').toLowerCase()} data-region={region.toLowerCase()}>
                   <div>
-                    {/* Foto del Dojang como cover */}
+                    {/* Foto de la escuela como portada */}
                     {escuela.foto ? (
                       escuela.slug?.current ? (
                         <a href={`/escuelas/${escuela.slug.current}`} class="block aspect-video overflow-hidden group">
                           <img
                             src={urlFor(escuela.foto).width(800).auto('format').url()}
-                            alt={`Dojang ${escuela.nombre}`}
+                            alt={`Escuela ${escuela.nombre}`}
                             loading="lazy"
                             decoding="async"
                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -124,7 +124,7 @@ const jsonLdEscuelas = {
                         <div class="aspect-video overflow-hidden">
                           <img
                             src={urlFor(escuela.foto).width(800).auto('format').url()}
-                            alt={`Dojang ${escuela.nombre}`}
+                            alt={`Escuela ${escuela.nombre}`}
                             loading="lazy"
                             decoding="async"
                             class="w-full h-full object-cover"
@@ -178,7 +178,7 @@ const jsonLdEscuelas = {
                           href={`/escuelas/${escuela.slug.current}`}
                           class="inline-flex items-center gap-1.5 font-medium font-mono text-xs tracking-wider uppercase bg-slate-900 text-white px-3 py-1.5 rounded-sm transition-colors duration-150 hover:bg-itf-red"
                         >
-                          Ver dojang
+                          Ver escuela
                         </a>
                       )}
                       {escuela.email && (

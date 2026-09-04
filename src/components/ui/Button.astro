@@ -1,9 +1,11 @@
 ---
-// Componente Button reutilizable con variantes.
+// Botón reutilizable para mantener una jerarquía visual consistente.
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'dark' | 'dark-ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'dark' | 'dark-ghost' | 'blue';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
+  /** Renderiza una etiqueta visual dentro de un enlace contenedor sin anidar enlaces. */
+  as?: 'button' | 'span';
   class?: string;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
@@ -13,35 +15,40 @@ const {
   variant = 'primary',
   size = 'md',
   href,
+  as = 'button',
   class: clase = '',
   type = 'button',
   disabled = false,
 } = Astro.props;
 
-const baseClasses = 'inline-flex items-center gap-2 font-semibold font-kumbh tracking-wider uppercase rounded-sm cursor-pointer transition-all duration-150 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+const baseClasses = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-5 py-3 font-heading text-xs font-bold uppercase tracking-[0.06em] cursor-pointer transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-itf-red disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50';
 
 const sizeClasses = {
-  sm: 'text-xs py-2 px-3.5',
-  md: 'text-xs py-2.5 px-5',
-  lg: 'text-sm py-3 px-6',
+  sm: 'min-h-11 px-4',
+  md: 'min-h-11 px-5',
+  lg: 'min-h-12 px-6 text-sm',
 };
 
 const variantClasses = {
-  primary: 'bg-itf-red text-white hover:bg-itf-red-dark shadow-xs',
-  secondary: 'bg-slate-900 text-white hover:bg-slate-800 shadow-xs',
-  ghost: 'bg-transparent border border-white/60 text-white hover:bg-white/10',
-  dark: 'bg-slate-900 text-white hover:bg-slate-800 shadow-xs',
-  'dark-ghost': 'bg-transparent border border-slate-900 text-slate-900 hover:bg-slate-100',
-  blue: 'bg-itf-blue text-white hover:bg-itf-blue-dark shadow-xs',
+  primary: 'bg-itf-red text-white hover:bg-itf-red-dark',
+  secondary: 'bg-slate-900 text-white hover:bg-slate-800',
+  ghost: 'border border-white/70 bg-transparent text-white hover:bg-white/10',
+  dark: 'bg-slate-900 text-white hover:bg-slate-800',
+  'dark-ghost': 'border border-slate-300 bg-transparent text-slate-800 hover:border-slate-900 hover:bg-slate-100',
+  blue: 'bg-itf-blue text-white hover:bg-itf-blue-dark',
 };
 
-const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant] ?? variantClasses.primary} ${clase}`;
+const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${clase}`;
 ---
 
 {href ? (
   <a href={href} class={allClasses}>
     <slot />
   </a>
+) : as === 'span' ? (
+  <span class={allClasses} aria-hidden="true">
+    <slot />
+  </span>
 ) : (
   <button type={type} class={allClasses} disabled={disabled}>
     <slot />

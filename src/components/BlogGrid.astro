@@ -1,5 +1,6 @@
 ---
 // Grilla de posts del blog, semántica y accesible.
+import Tag from "./Tag.astro";
 import { urlFor } from "../lib/sanity";
 
 interface Props {
@@ -29,55 +30,64 @@ const NOMBRES_CATEGORIAS: Record<string, string> = {
 
 {
   posts.length > 0 ? (
-    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0 m-0">
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 list-none p-0 m-0">
       {posts.map((post) => {
         const href = post.slug?.current
           ? `/blog/${post.slug.current}`
           : "/blog";
         const categoria = post.categorias?.[0];
         return (
-          <li data-post-categoria={post.categorias?.join(',') ?? ''}>
+          <li data-post-categoria={post.categorias?.join(',') ?? ''} class="h-full">
             <a
               href={href}
-              class="block bg-white border border-line rounded-sm overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg h-full"
+              class="group flex flex-col bg-white border border-line rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-slate-300 h-full"
             >
-              {post.imagen && (
-                <div class="aspect-[16/10] overflow-hidden">
+              <div class="aspect-[16/10] overflow-hidden bg-slate-100">
+                {post.imagen ? (
                   <img
                     src={urlFor(post.imagen).width(600).auto("format").url()}
                     alt={`Imagen de ${post.titulo}`}
                     loading="lazy"
                     decoding="async"
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </div>
-              )}
-              <div class="p-5">
-                <div class="flex items-center gap-3 mb-2">
-                  {categoria && (
-                    <span class="font-mono text-[0.65rem] tracking-[0.08em] uppercase text-red">
-                      {NOMBRES_CATEGORIAS[categoria] ?? categoria}
-                    </span>
-                  )}
-                  {post.fecha && (
-                    <time
-                      class="font-mono text-xs text-text-soft"
-                      datetime={post.fecha}
-                    >
-                      {new Date(post.fecha).toLocaleDateString("es-CL", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </time>
-                  )}
-                </div>
-                <h3 class="text-base md:text-lg m-0">{post.titulo}</h3>
-                {post.extracto && (
-                  <p class="text-text-soft text-sm mt-2 line-clamp-2">
-                    {post.extracto}
-                  </p>
+                ) : (
+                  <div class="w-full h-full bg-slate-200" />
                 )}
+              </div>
+              <div class="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    {categoria && (
+                      <Tag>{NOMBRES_CATEGORIAS[categoria] ?? categoria}</Tag>
+                    )}
+                    {post.fecha && (
+                      <time
+                        class="font-mono text-xs text-text-soft"
+                        datetime={post.fecha}
+                      >
+                        {new Date(post.fecha).toLocaleDateString("es-CL", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </time>
+                    )}
+                  </div>
+                  <h3 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-red transition-colors leading-snug line-clamp-2">
+                    {post.titulo}
+                  </h3>
+                  {post.extracto && (
+                    <p class="text-text-soft text-sm mt-2 line-clamp-2 leading-relaxed">
+                      {post.extracto}
+                    </p>
+                  )}
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                  <span class="font-mono text-xs uppercase tracking-wider text-red font-semibold group-hover:underline">
+                    Leer artículo →
+                  </span>
+                </div>
               </div>
             </a>
           </li>

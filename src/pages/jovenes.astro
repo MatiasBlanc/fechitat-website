@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HangulRail from '../components/HangulRail.astro';
 import Stat from '../components/Stat.astro';
 import PageHero from '../components/PageHero.astro';
 import BeltBar from '../components/BeltBar.astro';
@@ -13,17 +12,11 @@ const titulo = 'Para jóvenes competidores — FECHITAT';
 const descripcion =
   'Descubre cómo competir en Taekwon-Do ITF, avanzar de cinturón y llegar a la selección nacional con FECHITAT.';
 
-const riel = [
-  { href: '#logros', kr: '세계', label: 'Logros mundiales' },
-  { href: '#camino', kr: '단계', label: 'Camino de grados' },
-  { href: '#seleccion', kr: '국가대표', label: 'Selección nacional' },
-];
-
 const grados = [
   {
     rango: '10° – 7° Gup',
     nombre: 'Fundamentos',
-    texto: 'Posturas base, primeros Tul y disciplina de dojang.',
+    texto: 'Posturas base, primeros Tul y disciplina de entrenamiento.',
   },
   {
     rango: '6° – 3° Gup',
@@ -44,8 +37,6 @@ const grados = [
 ---
 
 <BaseLayout title={titulo} description={descripcion}>
-  <HangulRail links={riel} />
-
   <PageHero
     title="Entrena, compite<br />y representa a Chile"
     crumb="Para jóvenes"
@@ -75,7 +66,7 @@ const grados = [
     <div class="max-w-7xl mx-auto px-5 md:px-7">
       <h2 id="resumen-jovenes" class="text-xl md:text-2xl">Cómo avanzar y competir en Taekwon-Do ITF</h2>
       <p class="text-text-soft max-w-[68ch] mt-3">
-        Entrena en un dojang afiliado, progresa por grados, participa en competencias y desarrolla la técnica, la preparación física y la disciplina necesarias para postular a procesos de selección.
+        Entrena en una escuela afiliada, progresa por grados, participa en competencias y desarrolla la técnica, la preparación física y la disciplina necesarias para postular a procesos de selección.
       </p>
       <ul class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5 text-sm text-text-soft">
         <li><strong class="text-ink">1. Forma tu base:</strong> domina fundamentos y Tuls.</li>
@@ -92,7 +83,7 @@ const grados = [
         <span class="font-mono text-xs tracking-widest uppercase text-light-muted">Resultados internacionales</span>
         <h2 class="text-white mt-3">El trabajo también se mide en el escenario mundial</h2>
         <p class="text-light-soft">
-          Jóvenes deportistas de FECHITAT ya han llevado el trabajo de sus dojangs a competencias internacionales y han conseguido resultados para Chile.
+          Jóvenes deportistas de FECHITAT ya han llevado el trabajo de sus escuelas a competencias internacionales y han conseguido resultados para Chile.
         </p>
       </div>
 
@@ -175,7 +166,7 @@ const grados = [
       <div>
         <h2 class="max-w-[18ch] m-0">Empieza tu próximo desafío</h2>
         <p class="text-text-soft mt-3 max-w-[48ch]">
-          Encuentra un dojang afiliado y conversa con tu instructor sobre tu camino competitivo.
+          Encuentra una escuela afiliada y conversa con tu instructor sobre tu camino competitivo.
         </p>
       </div>
       <div class="flex flex-wrap gap-3">

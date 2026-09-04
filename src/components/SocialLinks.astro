@@ -12,16 +12,20 @@ interface EnlaceSocial {
 interface Props {
   class?: string;
   enlaces?: EnlaceSocial[];
+  mostrarNombres?: boolean;
 }
 
 const enlacesPorDefecto: EnlaceSocial[] = [
-  { href: '#', icono: 'x', etiqueta: 'X (Twitter)' },
   { href: '#', icono: 'instagram', etiqueta: 'Instagram' },
-  { href: '#', icono: 'youtube', etiqueta: 'YouTube' },
   { href: '#', icono: 'facebook', etiqueta: 'Facebook' },
+  { href: '#', icono: 'youtube', etiqueta: 'YouTube' },
 ];
 
-const { class: clase = 'flex gap-[1em] items-center', enlaces = enlacesPorDefecto } = Astro.props;
+const {
+  class: clase = 'flex gap-3 items-center',
+  enlaces = enlacesPorDefecto,
+  mostrarNombres = false,
+} = Astro.props;
 ---
 
 <div class={clase}>
@@ -30,9 +34,12 @@ const { class: clase = 'flex gap-[1em] items-center', enlaces = enlacesPorDefect
       <a
         href={enlace.href}
         aria-label={enlace.etiqueta}
-        class="w-[30px] h-[30px] border border-white/18 rounded-full flex items-center justify-center text-light-soft text-[0.72rem] hover:border-red hover:text-white transition-colors duration-150"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 text-sm text-light-soft transition-colors duration-150 hover:text-white"
       >
-        <SocialIcon name={enlace.icono} size={15} />
+        <SocialIcon name={enlace.icono} size={15} class="shrink-0" />
+        {mostrarNombres && <span>{enlace.etiqueta}</span>}
       </a>
     ))
   }

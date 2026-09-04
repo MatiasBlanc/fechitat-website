@@ -24,7 +24,7 @@ const { title, description, crumb, image, imageAlt, imageStyle } = Astro.props;
           <a href="/" class="hover:text-white transition-colors duration-150">Inicio</a> / {crumb}
         </div>
       )}
-      <h1 class="text-white text-[clamp(1.8rem,5vw,3.2rem)]" set:html={title} />
+      <h1 class="text-white uppercase text-[clamp(1.8rem,5vw,3.2rem)]" set:html={title} />
       {description && <p class="text-light-soft max-w-[60ch] mt-2">{description}</p>}
       <slot />
     </div>

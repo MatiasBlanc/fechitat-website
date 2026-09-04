@@ -1,6 +1,6 @@
 /**
  * Script para poblar Sanity con contenido de ejemplo para FECHITAT
- * Ejecutar: npx tsx scripts/seed-sanity.ts
+ * Ejecutar: bun scripts/seed-sanity.ts
  */
 
 import {createClient} from '@sanity/client'

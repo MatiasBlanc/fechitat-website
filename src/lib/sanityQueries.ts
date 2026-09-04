@@ -250,9 +250,9 @@ export async function getEscuelasPorRegion() {
   return sanity.fetch(`*[_type == "escuela" && activo == true] | order(region asc, nombre asc)`)
 }
 
-/** Obtener posts destacados del blog (máximo 4) */
+/** Obtener las tres publicaciones destacadas para la portada. */
 export async function getBlogPostsDestacados() {
-  return sanity.fetch(`*[_type == "blogPost" && destacado == true] | order(fecha desc)[0...4]`)
+  return sanity.fetch(`*[_type == "blogPost" && destacado == true] | order(fecha desc)[0...3]`)
 }
 
 /** Obtener testimonios */

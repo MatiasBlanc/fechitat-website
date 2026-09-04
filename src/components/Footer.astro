@@ -1,124 +1,81 @@
 ---
 import UIcon from "./icons/UIcon.astro";
 import SocialLinks from "./SocialLinks.astro";
+
+const anioActual = new Date().getFullYear();
 ---
 
-<footer class="bg-ink text-light-soft py-12 md:py-13 pb-8 md:pb-6">
-  <div class="max-w-6xl mx-auto px-5 md:px-7">
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-8 md:pb-10 border-b border-white/10"
-    >
+<footer class="bg-ink text-light-soft">
+  <div class="mx-auto max-w-7xl px-5 py-12 md:px-10 md:py-14 xl:px-16">
+    <div class="mb-10 flex flex-col gap-5 border-b border-white/10 pb-8 md:flex-row md:items-end md:justify-between">
       <div>
-        <div
-          class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg mb-4"
-        >
+        <div class="mb-3 flex items-center gap-3 text-white">
           <img
             src="/images/general/fechitat-logo.svg"
             alt="Logo FECHITAT"
-            class="w-9 h-9 object-contain"
+            width="52"
+            height="52"
+            class="h-12 w-12 object-contain"
           />
-          FECHITAT
+          <span class="font-heading text-lg font-extrabold tracking-[0.08em]">FECHITAT</span>
         </div>
-        <p class="max-w-[32ch] text-light-muted text-sm md:text-base mb-5">
-          Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF. Formando
-          artistas marciales desde los dojangs de todo Chile.
+        <p class="max-w-[58ch] text-sm leading-relaxed text-light-muted">
+          Federación Chilena de Taekwon-Do Tradicional, afiliada a ITF. Formamos artistas marciales con disciplina, respeto y proyección internacional.
         </p>
-        <div class="flex items-center gap-4">
-          <div
-            class="w-12 h-12 flex items-center justify-center overflow-hidden"
-          >
-            <img
-              src="/images/general/itf-logo.png"
-              alt="International Taekwon-Do Federation"
-              class="w-full object-contain"
-            />
-          </div>
-          <div
-            class="w-12 h-12 flex items-center justify-center overflow-hidden"
-          >
-            <img
-              src="/images/general/logo_panam.webp"
-              alt="Panamerican Taekwon-Do Federation"
-              class="w-full object-contain"
-            />
-          </div>
-        </div>
       </div>
+      <div class="flex items-center gap-4" aria-label="Federaciones afiliadas">
+        <img src="/images/general/itf-logo.png" alt="International Taekwon-Do Federation" width="48" height="48" class="h-12 w-12 object-contain" />
+        <img src="/images/general/logo_panam.webp" alt="Panamerican Taekwon-Do Federation" width="48" height="48" class="h-12 w-12 object-contain" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
-          Legales
-        </h2>
-        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
-          <li>
-            <a href="/federacion/documentos" class="hover:text-white transition-colors duration-150"
-              >Documentos oficiales</a
-            >
-          </li>
-          <li>
-            <a href="mailto:contacto@fechitat.cl?subject=Consulta%20de%20transparencia" class="hover:text-white transition-colors duration-150"
-              >Transparencia</a
-            >
-          </li>
-          <li>
-            <a href="mailto:contacto@fechitat.cl?subject=Solicitud%20de%20estatutos" class="hover:text-white transition-colors duration-150"
-              >Estatutos</a
-            >
-          </li>
-          <li>
-            <a href="/federacion#afiliacion" class="hover:text-white transition-colors duration-150"
-              >Afiliación a la federación</a
-            >
-          </li>
-          <li>
-            <a href="/escuelas" class="hover:text-white transition-colors duration-150"
-              >Listado de escuelas</a
-            >
-          </li>
+        <h2 class="mb-3 text-sm font-bold normal-case text-white">Federación</h2>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0 text-sm">
+          <li><a href="/federacion" class="transition-colors hover:text-white">Quiénes somos</a></li>
+          <li><a href="/federacion/documentos" class="transition-colors hover:text-white">Estatutos y documentos</a></li>
+          <li><a href="/federacion#directivos" class="transition-colors hover:text-white">Directiva</a></li>
+          <li><a href="/escuelas" class="transition-colors hover:text-white">Escuelas afiliadas</a></li>
         </ul>
       </div>
       <div>
-        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
-          Recursos
-        </h2>
-        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
-          <li>
-            <a href="/examen" class="hover:text-white transition-colors duration-150"
-              >Manual de exámenes</a
-            >
-          </li>
-          <li>
-            <a href="/eventos" class="hover:text-white transition-colors duration-150"
-              >Reglamento de torneos</a
-            >
-          </li>
-          <li>
-            <a href="/estudio" class="hover:text-white transition-colors duration-150"
-              >Enciclopedia técnica</a
-            >
-          </li>
+        <h2 class="mb-3 text-sm font-bold normal-case text-white">Participar</h2>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0 text-sm">
+          <li><a href="/padres" class="transition-colors hover:text-white">Familias y nuevos alumnos</a></li>
+          <li><a href="/jovenes" class="transition-colors hover:text-white">Área competitiva</a></li>
+          <li><a href="/eventos" class="transition-colors hover:text-white">Calendario</a></li>
         </ul>
       </div>
       <div>
-        <h2 class="text-white font-mono text-xs tracking-widest uppercase mb-4">
-          Contacto
-        </h2>
-        <ul class="list-none p-0 m-0 flex flex-col gap-2 text-sm">
-          <li class="flex items-center gap-2">
-            <UIcon name="mail" size={16} />
-            <span>contacto@fechitat.cl</span>
+        <h2 class="mb-3 text-sm font-bold normal-case text-white">Recursos</h2>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0 text-sm">
+          <li><a href="/material/programa-examen" class="transition-colors hover:text-white">Programa de examen</a></li>
+          <li><a href="/estudio" class="transition-colors hover:text-white">Material de estudio</a></li>
+          <li><a href="/eventos" class="transition-colors hover:text-white">Reglamentos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="mb-3 text-sm font-bold normal-case text-white">Contacto</h2>
+        <ul class="m-0 mb-2 flex list-none flex-col gap-2 p-0 text-sm">
+          <li>
+            <a href="mailto:contacto@fechitat.cl" class="inline-flex items-center gap-2 text-light-soft transition-colors hover:text-white">
+              <UIcon name="mail" size={15} class="shrink-0" />
+              <span>contacto@fechitat.cl</span>
+            </a>
           </li>
-          <li class="flex items-center gap-2">
-            <UIcon name="phone" size={16} />
+          <li class="inline-flex items-center gap-2 text-light-soft">
+            <UIcon name="phone" size={15} class="shrink-0" />
             <span>+569 8888 9668</span>
           </li>
         </ul>
+        <SocialLinks mostrarNombres class="flex flex-col items-start gap-2" />
       </div>
     </div>
-    <div
-      class="flex flex-col sm:flex-row justify-between items-center pt-6 md:pt-[1.6em] text-sm gap-4"
-    >
-      <div>Hecho en ★ con espíritu indómito.</div>
-      <SocialLinks />
+
+    <div class="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-light-muted sm:flex-row sm:items-center sm:justify-between">
+      <p class="m-0">© {anioActual} FECHITAT. Todos los derechos reservados.</p>
+      <p class="m-0"><a href="/federacion/documentos" class="hover:text-white">Información legal</a></p>
     </div>
   </div>
 </footer>

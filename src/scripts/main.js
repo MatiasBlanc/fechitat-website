@@ -12,7 +12,6 @@ if (burger && mobileNav) {
 
   const toggle = (open) => {
     mobileNav.classList.toggle('open', open);
-    mobileNav.classList.toggle('translate-x-full', !open);
     burger.textContent = open ? '✕' : '☰';
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');

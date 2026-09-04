@@ -156,66 +156,72 @@ const jsonLdEventoPrincipal = eventoPrincipal
         )
       }
 
-      <div class="mt-10 mb-8">
-        <h2>Próximos eventos</h2>
-      </div>
-
       {
         proximos.length > 0 ? (
-          <ul class="flex flex-col mt-8 list-none p-0 m-0">
-            {proximos.map((evento) => (
-              <li>
-                <div class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line">
-                  <div class="flex-none relative z-[1]">
-                    <EventBadge
-                      mes={new Date(evento.fecha)
-                        .toLocaleDateString("es-CL", { month: "short" })
-                        .toUpperCase()}
-                      dia={new Date(evento.fecha).getDate().toString()}
-                      large
-                    />
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <span class="font-mono text-xs tracking-wider uppercase text-text-soft">
-                      {labelTipo(evento.tipo)}
-                    </span>
-                    {puedeAbrirEvento(evento) ? (
-                      <a
-                        href={`/eventos/${evento.slug.current}`}
-                        class="text-ink hover:text-red"
-                      >
-                        <h3 class="text-base md:text-lg mb-1 inline">{evento.titulo}</h3>
-                      </a>
-                    ) : (
-                      <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
-                    )}
-                    <div class="flex flex-wrap gap-3 font-mono text-xs tracking-wider text-text-soft">
-                      {evento.lugar && (
-                        <span class="flex items-center gap-1">
-                          <UIcon name="map-pin" size={12} /> {evento.lugar}
-                        </span>
-                      )}
-                      <time datetime={evento.fecha}>{fechaLarga(evento.fecha)}</time>
-                    </div>
-                    {evento.descripcion && (
-                      <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>
-                    )}
-                    <div class="mt-3">
-                      <BotonCalendario
-                        evento={evento}
-                        className="border border-line text-ink px-4 py-2"
+          <>
+            <div class="mt-10 mb-8">
+              <h2>{eventoPrincipal ? "Más eventos próximos" : "Próximos eventos"}</h2>
+            </div>
+            <ul class="flex flex-col mt-8 list-none p-0 m-0">
+              {proximos.map((evento) => (
+                <li>
+                  <div class="flex items-start gap-4 md:gap-6 py-5 md:py-6 border-b border-line">
+                    <div class="flex-none relative z-[1]">
+                      <EventBadge
+                        mes={new Date(evento.fecha)
+                          .toLocaleDateString("es-CL", { month: "short" })
+                          .toUpperCase()}
+                        dia={new Date(evento.fecha).getDate().toString()}
+                        large
                       />
                     </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="font-mono text-xs tracking-wider uppercase text-text-soft">
+                        {labelTipo(evento.tipo)}
+                      </span>
+                      {puedeAbrirEvento(evento) ? (
+                        <a
+                          href={`/eventos/${evento.slug.current}`}
+                          class="text-ink hover:text-red"
+                        >
+                          <h3 class="text-base md:text-lg mb-1 inline">{evento.titulo}</h3>
+                        </a>
+                      ) : (
+                        <h3 class="text-base md:text-lg mb-1">{evento.titulo}</h3>
+                      )}
+                      <div class="flex flex-wrap gap-3 font-mono text-xs tracking-wider text-text-soft">
+                        {evento.lugar && (
+                          <span class="flex items-center gap-1">
+                            <UIcon name="map-pin" size={12} /> {evento.lugar}
+                          </span>
+                        )}
+                        <time datetime={evento.fecha}>{fechaLarga(evento.fecha)}</time>
+                      </div>
+                      {evento.descripcion && (
+                        <p class="text-text-soft text-sm mt-2">{evento.descripcion}</p>
+                      )}
+                      <div class="mt-3">
+                        <BotonCalendario
+                          evento={evento}
+                          className="border border-line text-ink px-4 py-2"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="text-text-soft py-8">
-            No hay eventos próximos programados.
-          </p>
-        )
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : !eventoPrincipal ? (
+          <div>
+            <div class="mb-6">
+              <h2>Próximos eventos</h2>
+            </div>
+            <p class="text-text-soft text-sm mt-1 max-w-md">
+              Estamos preparando el calendario de las próximas actividades. Revisa los eventos pasados a continuación o síguenos en nuestras redes.
+            </p>
+          </div>
+        ) : null
       }
     </div>
   </section>

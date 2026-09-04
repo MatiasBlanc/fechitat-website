@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HangulRail from '../components/HangulRail.astro';
 import Tag from '../components/Tag.astro';
 import PageHero from '../components/PageHero.astro';
 import { img } from '../lib/imagenes';
@@ -13,16 +12,8 @@ const titulo = 'Para padres — FECHITAT';
 const descripcion =
   'Conoce los beneficios, edades, seguridad y pasos para inscribir a tu hijo o hija en Taekwon-Do ITF con FECHITAT.';
 
-const riel = [
-  { href: '#beneficios', kr: '혜택', label: 'Beneficios' },
-  { href: '#seguridad', kr: '안전', label: 'Seguridad' },
-  { href: '#faq', kr: '질문', label: 'Preguntas frecuentes' },
-  { href: '#testimonios', kr: '후기', label: 'Testimonios' },
-  { href: '#inscribir', kr: '등록', label: 'Inscribir' },
-];
-
 const beneficios = [
-  { etiqueta: 'Disciplina', variante: 'red', texto: 'Rutinas claras y metas por cinturón que enseñan constancia dentro y fuera del dojang.' },
+  { etiqueta: 'Disciplina', variante: 'red', texto: 'Rutinas claras y metas por cinturón que enseñan constancia dentro y fuera de clase.' },
   { etiqueta: 'Confianza', variante: 'blue', texto: 'Cada examen superado refuerza la seguridad en sí mismos, en el tatami y en la vida diaria.' },
   { etiqueta: 'Respeto', variante: 'gold', texto: 'El saludo, la jerarquía de grados y el trabajo en pareja enseñan a respetar a otros y a sí mismos.' },
   { etiqueta: 'Condición física', variante: 'default', texto: 'Coordinación, flexibilidad y resistencia, con progresiones adecuadas a cada edad.' },
@@ -34,7 +25,7 @@ const testimonios = await getTestimonios();
 const faqs = [
   { pregunta: '¿A qué edad puede empezar mi hijo/a?', respuesta: 'Recibimos alumnos desde los 5 años en clases infantiles, con progresiones adaptadas a cada etapa de desarrollo.' },
   { pregunta: '¿Necesita experiencia previa?', respuesta: 'No. La mayoría de los alumnos comienza sin experiencia; el uniforme y el cinturón blanco se entregan al inscribirse.' },
-  { pregunta: '¿Cuántas veces por semana se entrena?', respuesta: 'Los dojangs afiliados ofrecen entre 2 y 3 clases semanales; cada escuela define su propio horario.' },
+  { pregunta: '¿Cuántas veces por semana se entrena?', respuesta: 'Las escuelas afiliadas ofrecen entre 2 y 3 clases semanales; cada escuela define su propio horario.' },
   { pregunta: '¿Pueden competir a nivel nacional?', respuesta: 'Sí, una vez alcanzado el nivel adecuado pueden participar en el calendario nacional y, con buen desempeño, en la selección para torneos internacionales.' },
 ];
 const faqJsonLd = {
@@ -49,8 +40,6 @@ const faqJsonLd = {
 ---
 
 <BaseLayout title={titulo} description={descripcion} structuredData={faqJsonLd}>
-  <HangulRail links={riel} />
-
   <PageHero
     title="Un deporte que forma<br />el carácter de tu hijo/a"
     crumb="Para padres"
@@ -74,7 +63,7 @@ const faqJsonLd = {
         Es una actividad marcial guiada que combina ejercicio, disciplina, respeto y confianza. Las escuelas afiliadas trabajan por edades y niveles, con instructores certificados y opciones para probar una clase antes de inscribirse.
       </p>
       <ul class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5 text-sm text-text-soft">
-        <li><strong class="text-ink">Edad:</strong> clases infantiles desde los 5 años, según cada dojang.</li>
+        <li><strong class="text-ink">Edad:</strong> clases infantiles desde los 5 años, según cada escuela.</li>
         <li><strong class="text-ink">Seguridad:</strong> grupos por nivel, supervisión y protecciones en contacto.</li>
         <li><strong class="text-ink">Primer paso:</strong> encuentra una escuela y solicita una clase de prueba.</li>
       </ul>
@@ -157,7 +146,7 @@ const faqJsonLd = {
       <div>
         <h2>Reserva una clase de prueba gratuita</h2>
         <p class="text-text-soft">
-          Completa el formulario y te contactaremos con el dojang más cercano a
+          Completa el formulario y te contactaremos con la escuela más cercana a
           tu domicilio para coordinar la primera clase, sin costo ni compromiso.
         </p>
       </div>

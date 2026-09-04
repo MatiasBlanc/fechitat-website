@@ -1,11 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HangulRail from '../components/HangulRail.astro';
 import PageHero from '../components/PageHero.astro';
-import BeltBar from '../components/BeltBar.astro';
 import Timeline from '../components/Timeline.astro';
 import Button from '../components/ui/Button.astro';
-import { img } from '../lib/imagenes';
 import { getOrganigrama, getComisiones, getCampeones, getHitoHistorico } from '../lib/sanityQueries';
 import { urlFor } from '../lib/sanity';
 
@@ -14,17 +11,7 @@ export const revalidate = 3600;
 
 const titulo = 'Sobre FECHITAT — Federación de Taekwon-Do ITF';
 const descripcion =
-  'Conoce FECHITAT, la federación chilena de Taekwon-Do ITF: historia, directiva, campeones y escuelas afiliadas.';
-
-const riel = [
-  { href: '#quienes', kr: '소개', label: 'Quiénes somos' },
-  { href: '#historia', kr: '역사', label: 'Historia' },
-  { href: '#directivos', kr: '임원', label: 'Directivos' },
-  { href: '#comisiones', kr: '위원회', label: 'Comisiones' },
-  { href: '#documentos', kr: '문서', label: 'Documentos' },
-  { href: '#campeones', kr: '챔피언', label: 'Campeones' },
-  { href: '#afiliacion', kr: '가입', label: 'Afiliación' },
-];
+  'Conoce FECHITAT, la federación chilena de Taekwon-Do ITF: historia, directiva, comisiones, campeones y afiliación oficial.';
 
 // Obtener datos de Sanity
 const [directivos, comisiones, campeones, hitos] = await Promise.all([
@@ -36,46 +23,48 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
 ---
 
 <BaseLayout title={titulo} description={descripcion}>
-  <HangulRail links={riel} />
-
   <PageHero
     title="Sobre FECHITAT"
     crumb="FECHITAT"
-    description="FECHITAT es la organización que representa oficialmente al Taekwon-Do ITF Original en Chile, reuniendo dojangs, instructores y practicantes de todo el país."
+    description="FECHITAT es la organización que representa oficialmente al Taekwon-Do ITF Original en Chile, reuniendo escuelas, instructores y practicantes de todo el país."
   />
 
   <!-- Quiénes somos -->
-  <section id="quienes" class="py-10 md:py-16">
+  <section id="quienes" class="py-12 md:py-16 bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-7 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <div>
-        <h2>Más que una federación, una familia</h2>
-        <p class="text-text-soft">
-          FECHITAT agrupa dojangs de todo Chile bajo un mismo sello: el
-          Taekwon-Do ITF Original. Cinturones certificados por la ITF,
-          competencias nacionales e internacionales y una comunidad que crece
-          año a año.
+        <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Misión y Valores</span>
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+          Más que una federación, una familia
+        </h2>
+        <p class="text-slate-600 text-sm md:text-base mt-4 leading-relaxed">
+          FECHITAT agrupa escuelas de todo Chile bajo un mismo sello: el Taekwon-Do ITF Original. Certificación oficial de grados por la ITF, competencias nacionales e internacionales y una comunidad que entrena con disciplina, respeto y proyección de excelencia.
         </p>
-        <p class="text-text-soft">
-          Detrás de cada técnica hay una filosofía — disciplina, respeto,
-          superación — que nuestros instructores transmiten en cada clase,
-          dentro y fuera del dojang.
+        <p class="text-slate-600 text-sm md:text-base mt-3 leading-relaxed">
+          Detrás de cada técnica hay una filosofía de vida: cortesía, integridad, perseverancia, autocontrol y espíritu indómito. Principios que nuestros instructores transmiten en cada clase, dentro y fuera de la escuela.
         </p>
       </div>
-      <img
-        src="/images/hero/OIP.webp"
-        alt="Equipo nacional de Taekwon-Do ITF junto a la bandera de Chile"
-        class="rounded-sm w-full"
-      />
+      <div>
+        <img
+          src="/images/hero/OIP.webp"
+          alt="Equipo nacional de Taekwon-Do ITF junto a la bandera de Chile"
+          class="rounded-xl w-full h-auto shadow-md object-cover border border-slate-200"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
     </div>
   </section>
 
   <!-- Línea de tiempo -->
   {hitos.length > 0 && (
-    <section class="py-10 md:py-16" id="historia">
+    <section class="py-12 md:py-16 bg-slate-50 border-t border-b border-slate-200" id="historia">
       <div class="max-w-7xl mx-auto px-5 md:px-7">
-        <h2 class="mb-6">Línea de tiempo de la federación</h2>
-      </div>
-      <div class="max-w-7xl mx-auto px-5 md:px-7">
+        <div class="mb-8">
+          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Trayectoria</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Línea de tiempo de la federación</h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">Los hitos institucionales y deportivos más relevantes en la historia de FECHITAT.</p>
+        </div>
         <Timeline hitos={hitos} />
       </div>
     </section>
@@ -83,42 +72,51 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
 
   <!-- Directorio -->
   {directivos.length > 0 && (
-    <section id="directivos" class="py-10 md:py-16">
+    <section id="directivos" class="py-12 md:py-16 bg-white">
       <div class="max-w-7xl mx-auto px-5 md:px-7">
-        <h2 class="mb-6">Directorio</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div class="mb-8">
+          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Gobernanza</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Directorio Oficial</h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">Autoridades electas responsables de la dirección estratégica y administrativa de la federación.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {directivos.map((d) => (
-            <div class="bg-white border border-line rounded-sm overflow-hidden">
-              <div class="text-center">
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
+              <div>
                 {/* Foto o iniciales */}
-                <div>
+                <div class="aspect-4/5 overflow-hidden bg-slate-100">
                   {d.foto ? (
                     <img
-                      src={urlFor(d.foto).width(240).height(300).url()}
+                      src={urlFor(d.foto).width(400).height(500).url()}
                       alt={d.nombre}
-                      class="w-full aspect-[4/5] object-cover"
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
-                    <div class="w-full aspect-[4/5] bg-ink text-white flex items-center justify-center font-heading font-extrabold text-3xl">
+                    <div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-700 font-bold text-3xl">
                       {d.nombre.split(' ').map((n: string) => n[0]).join('')}
                     </div>
                   )}
                 </div>
 
                 {/* Info */}
-                <div class="px-4 pb-5 pt-3">
-                  <h3 class="text-base md:text-lg mb-1">{d.nombre}</h3>
-                  <p class="text-red font-mono text-xs tracking-wider uppercase mb-1">{d.cargo}</p>
-                  {d.grado && <p class="text-text-soft text-xs mb-4">{d.grado}</p>}
-
-                  {/* Botón de contacto */}
-                  {d.email && (
-                    <Button href={`mailto:${d.email}`} variant="dark-ghost" size="sm">
-                      Contactar
-                    </Button>
-                  )}
+                <div class="p-5 text-center">
+                  <h3 class="text-base md:text-lg font-bold text-slate-900 leading-snug">{d.nombre}</h3>
+                  <p class="text-xs font-semibold text-itf-blue uppercase tracking-wider mt-1">{d.cargo}</p>
+                  {d.grado && <p class="text-xs text-slate-500 mt-0.5">{d.grado}</p>}
                 </div>
               </div>
+
+              {/* Botón de contacto */}
+              {d.email && (
+                <div class="px-5 pb-5 pt-0">
+                  <Button href={`mailto:${d.email}`} variant="secondary" size="sm" class="w-full justify-center">
+                    Contactar
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -128,44 +126,49 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
 
   <!-- Comisiones -->
   {comisiones.length > 0 && (
-    <section id="comisiones" class="py-10 md:py-16 bg-paper">
+    <section id="comisiones" class="py-12 md:py-16 bg-slate-50 border-t border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-5 md:px-7">
         <div class="mb-8">
-          <h2>Comisiones</h2>
-          <p class="text-text-soft max-w-[65ch] mt-2">
-            Equipos de trabajo que apoyan la gestión y el funcionamiento de FECHITAT.
+          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Estructura Técnica</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Comisiones de Trabajo</h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1 max-w-2xl">
+            Equipos técnicos y multidisciplinarios que apoyan la gestión deportiva, formativa y reglamentaria de FECHITAT.
           </p>
         </div>
 
         <div class="space-y-6">
           {comisiones.map((comision) => (
-            <article class="bg-white border border-line rounded-sm p-5 md:p-6">
-              <h3 class="text-xl mb-2">{comision.nombre}</h3>
-              {comision.descripcion && <p class="text-text-soft text-sm mb-5">{comision.descripcion}</p>}
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <article class="bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-xs">
+              <h3 class="text-xl font-bold text-slate-900">{comision.nombre}</h3>
+              {comision.descripcion && (
+                <p class="text-slate-600 text-sm leading-relaxed mt-2 mb-6 max-w-3xl">
+                  {comision.descripcion}
+                </p>
+              )}
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
                 {comision.miembros?.map((miembro) => (
-                  <div class="pt-4">
-                    <div class="flex items-center gap-3">
-                      {miembro.foto ? (
-                        <img
-                          src={urlFor(miembro.foto).width(96).height(96).url()}
-                          alt={miembro.nombre}
-                          class="w-12 h-12 rounded-full object-cover flex-none"
-                        />
-                      ) : (
-                        <div class="w-12 h-12 rounded-full bg-ink text-white flex items-center justify-center font-heading font-extrabold text-sm flex-none">
-                          {miembro.nombre.split(' ').map((n: string) => n[0]).join('')}
-                        </div>
-                      )}
-                      <div>
-                        <h4 class="text-base m-0">{miembro.nombre}</h4>
+                  <div class="flex items-center gap-3.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                    {miembro.foto ? (
+                      <img
+                        src={urlFor(miembro.foto).width(96).height(96).url()}
+                        alt={miembro.nombre}
+                        class="w-12 h-12 rounded-full object-cover flex-none border border-slate-200"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm flex-none">
+                        {miembro.nombre.split(' ').map((n: string) => n[0]).join('')}
                       </div>
-                    </div>
-                    {miembro.email && (
-                      <Button href={`mailto:${miembro.email}`} variant="dark-ghost" size="sm" class="mt-5">
-                        Contactar
-                      </Button>
                     )}
+                    <div class="min-w-0 flex-1">
+                      <h4 class="text-sm font-semibold text-slate-900 truncate">{miembro.nombre}</h4>
+                      {miembro.email && (
+                        <a href={`mailto:${miembro.email}`} class="text-xs text-itf-blue hover:underline block truncate mt-0.5">
+                          {miembro.email}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -176,84 +179,116 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
     </section>
   )}
 
-  <!-- Documentos oficiales -->
-  <section id="documentos" class="py-10 md:py-14">
+  <!-- Documentos oficiales (Teaser institucional consistente) -->
+  <section id="documentos" class="py-12 md:py-16 bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="bg-ink text-white rounded-sm p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div>
-          <span class="font-mono text-xs tracking-widest uppercase text-red">Información institucional</span>
-          <h2 class="text-white text-2xl md:text-3xl mt-2">Documentos oficiales</h2>
-          <p class="text-light-soft text-sm max-w-[58ch] mt-2">
-            Consulta los protocolos, reglamentos, estatutos y comunicados publicados por FECHITAT.
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="max-w-2xl">
+          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Marco Normativo</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Documentos oficiales</h2>
+          <p class="text-slate-600 text-sm md:text-base mt-2 leading-relaxed">
+            Accede al repositorio institucional para consultar y descargar estatutos oficiales, circulares federativas, reglamentos disciplinarios y protocolos vigentes.
           </p>
         </div>
-        <Button href="/federacion/documentos" variant="primary" size="md" class="self-start md:self-center">
-          Ver documentos
+        <Button href="/federacion/documentos" variant="secondary" size="md" class="self-start md:self-center whitespace-nowrap">
+          Ver documentos oficiales →
         </Button>
       </div>
     </div>
   </section>
 
-  <!-- Salón de campeones -->
+  <!-- Salón de campeones / Maestros que marcaron escuela -->
   {campeones.length > 0 && (
-    <section class="py-10 md:py-16 bg-ink text-light" id="campeones">
+    <section class="py-12 md:py-16 bg-slate-50 border-t border-b border-slate-200" id="campeones">
       <div class="max-w-7xl mx-auto px-5 md:px-7">
         <div class="mb-8">
-          <h2 class="text-white">Maestros que marcaron escuela</h2>
+          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Legado y Maestría</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Maestros que marcaron escuela</h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">Reconocimiento a quienes han forjado el Taekwon-Do ITF en Chile a través de su trayectoria y logros internacionales.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {campeones.map((c) => (
-            <div class="flex gap-4 items-center py-4 border-b border-white/10">
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs hover:shadow-md transition-shadow flex items-center gap-4">
               {c.foto ? (
                 <img
                   src={urlFor(c.foto).width(128).height(128).url()}
                   alt={c.nombre}
-                  class="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover flex-none"
+                  class="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover flex-none border border-slate-200"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
-                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-red text-white flex items-center justify-center font-heading font-extrabold text-lg flex-none">
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-base flex-none border border-slate-200">
                   {c.nombre.split(' ').map((n: string) => n[0]).join('')}
                 </div>
               )}
-              <div>
-                <span class="font-mono text-xs tracking-wider uppercase text-light-muted">{c.grado}{c.titulo ? ` · ${c.titulo}` : ''}</span>
-                <h3 class="text-white text-sm md:text-base m-0">{c.nombre}</h3>
-                {c.competencia && <p class="text-white/60 text-xs mt-1">{c.competencia} {c.anio}</p>}
+              <div class="min-w-0">
+                <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block">
+                  {c.grado}{c.titulo ? ` · ${c.titulo}` : ''}
+                </span>
+                <h3 class="text-base md:text-lg font-bold text-slate-900 m-0 truncate">{c.nombre}</h3>
+                {c.competencia && <p class="text-slate-500 text-xs mt-1">{c.competencia} {c.anio}</p>}
               </div>
             </div>
           ))}
-        </div>
-        <div class="text-center mt-8">
-          <Button href="#" variant="primary" size="md">
-            Conocer más maestros
-          </Button>
         </div>
       </div>
     </section>
   )}
 
   <!-- Beneficios de afiliación -->
-  <section id="afiliacion" class="py-10 md:py-16">
+  <section id="afiliacion" class="py-12 md:py-16 bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div>
-        <h2>Por qué ser parte de FECHITAT</h2>
-        <p class="text-text-soft">
-          Al afiliar tu escuela a la federación, tus alumnos acceden a exámenes
-          de grado reconocidos por ITF, seguro deportivo en competencias
-          oficiales y la posibilidad de representar a Chile en torneos
-          panamericanos y mundiales.
+      <div class="max-w-3xl mb-8">
+        <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Afiliación Oficial</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Por qué afiliar tu escuela a FECHITAT</h2>
+        <p class="text-slate-600 text-sm md:text-base mt-2 leading-relaxed">
+          Al integrar tu escuela a la federación, tus practicantes e instructores obtienen respaldo institucional, acreditación internacional y acceso a todas las actividades oficiales del circuito federado.
         </p>
-        <ul class="text-text-soft pl-5 leading-8 text-sm md:text-base">
-          <li>Presencia activa a nivel internacional</li>
-          <li>Certificación oficial de grados y cinturones negros</li>
-          <li>Acceso a seminarios técnicos con maestros invitados</li>
-          <li>Cobertura en el calendario nacional de competencias</li>
-        </ul>
-        <Button href="#" variant="secondary" size="md" class="mt-4">
-          Afiliar mi escuela
-        </Button>
       </div>
 
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8">
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-lg bg-itf-blue-light text-itf-blue flex items-center justify-center mb-3 font-bold">✓</div>
+          <h3 class="text-base font-bold text-slate-900">Presencia activa a nivel internacional</h3>
+          <p class="text-slate-600 text-xs md:text-sm mt-1 leading-relaxed">
+            Representación oficial ante la International Taekwon-Do Federation (ITF) con acceso a torneos panamericanos y mundiales.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-lg bg-itf-blue-light text-itf-blue flex items-center justify-center mb-3 font-bold">✓</div>
+          <h3 class="text-base font-bold text-slate-900">Certificación oficial de grados</h3>
+          <p class="text-slate-600 text-xs md:text-sm mt-1 leading-relaxed">
+            Registro y homologación federativa de exámenes de grado Gup y diplomas internacionales de cinturón negro Dan.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-lg bg-itf-blue-light text-itf-blue flex items-center justify-center mb-3 font-bold">✓</div>
+          <h3 class="text-base font-bold text-slate-900">Seminarios y capacitación continua</h3>
+          <p class="text-slate-600 text-xs md:text-sm mt-1 leading-relaxed">
+            Participación preferente en cursos para instructores, árbitros y seminarios técnicos con Maestros invitados.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-lg bg-itf-blue-light text-itf-blue flex items-center justify-center mb-3 font-bold">✓</div>
+          <h3 class="text-base font-bold text-slate-900">Circuito nacional de torneos</h3>
+          <p class="text-slate-600 text-xs md:text-sm mt-1 leading-relaxed">
+            Cobertura y seguro deportivo en el calendario nacional oficial, con llaves y reglamentos estandarizados.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 items-start">
+        <Button href="mailto:contacto@fechitat.cl" variant="primary" size="md">
+          Solicitar afiliación institucional
+        </Button>
+        <Button href="/escuelas" variant="secondary" size="md">
+          Ver escuelas actualmente afiliadas
+        </Button>
+      </div>
     </div>
   </section>
 
