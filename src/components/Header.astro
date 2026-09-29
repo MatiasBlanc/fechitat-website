@@ -148,3 +148,47 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
     </details>
   </nav>
 </header>
+
+<script is:inline>
+  function setupBurger() {
+    const burger = document.querySelector('[data-burger]');
+    const mobileNav = document.querySelector('.mobile-nav');
+    if (!burger || !mobileNav) return;
+
+    // Evitar doble binding en navegaciones con View Transitions
+    if (burger._burgerReady) return;
+    burger._burgerReady = true;
+
+    const toggle = (open) => {
+      mobileNav.classList.toggle('open', open);
+      mobileNav.classList.toggle('translate-x-full', !open);
+      mobileNav.classList.toggle('translate-x-0', open);
+      burger.textContent = open ? '✕' : '☰';
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      document.body.style.overflow = open ? 'hidden' : '';
+      if (open) {
+        const first = mobileNav.querySelector('a, button:not([disabled])');
+        first?.focus();
+      }
+    };
+
+    burger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle(!mobileNav.classList.contains('open'));
+    });
+
+    mobileNav.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => toggle(false))
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileNav.classList.contains('open')) toggle(false);
+    });
+  }
+
+  // Corre inmediatamente (el header ya está en el DOM)
+  setupBurger();
+  // Re-corre en cada navegación de View Transitions
+  document.addEventListener('astro:page-load', setupBurger);
+</script>

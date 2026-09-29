@@ -1,69 +1,5 @@
 // Interacciones globales del sitio
-
-function initMobileNav() {
-  const burger = document.querySelector('[data-burger]');
-  const mobileNav = document.querySelector('.mobile-nav');
-  if (!burger || !mobileNav) return;
-
-  /** Elementos enfocables dentro del menú móvil. */
-  const getEnfocables = () =>
-    Array.from(
-      mobileNav.querySelectorAll('a[href], button:not([disabled])')
-    );
-
-  const toggle = (open) => {
-    mobileNav.classList.toggle('open', open);
-    if (open) {
-      mobileNav.classList.remove('translate-x-full');
-      mobileNav.classList.add('translate-x-0');
-    } else {
-      mobileNav.classList.remove('translate-x-0');
-      mobileNav.classList.add('translate-x-full');
-    }
-    burger.textContent = open ? '✕' : '☰';
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
-
-    if (open) {
-      const enfocables = getEnfocables();
-      enfocables[0]?.focus();
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      burger.focus();
-    }
-  };
-
-  burger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggle(!mobileNav.classList.contains('open'));
-  });
-
-  mobileNav.querySelectorAll('a').forEach((a) =>
-    a.addEventListener('click', () => toggle(false))
-  );
-
-  // Cierre con Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileNav.classList.contains('open')) toggle(false);
-  });
-
-  // Atrapar el foco dentro del menú abierto (bucles de Tab)
-  mobileNav.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab' || !mobileNav.classList.contains('open')) return;
-    const enfocables = getEnfocables();
-    if (!enfocables.length) return;
-    const primero = enfocables[0];
-    const ultimo = enfocables[enfocables.length - 1];
-    if (e.shiftKey && document.activeElement === primero) {
-      e.preventDefault();
-      ultimo.focus();
-    } else if (!e.shiftKey && document.activeElement === ultimo) {
-      e.preventDefault();
-      primero.focus();
-    }
-  });
-}
+// Nota: el menú móvil está inicializado en Header.astro con is:inline
 
 function initHangulRail() {
   const rail = document.querySelector('.hangul-rail');
@@ -134,16 +70,11 @@ function initCounters() {
 }
 
 function initAll() {
-  initMobileNav();
   initHangulRail();
   initCounters();
 }
 
 // Ejecutar en carga inicial y en cada transición de página de Astro
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAll);
-} else {
-  initAll();
-}
+initAll();
 document.addEventListener('astro:page-load', initAll);
 
