@@ -11,6 +11,7 @@ import materialEstudio from './materialEstudio'
 import programaExamen from './programaExamen'
 import comision from './comision'
 import documentoOficial from './documentoOficial'
+import camiseta from './camiseta'
 
 export const schemaTypes = [
   evento,
@@ -26,4 +27,5 @@ export const schemaTypes = [
   programaExamen,
   comision,
   documentoOficial,
+  camiseta,
 ]

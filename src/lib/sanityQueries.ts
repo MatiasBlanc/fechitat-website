@@ -279,3 +279,22 @@ export async function getEventosCalendario(anio: number, mes?: number) {
     }
   )
 }
+
+/** Obtener camisetas/uniformes históricos ordenados cronológicamente */
+export async function getCamisetas() {
+  return sanity.fetch(
+    `*[_type == "camiseta" && activo == true] | order(anioOrden asc) {
+      _id,
+      titulo,
+      periodo,
+      anioOrden,
+      imagenFrente,
+      imagenDorso,
+      coloresPrincipales,
+      disenador,
+      lugarEvento,
+      descripcion
+    }`
+  )
+}
+
