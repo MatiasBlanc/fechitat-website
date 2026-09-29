@@ -65,7 +65,7 @@ const structuredData = {
   "@type": "SportsActivityLocation",
   name: escuela.nombre,
   description: escuela.descripcion ?? `Escuela oficial de Taekwon-Do ITF en ${ciudad}, Chile.`,
-  url: `https://fechitat.cl/escuelas/${escuela.slug?.current}`,
+  url: `https://fechitat-website.vercel.app/escuelas/${escuela.slug?.current}`,
   ...(fotoUrl ? { image: fotoUrl } : {}),
   ...(escuela.email ? { email: escuela.email } : {}),
   ...(numeroWhatsapp ? { telephone: `+${numeroWhatsapp}` } : {}),
@@ -88,7 +88,7 @@ const structuredData = {
   parentOrganization: {
     "@type": "SportsOrganization",
     name: "FECHITAT",
-    url: "https://fechitat.cl",
+    url: "https://fechitat-website.vercel.app",
   },
 };
 ---

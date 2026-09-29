@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://fechitat.cl',
+  site: 'https://fechitat-website.vercel.app',
   output: 'server',
   adapter: vercel(),
   image: {

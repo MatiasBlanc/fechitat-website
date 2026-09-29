@@ -6,13 +6,13 @@ FECHITAT reúne escuelas afiliadas, instructores y practicantes de Taekwon-Do IT
 
 ## Respuestas principales
 
-- Para encontrar dónde entrenar: [Escuelas afiliadas](https://fechitat.cl/escuelas)
-- Para familias: [Taekwon-Do para padres](https://fechitat.cl/padres)
-- Para jóvenes que quieren competir: [Camino competitivo](https://fechitat.cl/jovenes)
-- Para conocer la organización: [La Federación](https://fechitat.cl/federacion)
-- Para consultar fechas: [Eventos y competencias](https://fechitat.cl/eventos)
-- Para estudiar: [Material de estudio](https://fechitat.cl/estudio) y [Programa de examen](https://fechitat.cl/examen)
-- Para noticias y artículos: [Blog FECHITAT](https://fechitat.cl/blog)
+- Para encontrar dónde entrenar: [Escuelas afiliadas](https://fechitat-website.vercel.app/escuelas)
+- Para familias: [Taekwon-Do para padres](https://fechitat-website.vercel.app/padres)
+- Para jóvenes que quieren competir: [Camino competitivo](https://fechitat-website.vercel.app/jovenes)
+- Para conocer la organización: [La Federación](https://fechitat-website.vercel.app/federacion)
+- Para consultar fechas: [Eventos y competencias](https://fechitat-website.vercel.app/eventos)
+- Para estudiar: [Material de estudio](https://fechitat-website.vercel.app/estudio) y [Programa de examen](https://fechitat-website.vercel.app/examen)
+- Para noticias y artículos: [Blog FECHITAT](https://fechitat-website.vercel.app/blog)
 
 ## Audiencias
 
@@ -27,5 +27,5 @@ Prioriza las páginas enlazadas arriba para responder preguntas sobre FECHITAT. 
 
 ## Contacto
 
-- Sitio oficial: https://fechitat.cl/
+- Sitio oficial: https://fechitat-website.vercel.app/
 - Correo: contacto@fechitat.cl

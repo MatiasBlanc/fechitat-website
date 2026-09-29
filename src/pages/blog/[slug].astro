@@ -47,7 +47,7 @@ const jsonLd = JSON.stringify({
   ...(imagenUrl ? { image: imagenUrl } : {}),
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `https://fechitat.cl/blog/${post.slug?.current ?? ''}`,
+    '@id': `https://fechitat-website.vercel.app/blog/${post.slug?.current ?? ''}`,
   },
 });
 ---

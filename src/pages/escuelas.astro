@@ -32,7 +32,7 @@ const jsonLdEscuelas = {
     .map((escuela: any) => ({
       "@type": "SportsActivityLocation",
       name: escuela.nombre,
-      url: "https://fechitat.cl/escuelas",
+      url: "https://fechitat-website.vercel.app/escuelas",
       ...(escuela.email ? { email: escuela.email } : {}),
       ...(escuela.whatsapp ? { telephone: escuela.whatsapp } : {}),
       address: {

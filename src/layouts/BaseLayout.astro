@@ -25,15 +25,15 @@ const {
   noindex = false,
 } = Astro.props;
 
-const url = new URL(Astro.url.pathname, Astro.site ?? "https://fechitat.cl");
+const url = new URL(Astro.url.pathname, Astro.site ?? "https://fechitat-website.vercel.app");
 
 const jsonLdOrganizacion = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SportsOrganization",
   name: "FECHITAT",
   alternateName: "Federación Chilena de Taekwon-Do Tradicional",
-  url: "https://fechitat.cl",
-  logo: "https://fechitat.cl/images/general/fechitat-logo.svg",
+  url: "https://fechitat-website.vercel.app",
+  logo: "https://fechitat-website.vercel.app/images/general/fechitat-logo.svg",
   email: "contacto@fechitat.cl",
   sport: "Taekwon-Do ITF",
   areaServed: { "@type": "Country", name: "Chile" },
@@ -43,7 +43,7 @@ const jsonLdOrganizacion = JSON.stringify({
 const jsonLdAdicional = structuredData
   ? JSON.stringify(Array.isArray(structuredData) ? structuredData : [structuredData])
   : null;
-const imagenSocial = new URL(ogImage, Astro.site ?? "https://fechitat.cl");
+const imagenSocial = new URL(ogImage, Astro.site ?? "https://fechitat-website.vercel.app");
 ---
 
 <!doctype html>
@@ -56,9 +56,7 @@ const imagenSocial = new URL(ogImage, Astro.site ?? "https://fechitat.cl");
     {noindex && <meta name="robots" content="noindex,follow" />}
     <link rel="canonical" href={url} />
     <meta name="theme-color" content="#0b1220" />
-    {import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION && (
-      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION} />
-    )}
+    <meta name="google-site-verification" content="B7F13jj208ydD6dWrfncw3sQ59mEi_yhj7v1W4Hr3cg" />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
