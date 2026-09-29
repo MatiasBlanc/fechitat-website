@@ -1,23 +1,30 @@
 // Interacciones globales del sitio
 
-// Menú móvil del header (con foco atrapado y cierre con Escape)
-const burger = document.querySelector('[data-burger]');
-const mobileNav = document.querySelector('.mobile-nav');
-if (burger && mobileNav) {
+function initMobileNav() {
+  const burger = document.querySelector('[data-burger]');
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (!burger || !mobileNav) return;
+
   /** Elementos enfocables dentro del menú móvil. */
   const getEnfocables = () =>
     Array.from(
-      mobileNav.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
+      mobileNav.querySelectorAll('a[href], button:not([disabled])')
     );
 
   const toggle = (open) => {
     mobileNav.classList.toggle('open', open);
+    if (open) {
+      mobileNav.classList.remove('translate-x-full');
+      mobileNav.classList.add('translate-x-0');
+    } else {
+      mobileNav.classList.remove('translate-x-0');
+      mobileNav.classList.add('translate-x-full');
+    }
     burger.textContent = open ? '✕' : '☰';
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
 
     if (open) {
-      // Mover foco al primer enlace y atraparlo dentro del menú.
       const enfocables = getEnfocables();
       enfocables[0]?.focus();
       document.body.style.overflow = 'hidden';
@@ -27,9 +34,14 @@ if (burger && mobileNav) {
     }
   };
 
-  burger.addEventListener('click', () => toggle(!mobileNav.classList.contains('open')));
+  burger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggle(!mobileNav.classList.contains('open'));
+  });
 
-  mobileNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => toggle(false)));
+  mobileNav.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => toggle(false))
+  );
 
   // Cierre con Escape
   document.addEventListener('keydown', (e) => {
@@ -53,44 +65,46 @@ if (burger && mobileNav) {
   });
 }
 
-// Scroll-spy del riel hangul
-const rail = document.querySelector('.hangul-rail');
-const railLinks = document.querySelectorAll('.hangul-rail a');
-if (railLinks.length) {
-  const sections = Array.from(railLinks)
-    .map((a) => document.querySelector(a.getAttribute('href')))
-    .filter(Boolean);
+function initHangulRail() {
+  const rail = document.querySelector('.hangul-rail');
+  const railLinks = document.querySelectorAll('.hangul-rail a');
+  if (railLinks.length) {
+    const sections = Array.from(railLinks)
+      .map((a) => document.querySelector(a.getAttribute('href')))
+      .filter(Boolean);
 
-  const setActive = () => {
-    if (!sections.length) return;
-    let current = sections[0];
-    const y = window.scrollY + window.innerHeight * 0.35;
-    sections.forEach((s) => {
-      if (s.getBoundingClientRect().top + window.scrollY <= y) current = s;
-    });
-    railLinks.forEach((a) => {
-      const target = document.querySelector(a.getAttribute('href'));
-      a.classList.toggle('active', target === current);
-    });
-  };
+    const setActive = () => {
+      if (!sections.length) return;
+      let current = sections[0];
+      const y = window.scrollY + window.innerHeight * 0.35;
+      sections.forEach((s) => {
+        if (s.getBoundingClientRect().top + window.scrollY <= y) current = s;
+      });
+      railLinks.forEach((a) => {
+        const target = document.querySelector(a.getAttribute('href'));
+        a.classList.toggle('active', target === current);
+      });
+    };
 
-  window.addEventListener('scroll', setActive, { passive: true });
-  setActive();
+    window.addEventListener('scroll', setActive, { passive: true });
+    setActive();
+  }
+
+  // Variante oscura del riel cuando el hero está visible
+  const hero = document.querySelector('.hero');
+  if (hero && rail) {
+    const heroObserver = new IntersectionObserver(
+      ([entry]) => rail.classList.toggle('hangul-rail--dark', entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    heroObserver.observe(hero);
+  }
 }
 
-// Variante oscura del riel cuando el hero está visible
-const hero = document.querySelector('.hero');
-if (hero && rail) {
-  const heroObserver = new IntersectionObserver(
-    ([entry]) => rail.classList.toggle('hangul-rail--dark', entry.isIntersecting),
-    { threshold: 0.1 }
-  );
-  heroObserver.observe(hero);
-}
+function initCounters() {
+  const counters = document.querySelectorAll('[data-count]');
+  if (!counters.length) return;
 
-// Contadores animados (respetando prefers-reduced-motion)
-const counters = document.querySelectorAll('[data-count]');
-if (counters.length) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const io = new IntersectionObserver(
     (entries) => {
@@ -118,3 +132,18 @@ if (counters.length) {
   );
   counters.forEach((c) => io.observe(c));
 }
+
+function initAll() {
+  initMobileNav();
+  initHangulRail();
+  initCounters();
+}
+
+// Ejecutar en carga inicial y en cada transición de página de Astro
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAll);
+} else {
+  initAll();
+}
+document.addEventListener('astro:page-load', initAll);
+
