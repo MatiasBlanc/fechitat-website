@@ -179,24 +179,6 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
     </section>
   )}
 
-  <!-- Documentos oficiales (Teaser institucional consistente) -->
-  <section id="documentos" class="py-12 md:py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-5 md:px-7">
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div class="max-w-2xl">
-          <span class="font-mono text-xs tracking-wider uppercase text-itf-blue font-semibold block mb-1">Marco Normativo</span>
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Documentos oficiales</h2>
-          <p class="text-slate-600 text-sm md:text-base mt-2 leading-relaxed">
-            Accede al repositorio institucional para consultar y descargar estatutos oficiales, circulares federativas, reglamentos disciplinarios y protocolos vigentes.
-          </p>
-        </div>
-        <Button href="/federacion/documentos" variant="secondary" size="md" class="self-start md:self-center whitespace-nowrap">
-          Ver documentos oficiales →
-        </Button>
-      </div>
-    </div>
-  </section>
-
   <!-- Salón de campeones / Maestros que marcaron escuela -->
   {campeones.length > 0 && (
     <section class="py-12 md:py-16 bg-slate-50 border-t border-b border-slate-200" id="campeones">
@@ -281,11 +263,21 @@ const [directivos, comisiones, campeones, hitos] = await Promise.all([
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 items-start">
-        <Button href="mailto:contacto@fechitat.cl" variant="primary" size="md">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+        <Button
+          href="mailto:contacto@fechitat.cl"
+          variant="primary"
+          size="md"
+          class="w-full sm:w-auto text-center"
+        >
           Solicitar afiliación institucional
         </Button>
-        <Button href="/escuelas" variant="secondary" size="md">
+        <Button
+          href="/escuelas"
+          variant="secondary"
+          size="md"
+          class="w-full sm:w-auto text-center"
+        >
           Ver escuelas actualmente afiliadas
         </Button>
       </div>
