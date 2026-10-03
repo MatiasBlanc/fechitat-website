@@ -1,4 +1,13 @@
 ---
-// Redirección directa a Sanity Studio
-return Astro.redirect('https://fechitat-website.sanity.studio');
+const wordpressUrl = process.env.WORDPRESS_URL?.trim();
+
+if (!wordpressUrl) {
+  return new Response('El administrador de WordPress no está configurado.', {
+    status: 503,
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+}
+
+const cmsUrl = new URL('wp-admin/', `${wordpressUrl.replace(/\/+$/, '')}/`);
+return Astro.redirect(cmsUrl.toString());
 ---

@@ -8,11 +8,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import heroImg from "../assets/hero/hero.webp";
 import { img } from "../lib/imagenes";
-import { getMetricas, getProximoEventoDestacado, getBlogPostsDestacados, getEscuelasPorRegion } from "../lib/sanityQueries";
+import { getMetricas, getProximoEventoDestacado, getEscuelasPorRegion } from "../lib/sanityQueries";
+import { getBlogPostsDestacados } from "../lib/blog";
 import { urlFor } from "../lib/sanity";
 import "leaflet/dist/leaflet.css";
 
-export const prerender = true;
+// La portada se sirve dinámicamente sólo cuando sus noticias provienen de WordPress.
+export const prerender = !process.env.WORDPRESS_URL;
 export const revalidate = 3600;
 
 const titulo = "FECHITAT — Federación Chilena de Taekwon-Do Tradicional";
@@ -123,107 +125,6 @@ const escuelasMapa = escuelas.map((escuela: any) => ({
       </div>
     </section>
   )}
-
-  <!-- ¿Qué estás buscando? -->
-  <section id="camino" class="py-12 md:py-20 bg-paper border-b border-line">
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
-      <div class="mb-10 text-center md:text-left">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          ¿Qué estás buscando?
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-        <!-- Card 1: Familias -->
-        <a
-          class="group flex flex-col bg-white border border-line rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-slate-300"
-          href="/padres"
-        >
-          <div class="aspect-[16/10] overflow-hidden bg-slate-100">
-            <img
-              src={img.ninosClase}
-              alt="Niños y familias entrenando Taekwon-Do en clase"
-              width="900"
-              height="563"
-              loading="lazy"
-              decoding="async"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
-          <div class="p-6 sm:p-8 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 group-hover:text-red transition-colors leading-snug">
-                Busco una actividad para mi hijo/a
-              </h3>
-              <p class="text-text-soft text-sm sm:text-base mt-3 leading-relaxed">
-                Desarrollo de disciplina, confianza y coordinación física en un entorno seguro y formativo para todas las edades.
-              </p>
-              <ul class="mt-4 space-y-1.5 text-xs sm:text-sm text-text-soft">
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Clases formativas desde los 4 años
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Valores de respeto, autocontrol y perseverancia
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Primera clase de prueba sin costo
-                </li>
-              </ul>
-            </div>
-            <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
-              <span class="font-mono text-xs tracking-wider uppercase text-red font-bold group-hover:underline">
-                Conocer el programa para familias →
-              </span>
-            </div>
-          </div>
-        </a>
-
-        <!-- Card 2: Competidores -->
-        <a
-          class="group flex flex-col bg-white border border-line rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-slate-300"
-          href="/jovenes"
-        >
-          <div class="aspect-[16/10] overflow-hidden bg-slate-100">
-            <img
-              src={img.jovenCompetidor}
-              alt="Competidor joven de Taekwon-Do ITF en competencia"
-              width="900"
-              height="563"
-              loading="lazy"
-              decoding="async"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
-          <div class="p-6 sm:p-8 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 group-hover:text-red transition-colors leading-snug">
-                Quiero avanzar y competir
-              </h3>
-              <p class="text-text-soft text-sm sm:text-base mt-3 leading-relaxed">
-                Escala técnica de grados Gup y Dan, preparación para torneos federados y proceso de postulación a la Selección Nacional.
-              </p>
-              <ul class="mt-4 space-y-1.5 text-xs sm:text-sm text-text-soft">
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Calendario oficial de campeonatos
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Reglamentos oficiales ITF de combate y formas
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="text-red font-bold">✓</span> Proyección a la Selección Nacional
-                </li>
-              </ul>
-            </div>
-            <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
-              <span class="font-mono text-xs tracking-wider uppercase text-red font-bold group-hover:underline">
-                Conocer el camino competitivo →
-              </span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
 
   <!-- Quiénes somos -->
   <section class="py-12 md:py-20 bg-white" id="quienes-somos">
@@ -342,10 +243,10 @@ const escuelasMapa = escuelas.map((escuela: any) => ({
               href={`/blog/${post.slug?.current || '#'}`}
             >
               <div class="aspect-[16/10] overflow-hidden bg-slate-100">
-                {post.imagen ? (
+                {post.imagenUrl || post.imagen ? (
                   <img
-                    src={urlFor(post.imagen).width(600).auto('format').url()}
-                    alt={`Imagen de ${post.titulo}`}
+                    src={post.imagenUrl ?? urlFor(post.imagen).width(600).auto('format').url()}
+                    alt={post.imagenAlt ?? `Imagen de ${post.titulo}`}
                     loading="lazy"
                     decoding="async"
                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -425,11 +326,14 @@ const escuelasMapa = escuelas.map((escuela: any) => ({
 <script>
   import L from 'leaflet';
 
-  const input = document.getElementById('buscar-escuela') as HTMLInputElement;
-  const lista = document.getElementById('lista-escuelas') as HTMLUListElement;
-  const estado = document.getElementById('estado-escuelas') as HTMLParagraphElement;
-  const contenedorMapa = document.getElementById('mapa-dojangs') as HTMLElement;
-  const escuelas = JSON.parse(contenedorMapa?.dataset.escuelas || '[]');
+  function inicializarMapaDojangs() {
+    const input = document.getElementById('buscar-escuela') as HTMLInputElement | null;
+    const lista = document.getElementById('lista-escuelas') as HTMLUListElement | null;
+    const estado = document.getElementById('estado-escuelas') as HTMLParagraphElement | null;
+    const contenedorMapa = document.getElementById('mapa-dojangs') as HTMLElement | null;
+    if (!input || !lista || !estado || !contenedorMapa || contenedorMapa.dataset.inicializado) return;
+    contenedorMapa.dataset.inicializado = 'true';
+    const escuelas = JSON.parse(contenedorMapa.dataset.escuelas || '[]');
 
   /** Cache de coordenadas geocodificadas (Nominatim) por ciudad, en localStorage. */
   const CACHE_GEO = 'fechitat:geo';
@@ -459,7 +363,6 @@ const escuelasMapa = escuelas.map((escuela: any) => ({
     return null;
   }
 
-  if (input && lista && contenedorMapa) {
     // Mapa centrado en Chile
     const mapa = L.map(contenedorMapa, {
       center: [-35.6751, -71.5429],
@@ -566,4 +469,7 @@ const escuelasMapa = escuelas.map((escuela: any) => ({
     input.addEventListener('input', () => pintarLista(input.value));
     pintarLista('');
   }
+
+  inicializarMapaDojangs();
+  document.addEventListener('astro:page-load', inicializarMapaDojangs);
 </script>

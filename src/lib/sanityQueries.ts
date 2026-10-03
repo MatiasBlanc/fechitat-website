@@ -5,6 +5,13 @@ export async function getEventos() {
   return sanity.fetch(`*[_type == "evento"] | order(fecha desc)`)
 }
 
+/** Obtiene las rutas y fechas de actualización de eventos para el sitemap dinámico. */
+export async function getEventosSitemap(): Promise<Array<{ slug: string; updatedAt: string }>> {
+  return sanity.fetch<Array<{ slug: string; updatedAt: string }>>(
+    `*[_type == "evento" && defined(slug.current)] { "slug": slug.current, "updatedAt": _updatedAt }`,
+  );
+}
+
 /** Obtener eventos próximos (excluye el destacado) */
 export async function getProximosEventos() {
   return sanity.fetch(
@@ -23,6 +30,7 @@ export async function getEventosPasados(limite = 12) {
       titulo,
       slug,
       fecha,
+      fechaFin,
       tipo,
       direccion,
       ciudad,
@@ -42,6 +50,7 @@ export async function getEventosPasadosPaginados(offset = 0, limite = 12) {
       titulo,
       slug,
       fecha,
+      fechaFin,
       tipo,
       direccion,
       ciudad,

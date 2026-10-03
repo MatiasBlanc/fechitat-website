@@ -40,10 +40,10 @@ src/
 
 | Comando          | Acción                                    |
 | :--------------- | :---------------------------------------- |
-| `bun install`    | Instala dependencias                      |
-| `bun run dev`    | Dev server local en `localhost:4321`      |
-| `bun run build`  | Build de producción a `./dist/`           |
-| `bun run preview`| Previsualiza el build localmente          |
+| `pnpm install`   | Instala dependencias del proyecto         |
+| `pnpm dev`       | Servidor local en `localhost:4321`        |
+| `pnpm build`     | Build de producción a `./dist/`           |
+| `pnpm preview`   | Previsualiza el build localmente          |
 
 ## Notas de migración
 

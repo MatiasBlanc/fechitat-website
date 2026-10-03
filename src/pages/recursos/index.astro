@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const secciones = [
+  {
+    id: 'formacion',
+    numero: '01',
+    titulo: 'Formación',
+    descripcion: 'Profundiza en la técnica, los patrones y el lenguaje del Taekwon-Do ITF. Material para acompañarte dentro y fuera del dojang.',
+    imagen: '/images/hero/hero.webp',
+    imagenAlt: 'Practicantes de Taekwon-Do reunidos en un dojang',
+    ancho: 1600,
+    alto: 1200,
+    enlaces: [
+      { nombre: 'Programa de examen', href: '/recursos/formacion/programa-examen' },
+      { nombre: 'Terminología', href: '/recursos/formacion/terminologia' },
+    ],
+  },
+  {
+    id: 'herramientas',
+    numero: '02',
+    titulo: 'Herramientas',
+    descripcion: 'Lleva tu práctica más lejos con recursos digitales para explorar formas, entrenar a tu ritmo y descubrir nuevas posibilidades.',
+    imagen: '/images/hero/OIP.webp',
+    imagenAlt: 'Grupo de practicantes de Taekwon-Do en el tatami',
+    ancho: 474,
+    alto: 474,
+    enlaces: [
+      { nombre: 'TUL · Sonkal ITF', href: 'https://play.google.com/store/apps/details?id=cz.principal.tul.tkd.itf&hl=en-US' },
+      { nombre: 'Temporizador de formas', href: 'https://tools.fechitat.cl/temporizador' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Recursos — FECHITAT" description="Material de formación y herramientas para practicar Taekwon-Do ITF.">
+  <section class="bg-ink text-white">
+    <div class="max-w-6xl mx-auto px-5 md:px-7 py-16 md:py-24">
+      <p class="text-light-soft font-mono text-sm uppercase tracking-widest mb-4">Aprende · Practica · Crece</p>
+      <h1 class="text-white text-4xl md:text-6xl max-w-3xl">Recursos para tu camino</h1>
+      <p class="text-light-soft mt-5 max-w-2xl text-lg">Encuentra material de formación y herramientas para seguir entrenando, dondequiera que estés.</p>
+    </div>
+  </section>
+
+  {secciones.map((seccion, indice) => (
+    <section id={seccion.id} class:list={['py-16 md:py-24', indice % 2 === 0 ? 'bg-white' : 'bg-paper']} aria-labelledby={`titulo-${seccion.id}`}>
+      <div class="max-w-6xl mx-auto px-5 md:px-7 grid gap-10 lg:gap-16 lg:grid-cols-2 items-center">
+        <div class:list={['overflow-hidden rounded-sm', indice % 2 !== 0 && 'lg:order-2']}>
+          <img
+            src={seccion.imagen}
+            alt={seccion.imagenAlt}
+            width={seccion.ancho}
+            height={seccion.alto}
+            loading="lazy"
+            class="w-full aspect-video lg:aspect-square object-cover"
+          />
+        </div>
+        <div>
+          <p class="text-red font-mono text-sm uppercase tracking-widest mb-4">{seccion.numero} / Recursos</p>
+          <h2 id={`titulo-${seccion.id}`} class="text-3xl md:text-5xl">{seccion.titulo}</h2>
+          <p class="text-text-soft text-lg mt-4 mb-8 max-w-xl">{seccion.descripcion}</p>
+          <ul class="border-t border-line">
+            {seccion.enlaces.map((enlace) => (
+              <li class="border-b border-line">
+                <a href={enlace.href} class="group flex items-center justify-between gap-4 py-5 text-ink hover:text-red focus-visible:text-red transition-colors">
+                  <span class="font-heading font-bold text-lg md:text-xl">{enlace.nombre}</span>
+                  <span aria-hidden="true" class="text-red text-2xl transition-transform group-hover:translate-x-1">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  ))}
+</BaseLayout>

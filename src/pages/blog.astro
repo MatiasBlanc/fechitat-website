@@ -4,10 +4,9 @@ import UIcon from '../components/icons/UIcon.astro';
 import PageHero from '../components/PageHero.astro';
 import BlogGrid from '../components/BlogGrid.astro';
 import Paginacion from '../components/Paginacion.astro';
-import { getBlogPosts, getTotalBlogPosts } from '../lib/sanityQueries';
+import { getBlogPosts, getTotalBlogPosts } from '../lib/blog';
 
-export const prerender = true;
-export const revalidate = 3600; // ISR: regenerar como máximo 1 vez por hora
+export const prerender = false;
 
 const POR_PAGINA = 12;
 
@@ -52,7 +51,7 @@ const etiquetas = ['todos', ...new Set(posts.flatMap((p) => p.categorias ?? []))
             </p>
           </div>
           <a
-            href="/estudio"
+            href="/recursos/formacion/material-estudio"
             class="inline-flex items-center gap-2 bg-red text-white font-mono text-xs tracking-widest uppercase py-3 px-5 rounded-sm transition-all duration-150 hover:bg-red-dark hover:-translate-y-px flex-none"
           >
             Ver material de estudio

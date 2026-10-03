@@ -1,6 +1,6 @@
 /**
  * Script para poblar Sanity con contenido de ejemplo para FECHITAT
- * Ejecutar: bun scripts/seed-sanity.ts
+ * Ejecutar desde la raíz: pnpm --filter @fechitat/website exec node --experimental-strip-types scripts/seed-sanity.ts
  */
 
 import {createClient} from '@sanity/client'

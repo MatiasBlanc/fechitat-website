@@ -2,13 +2,16 @@
 // Botón reutilizable para mantener una jerarquía visual consistente.
 interface Props {
   variant?: 'primary' | 'secondary' | 'ghost' | 'dark' | 'dark-ghost' | 'blue';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
   href?: string;
   /** Renderiza una etiqueta visual dentro de un enlace contenedor sin anidar enlaces. */
   as?: 'button' | 'span';
   class?: string;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
+  target?: string;
+  rel?: string;
+  ariaLabel?: string;
 }
 
 const {
@@ -19,6 +22,9 @@ const {
   class: clase = '',
   type = 'button',
   disabled = false,
+  target,
+  rel,
+  ariaLabel,
 } = Astro.props;
 
 const baseClasses = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-5 py-3 font-heading text-xs font-bold uppercase tracking-[0.06em] cursor-pointer transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-itf-red disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50';
@@ -27,6 +33,7 @@ const sizeClasses = {
   sm: 'min-h-11 px-4',
   md: 'min-h-11 px-5',
   lg: 'min-h-12 px-6 text-sm',
+  icon: 'min-h-9 px-2',
 };
 
 const variantClasses = {
@@ -42,7 +49,7 @@ const allClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant
 ---
 
 {href ? (
-  <a href={href} class={allClasses}>
+  <a href={href} class={allClasses} target={target} rel={rel} aria-label={ariaLabel}>
     <slot />
   </a>
 ) : as === 'span' ? (

@@ -1,0 +1,377 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { getProgramaExamen } from '../../../lib/sanityQueries';
+
+export const prerender = true;
+export const revalidate = 3600;
+
+const titulo = 'Programa de examen — FECHITAT';
+const descripcion =
+  'Revisa los requisitos por grado para el examen de Taekwon-Do ITF: posiciones, técnicas, Tuls, combate, roturas y teoría.';
+
+interface Grado {
+  rango: string;
+  cinturon: string;
+  posiciones: string[];
+  ataquesBrazo: string[];
+  ataquesPierna: string[];
+  defensas: string[];
+  formas: string[];
+  combate: string[];
+  rotura?: string[];
+  teoria: string[];
+  defensaPersonal?: string[];
+}
+
+const grados: Grado[] = [
+  {
+    rango: '10° a 9° Gup',
+    cinturon: 'Blanco a Blanco Punta Amarilla',
+    posiciones: ['De atención (Charyot Sogi)', 'De saludo (Kyong Ye Jase)', 'De pies paralelos (Narani Sogui)', 'De caminar (Gunnun Sogi)'],
+    ataquesBrazo: ['Con puño frontal (Ap Joomuk)'],
+    ataquesPierna: ['Patada frontal (Ap Chagi)', 'Patada circular hacia fuera (Bakuro Bandal Chagi)', 'Patada circular hacia dentro (Anuro Bandal Chagi)', 'Patada semicircular (Dollyo Chagi)', 'Patada frontal saltando (Twimyo Ap Chagi)'],
+    defensas: ['Zona baja con antebrazo externo (Palmok Najunde Makgi)', 'Zona baja con canto de mano (Sonkal Najunde Makgi)', 'Zona media con antebrazo interno (An Palmok Kaunde Makgi)'],
+    formas: ['Cruz de ataque (Saju Jirugi)', 'Cruz de defensa (Saju Makgi)'],
+    combate: ['Introducción a técnicas de tres pasos (Sambo Matsokgi)', 'Semi libre (una técnica cada uno)'],
+    teoria: ['Significado de la palabra Taekwon-Do', 'Nombre del Fundador', 'Los 5 principios del TK-D', 'Significado del color blanco del Dobok', 'Significado del cinturón blanco'],
+  },
+  {
+    rango: '9° a 8° Gup',
+    cinturon: 'Blanco Punta Amarilla a Amarillo',
+    posiciones: ['Las anteriores', 'En L (Niunja Sogi)'],
+    ataquesBrazo: ['Los anteriores'],
+    ataquesPierna: ['Las anteriores', 'Ap Cha Ollygi', 'Patada lateral con talón (Yop Chagi)', 'Combinaciones de dos técnicas'],
+    defensas: ['Las anteriores'],
+    formas: ['Cruz de ataque (anterior)', 'Cruz de defensa (anterior)', 'Chon-Ji (19 movimientos)'],
+    combate: ['Técnicas de un paso (Ilbo Matsokgi)', 'Técnicas de tres pasos con oponente (Sambo Matsokgi)', 'Semi libre'],
+    teoria: ['Juramento del Taekwon-Do', '¿Qué representa el color del cinturón amarillo?', 'Significado y cantidad de movimientos de Chon-Ji Tul'],
+  },
+  {
+    rango: '8° a 7° Gup',
+    cinturon: 'Amarillo a Amarillo Punta Verde',
+    posiciones: ['Las anteriores'],
+    ataquesBrazo: ['Los anteriores', 'Con puño frontal a zona alta (Nopunde Jirugi)', 'Con canto de mano (Sonkal Dollyo Taerigi)'],
+    ataquesPierna: ['Los anteriores', 'Patada lateral con talón (Yop Chagi)', 'Patada descendente hacia fuera (Bakuro Naeryo Chagi)', 'Patada descendente hacia adentro (Anuro Naeryo Chagi)', 'Patada circular hacia afuera con giro (Bandae Bakuro Sewo Chagi)', 'Patada trasera (Bandae Yop Chagi)', 'Patada semicircular con salto (Twimyo Dollyo Chagi)', 'Combinaciones'],
+    defensas: ['Las anteriores', 'Con canto de mano a zona media (Sonkal Daebi Makgi)', 'Con antebrazos externos a zonas media y alta (Sang Palmok Makgi)', 'Con antebrazo externo a zona alta (Palmok Chukyo Makgi)'],
+    formas: ['Chon-Ji (anterior)', 'Dan-Gun (21 movimientos)'],
+    combate: ['Técnicas de un paso', 'Técnicas de tres pasos', 'Libre'],
+    teoria: ['¿Qué representa el color del cinturón verde?', 'Fecha de creación del Taekwon-Do y de la ITF', 'Significado y cantidad de movimientos de Dan-Gun Tul'],
+  },
+  {
+    rango: '7° a 6° Gup',
+    cinturon: 'Amarillo Punta Verde a Verde',
+    posiciones: ['Las anteriores', 'De jinete (Annun Sogi)'],
+    ataquesBrazo: ['Los anteriores', 'Con punta de dedos (Sun Sonkut Tulgi)', 'Con revés del puño (Dung Joomuk)'],
+    ataquesPierna: ['Los anteriores', 'Patada lateral con gancho (Goro Chagi)', 'Patada lateral con gancho girando (Bandae Dollyo Goro Chagi)', 'Patada lateral con talón saltando (Twimyo Yop Chagi)', 'Combinaciones de pies y de pies y manos'],
+    defensas: ['Las anteriores', 'Con antebrazo externo hacia fuera a zona alta (Bakat Palmok Nopunde Yop Makgi)', 'Con antebrazos externos dobles hacia fuera (Bakat Palmok Nopunde Hechyo Makgi)'],
+    formas: ['Dan-Gun (anterior)', 'Do-San (24 movimientos)'],
+    combate: ['Técnicas de 1 y 3 pasos', 'Libre'],
+    rotura: ['De pie: Yop Chagi', 'De mano: Niunja So Sonkal Kaunde Yop Taerigi'],
+    teoria: ['Instructores que introdujeron el TK-D ITF en Chile', 'Clasificación de instructores y maestros', 'Significado y cantidad de movimientos de Do-San Tul', 'Significado del cinturón verde'],
+  },
+  {
+    rango: '6° a 5° Gup',
+    cinturon: 'Verde a Verde Punta Azul',
+    posiciones: ['Las anteriores', 'Pies juntos (Moa Sogi)', 'En L larga (Gojung Sogi)', 'De una pierna (Goobooryo Sogi)'],
+    ataquesBrazo: ['Los anteriores', 'Con canto de mano hacia adentro a zona alta (Sonkal Anuro Taerigi)'],
+    ataquesPierna: ['Los anteriores', 'Patada lateral con giro 180° saltando (Twimyo Bandae Yop Chagi)', 'Patada descendente hacia adentro con salto (Twimyo Anuro Naeryo Chagi)', 'Patada circular hacia afuera con giro saltando (Twimyo Bandae Bakuro Sewo Chagi)', 'Patadas dobles-triples con misma pierna'],
+    defensas: ['Las anteriores', 'En posición de guardia con antebrazo externo (Palmok Daebi Makgi)', 'Bajando y levantando con antebrazo interno (Palmok Dollimyo Makgi)'],
+    formas: ['Do-San (anterior)', 'Won-Hyo (28 movimientos)'],
+    combate: ['Técnicas de 1 y 3 pasos', 'Introducción a técnicas de 2 pasos', 'Libre'],
+    rotura: ['De mano: Puño', 'De pie: Dollyo Chagi'],
+    teoria: ['Fechas de nacimiento y muerte del Gral. Choi Hong Hi', 'Cultura Moral', 'Significado y cantidad de movimientos de Won-Hyo Tul', '¿Qué representa el color del cinturón azul?'],
+  },
+  {
+    rango: '5° a 4° Gup',
+    cinturon: 'Verde Punta Azul a Azul',
+    posiciones: ['Las anteriores', 'Pies cruzados (Kyocha Sogi)'],
+    ataquesBrazo: ['Los anteriores', 'Con codo frontal (Ap Palkup Taerigi)'],
+    ataquesPierna: ['Los anteriores', 'Patada circular con gancho y giro 180° saltando (Twimyo Bandae Dollyo Goro Chagi)', 'Patada frontal y circular simultáneas saltando (Twimyo Apcha Dollyo Chagi)', 'Patadas en tensión simples', 'Patada descendente hacia adentro con giro 360°'],
+    defensas: ['Las anteriores', 'De chequeo descendente con mano abierta (Golcho Makgi)', 'Con canto de mano a zona media y alta (Sang Sonkal Makgi)', 'Con antebrazo interno acompañado (Doo Palmok Makgi)'],
+    formas: ['Won-Hyo (anterior)', 'Yul-Gok (38 movimientos)'],
+    combate: ['Técnicas de 1, 2 y 3 pasos', 'Libre'],
+    rotura: ['De técnica: Twimyo Ap Chagi', 'De poder', 'Libre'],
+    teoria: ['Explicación del saludo', 'El porqué de los 9 danes', 'Significado y cantidad de movimientos de Yul-Gok', 'Significado del cinturón azul'],
+  },
+  {
+    rango: '4° a 3° Gup',
+    cinturon: 'Azul a Azul Punta Roja',
+    posiciones: ['Las anteriores', 'En L más corta (Dwitbal Sogi)', 'De caminar más larga (Nachuo Sogi)'],
+    ataquesBrazo: ['Los anteriores', 'Con codo ascendente frontal (Wipalkup Taerigi)', 'Con puños dobles frontal (Sang Joomuk Sewo Jirugi)', 'Con puños tipo gancho a zona media (Sang Joomuk Dwijibo Jirugi)'],
+    ataquesPierna: ['Los anteriores', 'Patada lateral saltando y girando 360°', 'Patada descendente hacia fuera con giro 180° saltando', 'Patada semicircular con salto y giro 360°', 'Patada abanico hacia adentro con salto y giro 360°', 'Introducción a Bituro Chagi'],
+    defensas: ['Las anteriores', 'Con canto interno de mano (Sonkal Dung Bakuro Makgi)', 'Con palma de mano ascendente (Sombadak Ollyo Makgi)', 'Con puños en cruz a zona alta (Kyocha Joomuk Chukyo Makgi)', 'Con palma de mano descendente a zona baja (Sombadak Noollo Makgi)', 'Con arco de mano a zonas media y alta con ambas manos (Mongdung-I Makgi)'],
+    formas: ['Yul-Gok (anterior)', 'Joong-Gun (32 movimientos)'],
+    combate: ['Técnicas de 1, 2 y 3 pasos', 'Semi libre', 'Libre'],
+    defensaPersonal: ['Resolución de agarres (brazos, cuello, pelo, ropa, desde adelante, desde atrás)'],
+    rotura: ['De técnica: Twimyo Nomo Yop Chagi', 'De poder: Solo de pies', 'Libre'],
+    teoria: ['Deberes del alumno', 'Historia del Taekwon-Do', '¿Qué representa el color del cinturón rojo?', 'Significado y cantidad de movimientos de Joong-Gun'],
+  },
+  {
+    rango: '3° a 2° Gup',
+    cinturon: 'Azul Punta Roja a Rojo',
+    posiciones: ['Las anteriores'],
+    ataquesBrazo: ['Los anteriores', 'Con punta de dedos a zona baja a pie invertido (Dwijibun Sonkut Tulgi)', 'Con revés del puño a zona alta y hacia atrás (Dung Joomuk Yop Dwi Taerigi)', 'Con punta de dedos a zona alta (Opun Sonkut Tulgi)'],
+    ataquesPierna: ['Los anteriores', 'Con rodilla ascendente (Moorup Ollyo Chagi)', 'Patada circular hacia afuera con salto y giro 360°', 'Patada lateral con gancho con salto y giro 360°', 'Patada fronto-lateral (Yobap Chagi)', 'Patada de torsión (Bituro Chagi)', 'Patadas retrocediendo'],
+    defensas: ['Las anteriores', 'Con puños en cruz a zona baja (Kyocha Joomuk Noollo Makgi)', 'Con antebrazos externos dobles a zona alta (Bakat Palmok Hechyo Makgi)', 'Con antebrazo interno acompañado empujando a zona baja (Doopalmok Najunde Miro Makgi)', 'Con canto de mano a zona baja (Sonkal Najunde Daebi Makgi)'],
+    formas: ['Joong-Gun (anterior)', 'Toi-Gye (37 movimientos)'],
+    combate: ['Técnicas de 1, 2 y 3 pasos', 'Semi libre', 'Libre'],
+    defensaPersonal: ['Resolución con desequilibrio del oponente (barrido, trabado, empujón, lanzamiento)'],
+    rotura: ['De técnica: Giros 360°, dos focos', 'De poder', 'Libre'],
+    teoria: ['Historia del Taekwon-Do ITF en Chile', 'Tipos de mociones', 'Significado y cantidad de movimientos de Toi-Gye Tul', 'Significado del cinturón rojo'],
+  },
+  {
+    rango: '2° a 1° Gup',
+    cinturon: 'Rojo a Rojo Punta Negra',
+    posiciones: ['Las anteriores', 'En L vertical (Soo Jik Sogi)'],
+    ataquesBrazo: ['Los anteriores', 'Con puño frontal ascendente (Ollyo Jirugi)', 'Con canto de mano descendente (Sonkal Naeryo Taerigi)', 'Con codo hacia atrás (Yop Palkup Tulgi)'],
+    ataquesPierna: ['Los anteriores', 'Patada descendente hacia fuera saltando y giro 360°', 'Patada trasera con talón (Dwitcha Busigi)', 'Doble patada frontal saltando (Twimyo Sangbal Ap Chagi)', 'Patadas de precisión frente a compañero'],
+    defensas: ['Las anteriores', 'Con palma de mano empujando (Sonbadak Miro Makgi)', 'Con antebrazo interno de frente y hacia el costado (An Palmok Yobap Makgi)'],
+    formas: ['Toi-Gye (anterior)', 'Hwa-Rang (29 movimientos)'],
+    combate: ['Técnicas de 1, 2 y 3 pasos', 'Libre'],
+    defensaPersonal: ['Resolución de ataques y tomas de palancas (cuello, hombro, codo, muñecas, dedos, rodillas)'],
+    rotura: ['De técnica: Twimyo Bandae Dollyo Chagi', 'De poder: Dollyo Chagi mínimo 2 pulgadas', 'Libre'],
+    teoria: ['¿Qué es el Tul?', 'Distintos tipos de enfrentamiento', 'Diferencia entre Arte Marcial y Deporte', 'Ciclo de composición del Taekwon-Do', 'Significado y cantidad de movimientos de Hwa-Rang Tul', '¿Qué representa el color del cinturón negro?'],
+  },
+  {
+    rango: '1° Gup a 1er Dan',
+    cinturon: 'Rojo Punta Negra a Negro',
+    posiciones: ['Revisión de todas las anteriores'],
+    ataquesBrazo: ['Los anteriores', 'Con revés de canto de mano (Sonkal Dung Ap Taerigi)'],
+    ataquesPierna: ['Los anteriores', 'Patada abanico hacia fuera saltando (Twimyo Bakuro Sewo Chagi)', 'Patada abanico hacia dentro saltando (Twimyo Anuro Sewo Chagi)', 'Patada con talón hacia atrás (Dwitcha Busigi)', 'Dos golpes con un salto'],
+    defensas: ['Las anteriores', 'Con antebrazo externo hacia adentro (Palmok Kaunde Ap Makgi)', 'Con cantos de manos en cruz (Kyocha Sonkal Monchau Makgi)', 'Con palmas de manos ascendentes (Sang Sonbadak Ollyo Makgi)'],
+    formas: ['Hwa-Rang (anterior)', 'Choong-Moo (30 movimientos)', 'Revisión de cualquier forma anterior'],
+    combate: ['Técnicas de 1, 2 y 3 pasos', 'Semi libre', 'Libre'],
+    defensaPersonal: ['Resolución con toma de pierna sobre cualquier patada', 'Estudio y aplicación de puntos vitales en agarres y/o ataques'],
+    rotura: ['De técnica', 'De poder', 'Libre'],
+    teoria: ['Teoría del poder', 'Relación instructor-alumno', '1er Dan: ¿Experto o novato?', 'Cultura Moral y Filosofía del Taekwon-Do', 'Significado y cantidad de movimientos de Choong-Moo', '¿Qué representa el color del cinturón negro?', 'Vocabulario'],
+  },
+];
+
+const descripcionPrograma =
+  'Diseñada y revisada por los Sabumnim Osvaldo Rojas y Javier Lillo, Directores Técnicos de FECHITAT. Cada grado incluye los requisitos de posiciones, técnicas, formas, combate, rotura y teoría.';
+const programaSanity = await getProgramaExamen();
+const programaVisible = programaSanity?.grados?.length
+  ? programaSanity
+  : { titulo: 'Programa de examinación FECHITAT', descripcion: descripcionPrograma, grados };
+const clasesPuntos = [
+  ['border-line', 'bg-white'], ['border-gold', 'bg-gold'], ['border-gold', 'bg-gold'],
+  ['border-belt-green', 'bg-belt-green'], ['border-belt-green', 'bg-belt-green'],
+  ['border-blue', 'bg-blue'], ['border-blue', 'bg-blue'], ['border-red', 'bg-red'],
+  ['border-red', 'bg-red'], ['border-ink', 'bg-ink'],
+];
+---
+
+<BaseLayout title={titulo} description={descripcion}>
+  <PageHero
+    title={programaVisible.titulo}
+    description={programaVisible.descripcion ?? 'Requisitos de cada grado para los exámenes de progresión de FECHITAT.'}
+  />
+
+  <section class="bg-white py-10 md:py-16">
+    <div class="mx-auto w-full max-w-screen-2xl px-5 md:px-8 xl:px-12">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-widest text-red">Tu camino de grado</p>
+          <h2 class="mt-2">Explora el programa</h2>
+        </div>
+        <p id="grado-contador" class="font-mono text-sm text-text-soft" aria-live="polite"></p>
+      </div>
+
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-5">
+        <nav class="flex flex-wrap gap-3" aria-label="Seleccionar grado">
+        {programaVisible.grados.map((grado, indice) => (
+          <button
+            type="button"
+            data-grado-dot={indice}
+            aria-label={`Ver ${grado.rango}: ${grado.cinturon}`}
+            aria-pressed={indice === 0 ? 'true' : 'false'}
+            class:list={[
+              'h-3 w-3 rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red',
+              indice === 0 ? 'scale-125' : 'hover:scale-110',
+              ...(clasesPuntos[indice] ?? ['border-line', 'bg-white']),
+            ]}
+          />
+        ))}
+        </nav>
+        <div class="flex flex-wrap items-center gap-3 text-sm">
+          <label for="tamano-lectura" class="text-text-soft">Tamaño</label>
+          <select id="tamano-lectura" class="border border-line bg-white px-2 py-2 text-ink">
+            <option value="18">18 px</option><option value="20" selected>20 px</option><option value="22">22 px</option><option value="24">24 px</option><option value="28">28 px</option>
+          </select>
+          <label for="fuente-lectura" class="text-text-soft">Tipografía</label>
+          <select id="fuente-lectura" class="border border-line bg-white px-2 py-2 text-ink">
+            <option value="Kumbh Sans, sans-serif">Sans</option><option value="Georgia, serif">Serif</option><option value="Arial, sans-serif">Arial</option>
+          </select>
+          <button type="button" data-descargar class="border border-ink px-3 py-2 font-mono text-xs uppercase tracking-wider hover:bg-ink hover:text-white">Descargar para leer después</button>
+        </div>
+      </div>
+
+      <div id="programa-lector" class="touch-pan-y">
+        {programaVisible.grados.map((grado, indice) => (
+          <article data-grado-panel={indice} hidden={indice !== 0} class="overflow-hidden bg-white">
+            <header class="border-b-4 border-red bg-white py-7 md:py-10">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p class="font-mono text-xs uppercase tracking-widest text-red">{grado.rango}</p>
+                  <h3 class="mt-2 text-3xl md:text-5xl">{grado.cinturon}</h3>
+                </div>
+              </div>
+            </header>
+
+            <div data-reader-text class="grid grid-cols-1 gap-x-12 px-0 pb-8 md:grid-cols-2" style="font-size: 20px; font-family: Kumbh Sans, sans-serif;">
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Posiciones (Sogi)</h4>
+                <ul class="space-y-2">{grado.posiciones.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Ataques con brazos (Son Gisool)</h4>
+                <ul class="space-y-2">{grado.ataquesBrazo.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Ataques con piernas (Bal Gisool)</h4>
+                <ul class="space-y-2">{grado.ataquesPierna.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Defensa con brazos (Makgi)</h4>
+                <ul class="space-y-2">{grado.defensas.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Formas (Tul)</h4>
+                <ul class="space-y-2">{grado.formas.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              <div class="border-t border-line py-6">
+                <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Combate (Matsokgi)</h4>
+                <ul class="space-y-2">{grado.combate.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+              </div>
+              {grado.defensaPersonal && (
+                <div class="border-t border-line py-6">
+                  <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Defensa personal</h4>
+                  <ul class="space-y-2">{grado.defensaPersonal.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+                </div>
+              )}
+              {grado.rotura && (
+                <div class="border-t border-line py-6">
+                  <h4 class="mb-3 font-mono text-base uppercase tracking-wider text-red">Rotura (Kyokpa)</h4>
+                  <ul class="space-y-2">{grado.rotura.map((item) => <li class="text-sm text-text-soft">• {item}</li>)}</ul>
+                </div>
+              )}
+              <div class="border-t border-line py-6 md:col-span-2">
+                <h4 class="mb-4 font-mono text-lg uppercase tracking-wider text-red">Teoría · selecciona un tema para abrir tus apuntes</h4>
+                <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2">{grado.teoria.map((item) => <li><button type="button" data-teoria={item} class="text-left text-text-soft underline decoration-dotted underline-offset-4 hover:text-red">{item} <span aria-hidden="true" class="text-red">↗</span></button></li>)}</ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <dialog id="teoria-dialog" class="rounded-sm border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/70">
+        <form method="dialog" class="p-6 md:p-8">
+          <div class="flex items-start justify-between gap-5">
+            <div><p class="font-mono text-xs uppercase tracking-widest text-red">Apuntes de teoría</p><h3 id="teoria-titulo" class="mt-2 text-2xl md:text-3xl"></h3></div>
+            <button aria-label="Cerrar" class="text-2xl text-text-soft hover:text-red">×</button>
+          </div>
+          <p class="mt-4 text-lg leading-relaxed">La información de este tema se irá completando.</p>
+          <div class="mt-5 flex justify-end"><button class="bg-ink px-5 py-3 font-mono text-xs uppercase tracking-wider text-white">Listo</button></div>
+        </form>
+      </dialog>
+
+      <div class="mt-6 flex items-center justify-between gap-4">
+        <button type="button" data-grado-prev class="border border-ink px-5 py-3 font-mono text-xs uppercase tracking-wider text-ink transition-colors hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:opacity-40">← Anterior</button>
+        <span class="hidden text-sm text-text-soft sm:block">Selecciona un punto para cambiar de grado</span>
+        <button type="button" data-grado-next class="border border-ink px-5 py-3 font-mono text-xs uppercase tracking-wider text-ink transition-colors hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:opacity-40">Siguiente →</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const paneles = [...document.querySelectorAll<HTMLElement>('[data-grado-panel]')];
+    const puntos = [...document.querySelectorAll<HTMLButtonElement>('[data-grado-dot]')];
+    const contador = document.querySelector<HTMLElement>('#grado-contador');
+    const anterior = document.querySelector<HTMLButtonElement>('[data-grado-prev]');
+    const siguiente = document.querySelector<HTMLButtonElement>('[data-grado-next]');
+    const lector = document.querySelector<HTMLElement>('#programa-lector');
+    const tamanoLectura = document.querySelector<HTMLSelectElement>('#tamano-lectura');
+    const fuenteLectura = document.querySelector<HTMLSelectElement>('#fuente-lectura');
+    const descargar = document.querySelector<HTMLButtonElement>('[data-descargar]');
+    const dialogoTeoria = document.querySelector<HTMLDialogElement>('#teoria-dialog');
+    const tituloTeoria = document.querySelector<HTMLElement>('#teoria-titulo');
+    let gradoActivo = 0;
+    let inicioDeslizamiento = 0;
+
+    /** Muestra un grado del programa y actualiza los controles de navegación.
+     * @param indice Índice del grado que se mostrará.
+     * @returns No devuelve ningún valor.
+     */
+    function mostrarGrado(indice: number) {
+      if (indice < 0 || indice >= paneles.length) return;
+      gradoActivo = indice;
+      paneles.forEach((panel, posicion) => { panel.hidden = posicion !== gradoActivo; });
+      puntos.forEach((punto, posicion) => {
+        const activo = posicion === gradoActivo;
+        punto.setAttribute('aria-pressed', String(activo));
+        punto.classList.toggle('scale-125', activo);
+        punto.classList.toggle('ring-2', activo);
+        punto.classList.toggle('ring-ink', activo);
+        punto.classList.toggle('ring-offset-2', activo);
+      });
+      if (contador) contador.textContent = `Grado ${gradoActivo + 1} de ${paneles.length}`;
+      if (anterior) anterior.disabled = gradoActivo === 0;
+      if (siguiente) siguiente.disabled = gradoActivo === paneles.length - 1;
+    }
+
+    puntos.forEach((punto) => punto.addEventListener('click', () => mostrarGrado(Number(punto.dataset.gradoDot))));
+    anterior?.addEventListener('click', () => mostrarGrado(gradoActivo - 1));
+    siguiente?.addEventListener('click', () => mostrarGrado(gradoActivo + 1));
+    lector?.addEventListener('pointerdown', (evento) => { if (evento.pointerType === 'touch') inicioDeslizamiento = evento.clientX; });
+    lector?.addEventListener('pointerup', (evento) => {
+      if (evento.pointerType !== 'touch') return;
+      const desplazamiento = evento.clientX - inicioDeslizamiento;
+      if (Math.abs(desplazamiento) > 55) mostrarGrado(gradoActivo + (desplazamiento < 0 ? 1 : -1));
+    });
+
+    tamanoLectura?.addEventListener('change', () => {
+      document.querySelectorAll<HTMLElement>('[data-reader-text]').forEach((contenido) => { contenido.style.fontSize = `${tamanoLectura.value}px`; });
+    });
+    fuenteLectura?.addEventListener('change', () => {
+      document.querySelectorAll<HTMLElement>('[data-reader-text]').forEach((contenido) => { contenido.style.fontFamily = fuenteLectura.value; });
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-teoria]').forEach((boton) => {
+      boton.addEventListener('click', () => {
+        if (tituloTeoria) tituloTeoria.textContent = boton.dataset.teoria ?? '';
+        dialogoTeoria?.showModal();
+      });
+    });
+
+    descargar?.addEventListener('click', () => {
+      const escaparHtml = (texto: string) => texto.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      const contenido = paneles.map((panel) => `<section><pre>${escaparHtml(panel.innerText || panel.textContent || '').replaceAll('\n', '<br>')}</pre></section>`).join('');
+      const fuente = fuenteLectura?.value ?? 'Georgia, serif';
+      const tamano = tamanoLectura?.value ?? '20';
+      const html = `<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Programa de examen FECHITAT</title><style>body{max-width:900px;margin:3rem auto;padding:0 1.5rem;font:${tamano}px/1.7 ${fuente};color:#181410}section{margin-bottom:4rem}pre{white-space:pre-wrap;font:inherit}section+section{border-top:2px solid #d8d0ba;padding-top:2rem}</style><h1>Programa de examen FECHITAT</h1>${contenido}</html>`;
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+      const enlace = document.createElement('a');
+      enlace.href = url;
+      enlace.download = 'programa-examen-fechitat.html';
+      enlace.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    mostrarGrado(0);
+  </script>
+  <style>
+    #teoria-dialog {
+      position: fixed;
+      inset: 0;
+      width: min(42rem, calc(100% - 2rem));
+      max-height: 85vh;
+      margin: auto;
+      overflow-y: auto;
+    }
+
+    #programa-lector [data-reader-text] li,
+    #programa-lector [data-reader-text] button {
+      font-size: inherit;
+      line-height: 1.65;
+    }
+  </style>
+</BaseLayout>

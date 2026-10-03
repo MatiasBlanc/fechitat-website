@@ -11,14 +11,14 @@ const links = [
 const esActivo = (href) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
 const federacionActiva = esActivo("/federacion") || esActivo("/escuelas");
-const formacionActiva = esActivo("/estudio") || esActivo("/examen");
+const recursosActivos = esActivo("/recursos");
 ---
 
 <header class="sticky top-0 z-50 bg-ink border-b border-white/10">
   <div class="max-w-6xl mx-auto px-5 md:px-7 flex items-center justify-between h-16 md:h-17">
     <!-- Logo -->
     <a href="/" class="flex items-center gap-2 text-white font-heading font-extrabold tracking-wide text-base md:text-lg" aria-label="FECHITAT — Inicio">
-      <img src="/images/general/fechitat-logo.svg" alt="" class="w-9 h-9 object-contain" />
+      <img src="/images/general/fechitat-logo.svg" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
       <span>FECHITAT</span>
     </a>
 
@@ -65,20 +65,15 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
       >
         Blog
       </a>
-      <details class="relative group">
-        <summary
-          class:list={[
-            "list-none cursor-pointer font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150 flex items-center gap-2",
-            formacionActiva ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red",
-          ]}
-        >
-          Formación <span aria-hidden="true">⌄</span>
-        </summary>
-        <div class="absolute right-0 top-full mt-3 min-w-52 bg-ink border border-white/15 rounded-sm p-2 shadow-xl">
-          <a href="/estudio" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Material de estudio</a>
-          <a href="/examen" class="block px-3 py-2 text-light-soft hover:text-white hover:bg-white/10 font-mono text-xs uppercase tracking-wider">Programa de examen</a>
-        </div>
-      </details>
+      <a
+        href="/recursos"
+        data-astro-prefetch="hover"
+        class="font-mono text-xs tracking-widest uppercase py-1 border-b-2 border-transparent transition-colors duration-150"
+        class:list={recursosActivos ? "text-white border-red" : "text-light-soft hover:text-white hover:border-red"}
+        aria-current={recursosActivos ? "page" : undefined}
+      >
+        Recursos
+      </a>
 
     </nav>
 
@@ -100,6 +95,7 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
     id="menu-movil"
     class="mobile-nav fixed inset-0 top-16 bg-ink flex flex-col px-5 py-8 gap-6 translate-x-full transition-transform duration-300 lg:hidden z-50 overflow-y-auto"
     aria-label="Navegación móvil"
+    inert
   >
     <a
       href="/"
@@ -139,13 +135,17 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
     >
       Blog
     </a>
-    <details class="border-l-2 pl-4" class:list={formacionActiva ? "border-red" : "border-transparent"}>
-      <summary class="list-none cursor-pointer font-mono text-sm tracking-widest uppercase py-2 text-light-soft">Formación <span aria-hidden="true">⌄</span></summary>
-      <div class="flex flex-col gap-3 pl-4 pb-2">
-        <a href="/estudio" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Material de estudio</a>
-        <a href="/examen" class="text-light-soft hover:text-white font-mono text-sm tracking-wider">Programa de examen</a>
-      </div>
-    </details>
+    <a
+      href="/recursos"
+      data-astro-prefetch="hover"
+      class:list={[
+        "font-mono text-sm tracking-widest uppercase py-2 border-l-2 transition-colors duration-150 pl-4",
+        recursosActivos ? "text-white border-red" : "text-light-soft hover:text-white border-transparent",
+      ]}
+      aria-current={recursosActivos ? "page" : undefined}
+    >
+      Recursos
+    </a>
   </nav>
 </header>
 
@@ -161,6 +161,7 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
 
     const toggle = (open) => {
       mobileNav.classList.toggle('open', open);
+      mobileNav.inert = !open;
       mobileNav.classList.toggle('translate-x-full', !open);
       mobileNav.classList.toggle('translate-x-0', open);
       burger.textContent = open ? '✕' : '☰';
@@ -183,7 +184,10 @@ const formacionActiva = esActivo("/estudio") || esActivo("/examen");
     );
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mobileNav.classList.contains('open')) toggle(false);
+      if (e.key === 'Escape' && mobileNav.classList.contains('open')) {
+        toggle(false);
+        burger.focus();
+      }
     });
   }
 

@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const terminos = [
+  { coreano: '태권도', romanizacion: 'Taekwon-Do', espanol: 'Arte marcial de golpes de pie y puño', ingles: 'The way of foot and fist', categoria: 'General' },
+  { coreano: '틀', romanizacion: 'Tul', espanol: 'Forma o patrón', ingles: 'Pattern', categoria: 'General' },
+  { coreano: '도장', romanizacion: 'Dojang', espanol: 'Sala de entrenamiento', ingles: 'Training hall', categoria: 'General' },
+  { coreano: '도복', romanizacion: 'Dobok', espanol: 'Uniforme de entrenamiento', ingles: 'Training uniform', categoria: 'General' },
+  { coreano: '사범', romanizacion: 'Sabum', espanol: 'Instructor', ingles: 'Instructor', categoria: 'General' },
+  { coreano: '급', romanizacion: 'Gup', espanol: 'Grado de cinturón de color', ingles: 'Colour-belt rank', categoria: 'Grados' },
+  { coreano: '단', romanizacion: 'Dan', espanol: 'Grado de cinturón negro', ingles: 'Black-belt degree', categoria: 'Grados' },
+  { coreano: '서기', romanizacion: 'Sogi', espanol: 'Posición', ingles: 'Stance', categoria: 'Técnica' },
+  { coreano: '막기', romanizacion: 'Makgi', espanol: 'Bloqueo o defensa', ingles: 'Blocking technique', categoria: 'Técnica' },
+  { coreano: '지르기', romanizacion: 'Jirugi', espanol: 'Golpe de puño', ingles: 'Punch', categoria: 'Técnica' },
+  { coreano: '차기', romanizacion: 'Chagi', espanol: 'Patada', ingles: 'Kick', categoria: 'Técnica' },
+  { coreano: '손칼', romanizacion: 'Sonkal', espanol: 'Canto de la mano', ingles: 'Knife-hand', categoria: 'Técnica' },
+  { coreano: '차렷', romanizacion: 'Charyot', espanol: 'Atención', ingles: 'Attention', categoria: 'Comandos' },
+  { coreano: '경례', romanizacion: 'Kyong Ye', espanol: 'Saludo', ingles: 'Bow', categoria: 'Comandos' },
+];
+---
+<BaseLayout title="Terminología — FECHITAT" description="Diccionario de Taekwon-Do ITF en español, inglés y coreano.">
+  <section class="bg-ink text-white">
+    <div class="max-w-6xl mx-auto px-5 md:px-7 py-16">
+      <h1 class="text-white text-4xl md:text-6xl">Terminología</h1>
+      <p class="text-light-soft mt-4">Diccionario de Taekwon-Do ITF en español, inglés y coreano.</p>
+    </div>
+  </section>
+  <section class="max-w-6xl mx-auto px-5 md:px-7 py-12">
+    <label for="buscar-termino" class="block text-sm font-mono uppercase tracking-wider text-text-soft mb-2">Buscar término</label>
+    <input id="buscar-termino" type="search" placeholder="Busca en español, inglés o coreano" class="w-full md:max-w-xl border border-line bg-white px-4 py-3 text-ink rounded-sm focus-visible:outline-2 focus-visible:outline-red" />
+    <div class="overflow-x-auto mt-6">
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="border-b-2 border-ink">
+            <th scope="col" class="p-3 font-mono text-xs uppercase tracking-wider">Coreano</th>
+            <th scope="col" class="p-3 font-mono text-xs uppercase tracking-wider">Español</th>
+            <th scope="col" class="p-3 font-mono text-xs uppercase tracking-wider">English</th>
+            <th scope="col" class="p-3 font-mono text-xs uppercase tracking-wider">Categoría</th>
+          </tr>
+        </thead>
+        <tbody id="terminos-diccionario">
+          {terminos.map((termino) => (
+            <tr class="border-b border-line hover:bg-paper" data-termino={`${termino.coreano} ${termino.romanizacion} ${termino.espanol} ${termino.ingles} ${termino.categoria}`.toLocaleLowerCase()}>
+              <td class="p-3"><span lang="ko" class="text-lg">{termino.coreano}</span><span class="block text-xs text-text-soft">{termino.romanizacion}</span></td>
+              <td class="p-3">{termino.espanol}</td>
+              <td class="p-3" lang="en">{termino.ingles}</td>
+              <td class="p-3 text-sm text-text-soft">{termino.categoria}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p id="sin-resultados" class="hidden text-text-soft mt-6">No se encontraron términos.</p>
+  </section>
+  <script>
+    const buscador = document.querySelector<HTMLInputElement>('#buscar-termino');
+    const filas = [...document.querySelectorAll<HTMLTableRowElement>('#terminos-diccionario tr')];
+    const sinResultados = document.querySelector<HTMLElement>('#sin-resultados');
+
+    buscador?.addEventListener('input', () => {
+      const consulta = buscador.value.trim().toLocaleLowerCase();
+      let visibles = 0;
+      filas.forEach((fila) => {
+        const coincide = fila.dataset.termino?.includes(consulta) ?? false;
+        fila.hidden = !coincide;
+        if (coincide) visibles += 1;
+      });
+      if (sinResultados) sinResultados.hidden = visibles > 0;
+    });
+  </script>
+</BaseLayout>
